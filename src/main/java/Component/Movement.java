@@ -1,0 +1,58 @@
+package Component;
+
+import Entities.DynamicEntity;
+import Utils.Vector2i;
+
+public class Movement {
+    private int speed;
+    private Vector2i velocity;
+    private Vector2i direction;
+    private DynamicEntity entity;
+
+    public Movement(DynamicEntity entity, int speed) {
+        this.speed = speed;
+        this.entity = entity;
+        velocity = new Vector2i();
+        direction = new Vector2i();
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void update(int directionX, int directionY) {
+        velocity.x = directionX * speed;
+        velocity.y = directionY * speed;
+        direction.x = directionX;
+        direction.y = directionY;
+    }
+
+    //  GETTER
+    public Vector2i getVelocity() {
+        return velocity;
+    }
+
+    public Vector2i getDirection() {
+        return direction;
+    }
+
+    public Vector2i getNextPosition() {
+        return new Vector2i(entity.getX() + velocity.x,
+                entity.getY() + velocity.y);
+    }
+
+    public void move() {
+        entity.setX(entity.getX() + velocity.x);
+        entity.setY(entity.getY() + velocity.y);
+        if (entity.getX() < 0) {
+            entity.setX(0);
+        }
+        if (entity.getY() < 0) {
+            entity.setY(0);
+        }
+    }
+}
