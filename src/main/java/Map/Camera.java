@@ -66,6 +66,10 @@ public class Camera {
         return start;
     }
 
+    public Vector2i getSize() {
+        return new Vector2i(width, height);
+    }
+
     //  FUNCTIONS
     /**
      * Cập nhập velocity (độ thay đổi của x và y)

@@ -38,7 +38,7 @@ public class Map {
     }
 
     public Camera getCamera() {
-        return camera.clone();
+        return camera;
     }
 
     //  FUNCTIONS
@@ -65,9 +65,9 @@ public class Map {
                         newEntity = createBalloonEnemy(col * gridSize, row * gridSize);
                     }
                     else {
-                        newEntity = new StaticEntity(
+                        newEntity = new Stone(
                                 col * gridSize, row * gridSize,
-                                gridSize, gridSize, null
+                                0, 0, null
                         );
                     }
                     entities.get(row).add(newEntity);

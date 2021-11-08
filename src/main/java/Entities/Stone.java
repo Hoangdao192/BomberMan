@@ -14,6 +14,11 @@ public class Stone extends StaticEntity{
     }
 
     @Override
+    public void update() {
+
+    }
+
+    @Override
     public boolean ifCollideDo(Entity other) {
         if (!(other instanceof DynamicEntity)) {
             return false;

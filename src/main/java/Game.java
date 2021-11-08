@@ -1,5 +1,6 @@
 import Entities.Bomber;
 import Map.Map;
+import Map.Camera;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -45,10 +46,25 @@ public class Game {
         mainStage = new Stage();
         mainStage.setScene(mainScene);
 
+        mainCanvas.setScaleX(1);
+        mainCanvas.setScaleY(1);
+        mainCanvas.setLayoutX(0);
+        mainCanvas.setLayoutY(0);
         setFPS(30);
         createMap();
         createPlayer();
         initEventHandler();
+        createResizeEventHandle();
+    }
+
+    private void createResizeEventHandle() {
+        mainScene.widthProperty().addListener((obs, oldVal, newVal) -> {
+            double scaleRatio = (double) newVal / (double) oldVal;
+            mainCanvas.setScaleX(mainScene.getWidth() / mainCanvas.getWidth());
+            mainCanvas.setScaleY(mainScene.getWidth() / mainCanvas.getWidth());
+            mainCanvas.setLayoutX((mainCanvas.getWidth() * (mainCanvas.getScaleX() - 1))/2);
+            mainCanvas.setLayoutY((mainCanvas.getHeight() * (mainCanvas.getScaleY() - 1))/2);
+        });
     }
 
     public void setFPS(int fps) {
@@ -66,7 +82,7 @@ public class Game {
 
     private void createPlayer() {
         bomber = new Bomber(100, 200, map);
-
+        map.getCamera().setCenter(100, 200);
     }
 
     public void initEventHandler() {

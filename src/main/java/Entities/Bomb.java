@@ -1,7 +1,9 @@
 package Entities;
 
+import Component.Animation;
 import Component.AnimationManager;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public class Bomb extends StaticEntity {
@@ -18,7 +20,21 @@ public class Bomb extends StaticEntity {
         createAnimation();
     }
 
-    public void createAnimation() {
+    @Override
+    public void update() {
 
+    }
+
+    public void createAnimation() {
+        Image image = new Image(IMAGE_PATH);
+        Animation mainAnimation = new Animation(this, image, 30, 30, 2, 0, 2);
+        animationManager = new AnimationManager(this);
+        animationManager.addAnimation("MAIN", mainAnimation);
+        animationManager.play("MAIN");
+    }
+
+    @Override
+    public void render(int x, int y, GraphicsContext graphicsContext) {
+        animationManager.render(graphicsContext, x, y);
     }
 }
