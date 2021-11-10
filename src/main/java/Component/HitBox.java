@@ -1,6 +1,7 @@
 package Component;
 
 import Entities.Entity;
+import Utils.Vector2i;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
 
@@ -69,6 +70,12 @@ public class HitBox {
 
     public int getOffsetY() {
         return offsetY;
+    }
+
+    public Vector2i getCenter() {
+        int x = (left + right) / 2;
+        int y = (top + bottom) / 2;
+        return new Vector2i(x, y);
     }
 
     //  FUNCTIONS

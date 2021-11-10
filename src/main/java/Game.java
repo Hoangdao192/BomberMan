@@ -64,7 +64,19 @@ public class Game {
             mainCanvas.setScaleY(mainScene.getWidth() / mainCanvas.getWidth());
             mainCanvas.setLayoutX((mainCanvas.getWidth() * (mainCanvas.getScaleX() - 1))/2);
             mainCanvas.setLayoutY((mainCanvas.getHeight() * (mainCanvas.getScaleY() - 1))/2);
+            map.getCamera().setSize(
+                    map.getCamera().getSize().x,
+                    (int)(2 * mainCanvas.getHeight() - mainCanvas.getHeight() * mainCanvas.getScaleY())
+                    );/*
+            map.getCamera().setCenter(bomber.getX(), bomber.getY());*/
         });
+        /*mainScene.heightProperty().addListener((obs, oldVal, newVal) -> {
+            double scaleRatio = (double) newVal / (double) oldVal;
+            mainCanvas.setScaleX(mainScene.getHeight() / mainCanvas.getHeight());
+            mainCanvas.setScaleY(mainScene.getHeight() / mainCanvas.getHeight());
+            mainCanvas.setLayoutX((mainCanvas.getWidth() * (mainCanvas.getScaleX() - 1))/2);
+            mainCanvas.setLayoutY((mainCanvas.getHeight() * (mainCanvas.getScaleY() - 1))/2);
+        });*/
     }
 
     public void setFPS(int fps) {
@@ -117,14 +129,16 @@ public class Game {
 
     public void update() {
         bomber.update();
+        if (!bomber.isAlive()) mainStage.close();
+        map.getCamera().setCenter(bomber.getX(), bomber.getY());
         map.update();
+
     }
 
     public void render() {
         graphicsContext.clearRect(0, 0, screenWidth, screenHeight);
         graphicsContext.setFill(Paint.valueOf("Blue"));
         graphicsContext.fillRect(0, 0, screenWidth, screenHeight);
-
         map.render(graphicsContext);
         bomber.render(graphicsContext);
     }

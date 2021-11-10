@@ -75,7 +75,9 @@ public class Camera {
      * Cập nhập velocity (độ thay đổi của x và y)
      */
     public void move(Vector2i velocity) {
-        this.velocity = velocity;
+        //this.velocity = velocity;
+        this.velocity.x = 0;
+        this.velocity.y = 0;
     }
 
     public void update() {
@@ -108,6 +110,7 @@ public class Camera {
 
         end.x = start.x + width;
         end.y = start.y + height;
+        System.out.println(start.x + " " + start.y + " " + end.x + " " + end.y);
     }
 
     @Override

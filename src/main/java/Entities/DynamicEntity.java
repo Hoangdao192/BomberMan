@@ -9,14 +9,14 @@ public abstract class DynamicEntity extends Entity {
     protected Map map;
     protected Movement movement;
 
-    public DynamicEntity(int x, int y, int width, int height, Image image, Map map) {
-        super(x, y, width, height, image);
+    public DynamicEntity(int x, int y, int width, int height, int gridSize, Image image, Map map) {
+        super(x, y, width, height, gridSize, image);
         this.map = map;
         movement = new Movement(this, 0);
     }
 
-    public DynamicEntity(int x, int y, int width, int height, Image image, Rectangle2D imageOffset, Map map) {
-        super(x, y, width, height, image, imageOffset);
+    public DynamicEntity(int x, int y, int width, int height, int gridSize, Image image, Rectangle2D imageOffset, Map map) {
+        super(x, y, width, height, gridSize, image, imageOffset);
         this.map = map;
         movement = new Movement(this, 0);
     }

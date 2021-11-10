@@ -1,11 +1,8 @@
 package Map;
 
 import Component.HitBox;
-import Entities.DynamicEntity;
+import Entities.*;
 import Entities.Enemy.Balloon;
-import Entities.Entity;
-import Entities.StaticEntity;
-import Entities.Stone;
 import Utils.Vector2i;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -25,7 +22,7 @@ public class Map {
     private int gridSize;
     private Camera camera;
     //  Danh sách các Entity có trong map.
-    private ArrayList<ArrayList<Entity>> entities;
+    private ArrayList<Entity> entities;
 
     public Map(String path, int cameraWidth, int cameraHeight) {
         loadMapFromFile(path);
@@ -41,6 +38,10 @@ public class Map {
         return camera;
     }
 
+    public int getGridSize() {
+        return gridSize;
+    }
+
     //  FUNCTIONS
     public void loadMapFromFile(String path) {
         try {
@@ -54,23 +55,19 @@ public class Map {
 
             entities = new ArrayList<>();
             for (int row = 0; row < mapGridHeight; ++row) {
-                entities.add(new ArrayList<Entity>());
                 for (int col = 0; col < mapGridWidth; ++col) {
                     int tileStyle = scanner.nextInt();
-                    Entity newEntity;
+                    Entity newEntity = null;
                     if (tileStyle == 1) {
                         newEntity = createStoneEntity(col * gridSize, row * gridSize);
                     }
                     else if (tileStyle == 2) {
                         newEntity = createBalloonEnemy(col * gridSize, row * gridSize);
                     }
-                    else {
-                        newEntity = new Stone(
-                                col * gridSize, row * gridSize,
-                                0, 0, null
-                        );
+                    else if (tileStyle == 3) {
+                        newEntity = createBrickEntity(col * gridSize, row * gridSize);
                     }
-                    entities.get(row).add(newEntity);
+                    if (newEntity != null) entities.add(newEntity);
                 }
             }
         } catch (FileNotFoundException e) {
@@ -79,13 +76,19 @@ public class Map {
     }
 
     //  ENTITY CREATOR.
+    public Entity createBrickEntity(int x, int y) {
+        Brick brick = new Brick(x, y, gridSize, gridSize, gridSize);
+        brick.createHitBox(0, 0, 32, 32);
+        return brick;
+    }
+
     /**
      * Tạo tảng đá.
      */
     public Entity createStoneEntity(int x, int y) {
         Image tileSheet = new Image("Graphic/Map/wall.png");
         Stone stone = new Stone(
-                x, y, gridSize, gridSize,
+                x, y, gridSize, gridSize, gridSize,
                 tileSheet, new Rectangle2D(0, 0, 32, 32)
         );
         stone.setCollision(true);
@@ -97,10 +100,13 @@ public class Map {
      * Tạo kẻ địch Balloon.
      */
     public Entity createBalloonEnemy(int x, int y) {
-        Balloon balloon = new Balloon(x, y, 24, 24, this);
-        balloon.createHitBox(0,0, 24, 24);
-        ((DynamicEntity) balloon).getMovement().setSpeed(10);
+        Balloon balloon = new Balloon(x, y, 32, 32, this);
+        balloon.createHitBox(2,2, 28, 28);
         return balloon;
+    }
+
+    public void addEntity(Entity entity) {
+        entities.add(entity);
     }
 
     public void createCamera(int width, int height) {
@@ -111,7 +117,7 @@ public class Map {
         );
     }
 
-    public ArrayList<ArrayList<Entity>> getEntityList() {
+    public ArrayList<Entity> getEntityList() {
         return entities;
     }
 
@@ -120,10 +126,13 @@ public class Map {
     }
 
     public void updateEntity() {
-        for (int row = 0; row < entities.size(); ++row) {
-            for (int col = 0; col < entities.get(row).size(); ++col) {
-                Entity currentEntity = entities.get(row).get(col);
+        for (int i = 0; i < entities.size(); ) {
+            Entity currentEntity = entities.get(i);
+            if (!currentEntity.isExist()) {
+                entities.remove(i);
+            } else {
                 currentEntity.update();
+                ++i;
             }
         }
     }
@@ -137,23 +146,21 @@ public class Map {
      * Render tất cả các entity nằm trong vùng camera.
      */
     public void render(GraphicsContext graphicsContext) {
-        for (int row = 0; row < entities.size(); ++row) {
-            for (int col = 0; col < entities.get(row).size(); ++col) {
-                Entity currentEntity = entities.get(row).get(col);
-                //  Không render nếu Entity nằm ngoài vùng camera
-                if (currentEntity.getX() >= camera.getEnd().x
+        for (int i = 0; i < entities.size(); ++i) {
+            Entity currentEntity = entities.get(i);
+            //  Không render nếu Entity nằm ngoài vùng camera
+            if (currentEntity.getX() >= camera.getEnd().x
                     || currentEntity.getX() + currentEntity.getWidth() <= camera.getStart().x
                     || currentEntity.getY() >= camera.getEnd().y
                     || currentEntity.getY() + currentEntity.getHeight() <= camera.getStart().y) {
-                    continue;
-                }
-
-                currentEntity.render(
-                        currentEntity.getX() - camera.getStart().x,
-                        currentEntity.getY() - camera.getStart().y,
-                        graphicsContext
-                );
+                continue;
             }
+
+            currentEntity.render(
+                    currentEntity.getX() - camera.getStart().x,
+                    currentEntity.getY() - camera.getStart().y,
+                    graphicsContext
+            );
         }
     }
 }

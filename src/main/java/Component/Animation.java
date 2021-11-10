@@ -30,7 +30,7 @@ public class Animation {
         MAX_SPEED = maxSpeed;
         speed = 0;
         frame = startFrame;
-        framePosition = new Rectangle2D(0, 0, 0, 0);
+        framePosition = spriteSheet.getSprite(frame);
         isPlay = true;
     }
 
@@ -41,9 +41,9 @@ public class Animation {
         this.startFrame = startFrame;
         this.endFrame = endFrame;
         this.image = spriteSheet.getImage();
-        framePosition = new Rectangle2D(0, 0, 0, 0);
         speed = 0;
         frame = startFrame;
+        framePosition = spriteSheet.getSprite(frame);
         isPlay = true;
     }
 
@@ -74,6 +74,10 @@ public class Animation {
 
     public void reset() {
         frame = startFrame;
+    }
+
+    public int getCurrentFrame() {
+        return frame;
     }
 
     public int getFrame() {

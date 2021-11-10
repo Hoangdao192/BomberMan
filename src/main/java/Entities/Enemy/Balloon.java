@@ -7,7 +7,6 @@ import Entities.Bomber;
 import Entities.Entity;
 import Map.Map;
 import Utils.Vector2i;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
@@ -17,13 +16,14 @@ public class Balloon extends Enemy {
     private final String IMAGE_PATH = "Graphic/Entity/Enemy/Balloon.png";
     private final int SPRITE_WIDTH = 16;
     private final int SPRITE_HEIGHT = 16;
+    private final int DEFAULT_SPEED = 3;
     private Vector2i currentDirection;
     AnimationManager animationManager;
 
     public Balloon(int x, int y, int width, int height, Map map) {
         super(x, y, width, height, null, map);
         createAnimation();
-        movement.setSpeed(5);
+        movement.setSpeed(DEFAULT_SPEED);
         currentDirection = new Vector2i(1, 0);
         collision = true;
     }
@@ -44,19 +44,17 @@ public class Balloon extends Enemy {
         /**
          * Xét vị trí tiếp theo có va chạm với bản đồ hay không.
          */
-        final ArrayList<ArrayList<Entity>> entities = map.getEntityList();
+        final ArrayList<Entity> entities = map.getEntityList();
         //  Hitbox của bomber ở vị trí tiếp theo khi di chuyển.
         HitBox nextPositionHitbox = hitBox.getNextPosition(movement);
         boolean collide = false;
         for (int i = 0; i < entities.size(); ++i) {
-            for (int j = 0; j < entities.get(i).size(); ++j) {
-                if (!entities.get(i).get(j).collisionAble()
-                    || entities.get(i).get(j) == this) {
-                    continue;
-                }
-                if (entities.get(i).get(j).ifCollideDo(this)) {
-                    collide = true;
-                }
+            if (!entities.get(i).collisionAble()
+                || entities.get(i) instanceof Enemy) {
+                continue;
+            }
+            if (entities.get(i).ifCollideDo(this)) {
+                collide = true;
             }
         }
         return collide;
@@ -68,7 +66,8 @@ public class Balloon extends Enemy {
             return false;
         }
         if (other instanceof Bomber) {
-            animationManager.play("DEAD");
+            System.out.println("GAME OVER");
+            ((Bomber) other).die();
         }
         return true;
     }
@@ -108,8 +107,14 @@ public class Balloon extends Enemy {
     }
 
     @Override
+    public void die() {
+        animationManager.play("DEAD");
+    }
+
+    @Override
     public void update() {
         updateMovement();
+        updateGridPosition();
         hitBox.update();
         updateAnimation();
     }

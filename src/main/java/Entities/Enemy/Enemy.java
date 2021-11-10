@@ -7,10 +7,10 @@ import javafx.scene.image.Image;
 
 public abstract class Enemy extends DynamicEntity {
     public Enemy(int x, int y, int width, int height, Image image, Map map) {
-        super(x, y, width, height, image, map);
+        super(x, y, width, height, map.getGridSize(), image, map);
     }
 
     public Enemy(int x, int y, int width, int height, Image image, Rectangle2D imageOffset, Map map) {
-        super(x, y, width, height, image, imageOffset, map);
+        super(x, y, width, height, map.getGridSize(), image, imageOffset, map);
     }
 }

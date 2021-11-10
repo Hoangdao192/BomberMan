@@ -23,14 +23,17 @@ public class Bomber extends DynamicEntity {
     private static final int SPRITE_WIDTH = 16;
     private static final int SPRITE_HEIGHT = 16;
 
+    private boolean alive;
+
     //  CONSTRUCTOR
     public Bomber(int x, int y, Map map) {
-        super(x, y, SPRITE_WIDTH * 2, SPRITE_HEIGHT * 2, null, map);
+        super(x, y, SPRITE_WIDTH * 2, SPRITE_HEIGHT * 2, map.getGridSize(), null, map);
         image = new Image("Graphic/Entity/Bomber/bomber.png");
         createAnimation();
         setMap(map);
-        movement.setSpeed(7);
+        movement.setSpeed(4);
         createHitBox(2, 0, (SPRITE_WIDTH - 6)  * 2, (SPRITE_HEIGHT - 2) * 2);
+        alive = true;
     }
 
     private void createAnimation() {
@@ -47,11 +50,26 @@ public class Bomber extends DynamicEntity {
         animationManager.play("WALK_DOWN");
     }
 
+    private void createBomb() {
+        Entity bomb = new Bomb(
+                1,
+                //  Lấy chỉ số hàng cột của ô hiện tại đang đứng
+                hitBox.getCenter().x / map.getGridSize() * map.getGridSize()
+                        + (hitBox.getLeft() % map.getGridSize() != 0 ? 1 : 0),
+                hitBox.getCenter().y / map.getGridSize() * map.getGridSize()
+                        + (hitBox.getTop() % map.getGridSize() != 0 ? 1 : 0),
+                32, 32, map);
+        map.addEntity(bomb);
+    }
+
     /**
      * keyPressed: false: Key released
      * keyPressed: true: Key pressed
      */
     public void updateInput(KeyEvent keyEvent, boolean isKeyPressed) {
+        if (keyEvent.getCode() == KeyCode.A && isKeyPressed) {
+            createBomb();
+        }
         if (keyEvent.getCode() == KeyCode.RIGHT) {
             moveRight = isKeyPressed;
         }
@@ -122,25 +140,33 @@ public class Bomber extends DynamicEntity {
         /**
          * Xét vị trí tiếp theo có va chạm với bản đồ hay không.
          */
-        final ArrayList<ArrayList<Entity>> entities = map.getEntityList();
+        final ArrayList<Entity> entities = map.getEntityList();
         //  Hitbox của bomber ở vị trí tiếp theo khi di chuyển.
         HitBox nextPositionHitbox = hitBox.getNextPosition(movement);
         boolean collide = false;
         for (int i = 0; i < entities.size(); ++i) {
-            for (int j = 0; j < entities.get(i).size(); ++j) {
-                if (!entities.get(i).get(j).collisionAble()) {
-                    continue;
-                }
-                collide = entities.get(i).get(j).ifCollideDo(this);
+            if (!entities.get(i).collisionAble()) {
+                continue;
             }
+            collide = entities.get(i).ifCollideDo(this);
         }
         return collide;
+    }
+
+    @Override
+    public void die() {
+        System.out.println("collide");
+    }
+
+    public boolean isAlive() {
+        return alive;
     }
 
     @Override
     public void update() {
         collisionWithMapEntities();
         updateMovement();
+        updateGridPosition();
         updateHitBox();
         updateAnimation();
     }

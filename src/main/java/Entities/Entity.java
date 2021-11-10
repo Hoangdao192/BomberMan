@@ -1,6 +1,7 @@
 package Entities;
 
 import Component.HitBox;
+import Entities.Enemy.Balloon;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -12,6 +13,10 @@ public abstract class Entity {
     protected int y;
     protected int width;
     protected int height;
+    //  Tọa độ theo Grid
+    protected int gridX;
+    protected int gridY;
+    protected int gridSize;
     //  Hình ảnh của đối tượng
     protected Image image;
     //  Vị trí của phần hình ảnh cần lấy
@@ -24,12 +29,18 @@ public abstract class Entity {
     protected boolean exist;
 
     //  CONSTRUCTOR
-    public Entity(int x, int y, int width, int height, Image image) {
+    public Entity(int x, int y, int width, int height, int gridSize, Image image) {
         id = "Entity";
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+
+        this.gridSize = gridSize;
+        gridX = x / gridSize;
+        gridY = y / gridSize;
+
+
         this.image = image;
         //  Hit box mặc định
         hitBox = new HitBox(this, 0, 0,0,0);
@@ -41,12 +52,16 @@ public abstract class Entity {
         }
     }
 
-    public Entity(int x, int y, int width, int height, Image image, Rectangle2D imageOffset) {
-        this(x, y, width, height, image);
+    public Entity(int x, int y, int width, int height, int gridSize, Image image, Rectangle2D imageOffset) {
+        this(x, y, width, height, gridSize, image);
         this.imageOffset = imageOffset;
     }
 
     //  SETTER
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -101,7 +116,21 @@ public abstract class Entity {
     }
 
     //  FUNCTIONS
+    public void die() {
+        exist = false;
+    }
+
     public abstract void update();
+
+    public void updateGridPosition() {
+        if (hitBox.getWidth() == 0) {
+            this.gridX = x / this.gridSize;
+            this.gridY = y / this.gridSize;
+        } else {
+            this.gridX = hitBox.getLeft() / this.gridSize;
+            this.gridY = hitBox.getTop() / this.gridSize;
+        }
+    }
 
     public void createHitBox(int offsetX, int offsetY, int width, int height) {
         hitBox = new HitBox(this, offsetX, offsetY, width, height);
