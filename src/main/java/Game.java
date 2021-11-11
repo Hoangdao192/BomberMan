@@ -133,7 +133,6 @@ public class Game {
         if (!bomber.isAlive()) mainStage.close();
         map.getCamera().setCenter(bomber.getX(), bomber.getY());
         map.update();
-        System.out.println(RandomInt.random(-1, 2));
     }
 
     public void render() {

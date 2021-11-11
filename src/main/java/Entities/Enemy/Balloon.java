@@ -12,9 +12,6 @@ import javafx.scene.image.Image;
 import java.util.ArrayList;
 
 public class Balloon extends Enemy {
-    private final String IMAGE_PATH = "Graphic/Entity/Enemy/Balloon.png";
-    private final int SPRITE_WIDTH = 16;
-    private final int SPRITE_HEIGHT = 16;
     private final int DEFAULT_SPEED = 3;
     private Vector2i currentDirection;
     AnimationManager animationManager;
@@ -22,6 +19,7 @@ public class Balloon extends Enemy {
     public Balloon(int x, int y, int width, int height, Map map) {
         super(x, y, width, height, null, map);
         createAnimation();
+        createHitbox();
         movement.setSpeed(DEFAULT_SPEED);
         currentDirection = new Vector2i(1, 0);
         collision = true;
@@ -29,7 +27,7 @@ public class Balloon extends Enemy {
 
     public void createAnimation() {
         animationManager = new AnimationManager(this);
-
+        this.sprite = Sprite.BALLOON_MOVE_RIGHT_1;
         Animation movingLeft = new Animation(this, null, this.width, this.height, 2);
         movingLeft.addSprite(Sprite.BALLOON_MOVE_LEFT_1);
         movingLeft.addSprite(Sprite.BALLOON_MOVE_LEFT_2);
@@ -50,6 +48,14 @@ public class Balloon extends Enemy {
         animationManager.addAnimation("MOVING RIGHT", movingRight);
         animationManager.addAnimation("DEAD", dead);
         animationManager.play("MOVING LEFT");
+    }
+
+    public void createHitbox() {
+        hitBox = new HitBox(
+                this, 1 * this.width / sprite.getWidth(), this.width / sprite.getWidth(),
+                14 * this.width / sprite.getWidth(),
+                14 * this.height / sprite.getHeight());
+        System.out.println(hitBox.getLeft() + " " + hitBox.getTop());
     }
 
     public boolean collisionWithMap() {

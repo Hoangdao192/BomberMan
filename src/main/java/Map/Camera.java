@@ -110,7 +110,6 @@ public class Camera {
 
         end.x = start.x + width;
         end.y = start.y + height;
-        System.out.println(start.x + " " + start.y + " " + end.x + " " + end.y);
     }
 
     @Override

@@ -19,10 +19,10 @@ public class BombFlame extends StaticEntity {
         super(x, y, width, height, gridSize, null);
         collision = true;
         createHitBox(0, 0, gridSize, gridSize);
-        createAnimation(image, flameType);
+        createAnimation(flameType);
     }
 
-    private void createAnimation(Image image, int flameType) {
+    private void createAnimation(int flameType) {
         switch (flameType) {
             //  Center
             case 0: {

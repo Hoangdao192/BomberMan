@@ -94,7 +94,6 @@ public class Map {
      */
     public Entity createBalloonEnemy(int x, int y) {
         Balloon balloon = new Balloon(x, y, 32, 32, this);
-        balloon.createHitBox(2,2, 28, 28);
         return balloon;
     }
 

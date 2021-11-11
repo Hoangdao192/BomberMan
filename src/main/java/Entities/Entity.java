@@ -20,9 +20,6 @@ public abstract class Entity {
     protected int gridSize;
     //  Hình ảnh của đối tượng
     protected Sprite sprite;
-    protected Image image;
-    //  Vị trí của phần hình ảnh cần lấy
-    protected Rectangle2D imageOffset;
 
     protected boolean collision = false;
 
@@ -31,8 +28,9 @@ public abstract class Entity {
     protected boolean exist;
 
     //  CONSTRUCTOR
-    public Entity(int x, int y, int width, int height, int gridSize, Image image) {
+    public Entity(int x, int y, int width, int height, int gridSize, Sprite sprite) {
         id = "Entity";
+        this.sprite = sprite;
         this.x = x;
         this.y = y;
         this.width = width;
@@ -42,26 +40,14 @@ public abstract class Entity {
         gridX = x / gridSize;
         gridY = y / gridSize;
 
-
-        this.image = image;
         //  Hit box mặc định
         hitBox = new HitBox(this, 0, 0,0,0);
         exist = true;
-        if (image != null) {
-            imageOffset = new Rectangle2D(0, 0, image.getWidth(), image.getHeight());
-        } else {
-            imageOffset = new Rectangle2D(0, 0, width, height);
-        }
-    }
-
-    public Entity(int x, int y, int width, int height, int gridSize, Image image, Rectangle2D imageOffset) {
-        this(x, y, width, height, gridSize, image);
-        this.imageOffset = imageOffset;
     }
 
     //  SETTER
-    public void setImage(Image image) {
-        this.image = image;
+    public void setSprite(Sprite sprite) {
+        this.sprite = sprite;
     }
 
     public void setId(String id) {
@@ -167,27 +153,21 @@ public abstract class Entity {
 
     //  Render theo tọa độ map.
     public void render(GraphicsContext graphicsContext) {
-        if (image != null) {
-            graphicsContext.drawImage(
-                    image,
-                    imageOffset.getMinX(), imageOffset.getMinY(),
-                    imageOffset.getWidth(), imageOffset.getHeight(),
-                    x, y, width, height
-            );
-        }
+        sprite.render(x, y, width, height, graphicsContext);
     }
 
     /**
      * Render theo tọa độ cửa sổ
      */
     public void render(int x, int y, GraphicsContext graphicsContext) {
-        if (image != null) {
-            graphicsContext.drawImage(
-                    image,
-                    imageOffset.getMinX(), imageOffset.getMinY(),
-                    imageOffset.getWidth(), imageOffset.getHeight(),
-                    x, y, width, height
-            );
+        if (sprite != null) {
+            sprite.render(x, y, this.width, this.height, graphicsContext);
+        }
+    }
+
+    public void render(int x, int y, int width, int height, GraphicsContext graphicsContext) {
+        if (sprite != null) {
+            sprite.render(x, y, width, height, graphicsContext);
         }
     }
 }

@@ -1,16 +1,14 @@
 package Entities;
 
 import Component.HitBox;
+import Component.Sprite;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 
 public abstract class StaticEntity extends Entity {
-    public StaticEntity(int x, int y, int width, int height, int gridSize, Image image) {
-        super(x, y, width, height, gridSize, image);
-    }
 
-    public StaticEntity(int x, int y, int width, int height, int gridSize, Image image, Rectangle2D imageOffset) {
-        super(x, y, width, height, gridSize, image, imageOffset);
+    public StaticEntity(int x, int y, int width, int height, int gridSize, Sprite sprite) {
+        super(x, y, width, height, gridSize, sprite);
     }
 
     @Override
