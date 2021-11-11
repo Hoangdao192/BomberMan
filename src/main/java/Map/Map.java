@@ -50,9 +50,6 @@ public class Map {
             mapGridWidth = scanner.nextInt();
             mapGridHeight = scanner.nextInt();
 
-            Image tileSheet = new Image("Graphic/Map/wall.png");
-            if (tileSheet == null) System.out.println("false");
-
             entities = new ArrayList<>();
             for (int row = 0; row < mapGridHeight; ++row) {
                 for (int col = 0; col < mapGridWidth; ++col) {
@@ -86,11 +83,7 @@ public class Map {
      * Tạo tảng đá.
      */
     public Entity createStoneEntity(int x, int y) {
-        Image tileSheet = new Image("Graphic/Map/wall.png");
-        Stone stone = new Stone(
-                x, y, gridSize, gridSize, gridSize,
-                tileSheet, new Rectangle2D(0, 0, 32, 32)
-        );
+        Stone stone = new Stone(x, y, gridSize, gridSize, gridSize);
         stone.setCollision(true);
         stone.createHitBox(0, 0, 32, 32);
         return stone;

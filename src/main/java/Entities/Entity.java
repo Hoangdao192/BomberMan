@@ -1,6 +1,7 @@
 package Entities;
 
 import Component.HitBox;
+import Component.Sprite;
 import Entities.Enemy.Balloon;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -18,6 +19,7 @@ public abstract class Entity {
     protected int gridY;
     protected int gridSize;
     //  Hình ảnh của đối tượng
+    protected Sprite sprite;
     protected Image image;
     //  Vị trí của phần hình ảnh cần lấy
     protected Rectangle2D imageOffset;

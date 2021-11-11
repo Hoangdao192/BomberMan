@@ -49,4 +49,14 @@ public class SpriteSheet {
         int yPosition = (spriteIndex / numberOfCollum) * spriteHeight;
         return new Rectangle2D(xPosition, yPosition, spriteWidth, spriteHeight);
     }
+
+    public Sprite getSpriteAtIndex(int spriteIndex) {
+        int xPosition = (spriteIndex % numberOfCollum) * spriteWidth;
+        int yPosition = (spriteIndex / numberOfCollum) * spriteHeight;
+        return new Sprite(image, xPosition * spriteWidth, yPosition * spriteHeight, spriteWidth, spriteHeight);
+    }
+
+    public Sprite getSpriteAtPosition(int col, int row) {
+        return new Sprite(image, col * spriteWidth, row * spriteHeight, spriteWidth, spriteHeight);
+    }
 }

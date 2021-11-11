@@ -1,9 +1,6 @@
 package Entities;
 
-import Component.Animation;
-import Component.AnimationManager;
-import Component.HitBox;
-import Component.SpriteInfo;
+import Component.*;
 import Map.Map;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -11,7 +8,7 @@ import javafx.scene.image.Image;
 import java.util.ArrayList;
 
 public class Bomb extends StaticEntity {
-    private AnimationManager animationManager;
+    private Animation mainAnimation;
     private Map map;
     private boolean exploded;
 
@@ -56,13 +53,15 @@ public class Bomb extends StaticEntity {
 
     @Override
     public void update() {
-        animationManager.update();
+        mainAnimation.update();
         countTime = System.nanoTime() - startTime;
         if (!exploded && countTime >= waitToExplode) {
             explode();
             countTime = 0;
         }
-        if (exploded && countTime >= waitToDelete) {
+        if (exploded &&
+                bombFlames.get(0).getAnimation().getCurrentFrame()
+                == bombFlames.get(0).getAnimation().getNumberOfFrame() - 1) {
             exist = false;
             removeBombExplode();
             countTime = 0;
@@ -83,14 +82,10 @@ public class Bomb extends StaticEntity {
     }
 
     public void createAnimation() {
-        Image image = new Image(SpriteInfo.BOMB_SPRITESHEET);
-        Animation mainAnimation = new Animation(
-                this, image,
-                SpriteInfo.BOMB_NORMAL.FRAME_WIDTH, SpriteInfo.BOMB_NORMAL.FRAME_HEIGHT,
-                4, SpriteInfo.BOMB_NORMAL.STAR_FRAME, SpriteInfo.BOMB_NORMAL.END_FRAME);
-        animationManager = new AnimationManager(this);
-        animationManager.addAnimation("MAIN", mainAnimation);
-        animationManager.play("MAIN");
+        mainAnimation = new Animation(this, null, this.width, this.height, 4);
+        mainAnimation.addSprite(Sprite.BOMB_NORMAL_1);
+        mainAnimation.addSprite(Sprite.BOMB_NORMAL_2);
+        mainAnimation.addSprite(Sprite.BOMB_NORMAL_3);
     }
 
     private void createHitbox() {
@@ -173,12 +168,9 @@ public class Bomb extends StaticEntity {
 
     private void createBombExplode() {
         bombFlames = new ArrayList<>();
-        Image image = animationManager.get("MAIN").getSpriteSheet().getImage();
         //  Center
         BombFlame explode1 = new BombFlame(
-                x, y, gridSize, gridSize, gridSize,
-                image, BombFlame.FLAME_CENTER
-
+                x, y, gridSize, gridSize, gridSize, BombFlame.FLAME_CENTER
         );
         explode1.createHitBox(4, 4, 24, 24);
         explode1.setCollision(true);
@@ -189,12 +181,12 @@ public class Bomb extends StaticEntity {
             if (i == maxRight) {
                 explodeRight  = new BombFlame(
                         x + i * gridSize, y, gridSize, gridSize, gridSize,
-                        image, BombFlame.FLAME_RIGHT);
+                        BombFlame.FLAME_RIGHT);
                 explodeRight.createHitBox(8, 10, 24, 16);
             } else {
                 explodeRight  = new BombFlame(
                         x + i * gridSize, y, gridSize, gridSize, gridSize,
-                        image, BombFlame.FLAME_HORIZON);
+                        BombFlame.FLAME_HORIZON);
                 explodeRight.createHitBox(0, 10, 32, 16);
             }
             explodeRight.setCollision(true);
@@ -207,12 +199,12 @@ public class Bomb extends StaticEntity {
             if (i == maxLeft) {
                 explodeLeft = new BombFlame(
                         x - i * gridSize, y, gridSize, gridSize, gridSize,
-                        image, BombFlame.FLAME_LEFT);
+                        BombFlame.FLAME_LEFT);
                 explodeLeft.createHitBox(0, 10, 24, 16);
             } else {
                 explodeLeft = new BombFlame(
                         x - i * gridSize, y, gridSize, gridSize, gridSize,
-                        image, BombFlame.FLAME_HORIZON);
+                        BombFlame.FLAME_HORIZON);
                 explodeLeft.createHitBox(0, 10, 32, 16);
             }
             explodeLeft.setCollision(true);
@@ -225,12 +217,12 @@ public class Bomb extends StaticEntity {
             if (i == maxDown) {
                 explodeDown = new BombFlame(
                         x, y + i * gridSize, gridSize, gridSize, gridSize,
-                        image, BombFlame.FLAME_DOWN);
+                        BombFlame.FLAME_DOWN);
                 explodeDown.createHitBox(8, 0, 16, 24);
             } else {
                 explodeDown = new BombFlame(
                         x, y + i * gridSize, gridSize, gridSize, gridSize,
-                        image, BombFlame.FLAME_VERTICAL);
+                        BombFlame.FLAME_VERTICAL);
                 explodeDown.createHitBox(8, 0, 16, 32);
             }
             explodeDown.setCollision(true);
@@ -243,12 +235,12 @@ public class Bomb extends StaticEntity {
             if (i == maxUp) {
                 explodeUp  = new BombFlame(
                         x, y - i * gridSize, gridSize, gridSize, gridSize,
-                        image, BombFlame.FLAME_UP);
+                        BombFlame.FLAME_UP);
                 explodeUp.createHitBox(8, 8, 16, 24);
             } else {
                 explodeUp  = new BombFlame(
                         x, y - i * gridSize, gridSize, gridSize, gridSize,
-                        image, BombFlame.FLAME_VERTICAL);
+                        BombFlame.FLAME_VERTICAL);
                 explodeUp.createHitBox(8, 0, 16, 32);
             }
             explodeUp.setCollision(true);
@@ -263,7 +255,7 @@ public class Bomb extends StaticEntity {
     @Override
     public void render(int x, int y, GraphicsContext graphicsContext) {
         if (exist) {
-            if (!exploded) animationManager.render(graphicsContext, x, y);
+            if (!exploded) mainAnimation.render(x, y, graphicsContext);
         }
     }
 }

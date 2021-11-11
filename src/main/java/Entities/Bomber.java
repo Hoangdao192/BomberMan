@@ -1,8 +1,6 @@
 package Entities;
 
-import Component.Animation;
-import Component.AnimationManager;
-import Component.HitBox;
+import Component.*;
 import Map.Map;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -19,7 +17,6 @@ public class Bomber extends DynamicEntity {
     boolean moveUp = false;
     boolean moveDown = false;
 
-    private final String SPRITE_SHEET_PATH = "";
     private static final int SPRITE_WIDTH = 16;
     private static final int SPRITE_HEIGHT = 16;
 
@@ -28,7 +25,6 @@ public class Bomber extends DynamicEntity {
     //  CONSTRUCTOR
     public Bomber(int x, int y, Map map) {
         super(x, y, SPRITE_WIDTH * 2, SPRITE_HEIGHT * 2, map.getGridSize(), null, map);
-        image = new Image("Graphic/Entity/Bomber/bomber.png");
         createAnimation();
         setMap(map);
         movement.setSpeed(4);
@@ -38,10 +34,27 @@ public class Bomber extends DynamicEntity {
 
     private void createAnimation() {
         animationManager = new AnimationManager(this);
-        Animation walkUpAnimation = new Animation(this, image, SPRITE_WIDTH, SPRITE_HEIGHT, 3, 0, 2);
-        Animation walkDownAnimation = new Animation(this, walkUpAnimation.getSpriteSheet(), 3, 3, 5);
-        Animation walkLeftAnimation = new Animation(this, walkUpAnimation.getSpriteSheet(), 2, 6, 8);
-        Animation walkRightAnimation = new Animation(this, walkUpAnimation.getSpriteSheet(), 2, 9, 11);
+
+        Animation walkUpAnimation = new Animation(this, null, this.width, this.height, 3);
+        walkUpAnimation.addSprite(Sprite.BOMBER_WALK_UP_1);
+        walkUpAnimation.addSprite(Sprite.BOMBER_WALK_UP_2);
+        walkUpAnimation.addSprite(Sprite.BOMBER_WALK_UP_3);
+
+        Animation walkDownAnimation = new Animation(this, null, this.width, this.height, 3);
+        walkDownAnimation.addSprite(Sprite.BOMBER_WALK_DOWN_1);
+        walkDownAnimation.addSprite(Sprite.BOMBER_WALK_DOWN_2);
+        walkDownAnimation.addSprite(Sprite.BOMBER_WALK_DOWN_3);
+
+        Animation walkLeftAnimation = new Animation(this, null, this.width, this.height, 1);
+        walkLeftAnimation.addSprite(Sprite.BOMBER_WALK_LEFT_1);
+        walkLeftAnimation.addSprite(Sprite.BOMBER_WALK_LEFT_2);
+        walkLeftAnimation.addSprite(Sprite.BOMBER_WALK_LEFT_3);
+
+        Animation walkRightAnimation = new Animation(this, null, this.width, this.height, 1);
+        walkRightAnimation.addSprite(Sprite.BOMBER_WALK_RIGHT_1);
+        walkRightAnimation.addSprite(Sprite.BOMBER_WALK_RIGHT_2);
+        walkRightAnimation.addSprite(Sprite.BOMBER_WALK_RIGHT_3);
+
         animationManager.addAnimation("WALK_UP", walkUpAnimation);
         animationManager.addAnimation("WALK_DOWN", walkDownAnimation);
         animationManager.addAnimation("WALK_LEFT", walkLeftAnimation);
@@ -129,6 +142,7 @@ public class Bomber extends DynamicEntity {
             animationManager.play("WALK_RIGHT");
         } else {
             animationManager.reset();
+            animationManager.getCurrentAnimation().stop();
         }
         animationManager.update();
     }

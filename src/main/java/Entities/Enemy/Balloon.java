@@ -1,11 +1,10 @@
 package Entities.Enemy;
 
-import Component.Animation;
-import Component.AnimationManager;
-import Component.HitBox;
+import Component.*;
 import Entities.Bomber;
 import Entities.Entity;
 import Map.Map;
+import Utils.RandomInt;
 import Utils.Vector2i;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -29,11 +28,24 @@ public class Balloon extends Enemy {
     }
 
     public void createAnimation() {
-        Image spriteSheet = new Image(IMAGE_PATH);
         animationManager = new AnimationManager(this);
-        Animation movingLeft = new Animation(this, spriteSheet, SPRITE_WIDTH, SPRITE_HEIGHT, 2, 0, 2);
-        Animation movingRight = new Animation(this, movingLeft.getSpriteSheet(), 2, 3, 5);
-        Animation dead = new Animation(this, movingLeft.getSpriteSheet(), 7, 6, 9);
+
+        Animation movingLeft = new Animation(this, null, this.width, this.height, 2);
+        movingLeft.addSprite(Sprite.BALLOON_MOVE_LEFT_1);
+        movingLeft.addSprite(Sprite.BALLOON_MOVE_LEFT_2);
+        movingLeft.addSprite(Sprite.BALLOON_MOVE_LEFT_3);
+
+        Animation movingRight = new Animation(this, null, this.width, this.height, 2);
+        movingRight.addSprite(Sprite.BALLOON_MOVE_RIGHT_1);
+        movingRight.addSprite(Sprite.BALLOON_MOVE_RIGHT_2);
+        movingRight.addSprite(Sprite.BALLOON_MOVE_RIGHT_3);
+
+        Animation dead = new Animation(this, null, this.width, this.height, 5);
+        dead.addSprite(Sprite.BALLOON_DIE);
+        dead.addSprite(Sprite.ENEMY_DIE_1);
+        dead.addSprite(Sprite.ENEMY_DIE_2);
+        dead.addSprite(Sprite.ENEMY_DIE_3);
+
         animationManager.addAnimation("MOVING LEFT", movingLeft);
         animationManager.addAnimation("MOVING RIGHT", movingRight);
         animationManager.addAnimation("DEAD", dead);
@@ -77,20 +89,18 @@ public class Balloon extends Enemy {
         //  Đổi hướng di chuyển khi va chạm với một vật thể nào đó.
         movement.update(currentDirection.x, currentDirection.y);
         if (collisionWithMap()) {
-            if (currentDirection.x == 1 && currentDirection.y == 0) {
-                currentDirection.x = -1;
+            int tempX = currentDirection.x;
+            int tempY = currentDirection.y;
+            while (tempX == currentDirection.x) {
+                tempX = RandomInt.random(-1, 2);
             }
-            else if (currentDirection.x == -1 && currentDirection.y == 0) {
-                currentDirection.x = 0;
-                currentDirection.y = 1;
-            }
-            else if (currentDirection.x == 0 && currentDirection.y == 1) {
-                currentDirection.y = -1;
-            }
-            else if (currentDirection.x == 0 && currentDirection.y == -1) {
-                currentDirection.x = 1;
-                currentDirection.y = 0;
-            }
+            if (tempX == 0) {
+                while (tempY == currentDirection.y) {
+                    tempY = RandomInt.random(-1, 2);
+                }
+            } else tempY = 0;
+            currentDirection.x = tempX;
+            currentDirection.y = tempY;
         } else {
             movement.move();
         }
@@ -100,14 +110,20 @@ public class Balloon extends Enemy {
         animationManager.update();
         if (animationManager.getCurrentAnimationKey().equals("DEAD")) {
             movement.setSpeed(0);
-            if (animationManager.get("DEAD").getFrame() == animationManager.get("DEAD").getEndFrame()) {
+            if (animationManager.get("DEAD").getCurrentFrame() == animationManager.get("DEAD").getNumberOfFrame() - 1) {
                 exist = false;
             }
+        }
+        else if (currentDirection.x > 0) {
+            animationManager.play("MOVING RIGHT");
+        } else {
+            animationManager.play("MOVING LEFT");
         }
     }
 
     @Override
     public void die() {
+        System.out.println("Balloon die");
         animationManager.play("DEAD");
     }
 

@@ -1,20 +1,21 @@
 package Entities;
 
-import Component.HitBox;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.image.Image;
+import Component.Sprite;
+import javafx.scene.canvas.GraphicsContext;
 
 public class Stone extends StaticEntity{
-    public Stone(int x, int y, int width, int height, int gridSize, Image image) {
-        super(x, y, width, height, gridSize, image);
-    }
-
-    public Stone(int x, int y, int width, int height, int gridSize, Image image, Rectangle2D imageOffset) {
-        super(x, y, width, height, gridSize, image, imageOffset);
+    public Stone(int x, int y, int width, int height, int gridSize) {
+        super(x, y, width, height, gridSize, null);
+        sprite = Sprite.WALL;
     }
 
     @Override
     public void update() {
 
+    }
+
+    @Override
+    public void render(int x, int y, GraphicsContext graphicsContext) {
+        sprite.render(x, y, this.width, this.height, graphicsContext);
     }
 }

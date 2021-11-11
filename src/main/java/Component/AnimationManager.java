@@ -2,7 +2,6 @@ package Component;
 
 import Entities.Entity;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 
 import java.util.HashMap;
 
@@ -12,6 +11,7 @@ public class AnimationManager {
     private Entity entity;
 
     public AnimationManager(Entity entity) {
+        this.entity = entity;
         animationMap = new HashMap<String, Animation>();
     }
 
@@ -19,24 +19,6 @@ public class AnimationManager {
         if (animationMap.containsKey(key)) {
             return false;
         }
-        animationMap.put(key, animation);
-        return true;
-    }
-
-    public boolean addAnimation(String key, Image image, int width, int height, int maxSpeed, int startFrame, int endFrame) {
-        if (animationMap.containsKey(key)) {
-            return false;
-        }
-        Animation animation = new Animation(entity, image, width, height, maxSpeed, startFrame, endFrame);
-        animationMap.put(key, animation);
-        return true;
-    }
-
-    public boolean addAnimation(String key, SpriteSheet spriteSheet, int width, int height, int maxSpeed, int startFrame, int endFrame) {
-        if (animationMap.containsKey(key)) {
-            return false;
-        }
-        Animation animation = new Animation(entity, spriteSheet, maxSpeed, startFrame, endFrame);
         animationMap.put(key, animation);
         return true;
     }
@@ -50,6 +32,10 @@ public class AnimationManager {
         return null;
     }
 
+    public Animation getCurrentAnimation() {
+        return currentAnimation;
+    }
+
     /**
      * Set animation hiện tại.
      */
@@ -57,6 +43,7 @@ public class AnimationManager {
         if (currentAnimation != animationMap.get(animationKey)) {
             currentAnimation = animationMap.get(animationKey);
             currentAnimation.reset();
+            currentAnimation.play();
         }
     }
 
@@ -92,6 +79,6 @@ public class AnimationManager {
      * Render animation hiện tại.
      */
     public void render(GraphicsContext graphicsContext, int x, int y) {
-        currentAnimation.render(graphicsContext, x, y);
+        currentAnimation.render(x, y, graphicsContext);
     }
 }

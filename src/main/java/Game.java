@@ -1,6 +1,7 @@
 import Entities.Bomber;
 import Map.Map;
 import Map.Camera;
+import Utils.RandomInt;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -132,7 +133,7 @@ public class Game {
         if (!bomber.isAlive()) mainStage.close();
         map.getCamera().setCenter(bomber.getX(), bomber.getY());
         map.update();
-
+        System.out.println(RandomInt.random(-1, 2));
     }
 
     public void render() {
