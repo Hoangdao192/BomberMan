@@ -10,6 +10,7 @@ public class AnimationManager {
     private Animation currentAnimation;
     private Entity entity;
 
+    //  CONSTRUCTOR
     public AnimationManager(Entity entity) {
         this.entity = entity;
         animationMap = new HashMap<String, Animation>();
@@ -37,14 +38,14 @@ public class AnimationManager {
     }
 
     /**
-     * Set animation hiện tại.
+     * Play animation
      */
     public void play(String animationKey) {
         if (currentAnimation != animationMap.get(animationKey)) {
             currentAnimation = animationMap.get(animationKey);
             currentAnimation.reset();
-            currentAnimation.play();
         }
+        currentAnimation.play();
     }
 
     /**
@@ -65,7 +66,9 @@ public class AnimationManager {
      * Reset một animation cụ thể.
      */
     public void reset(String animationKey) {
-        animationMap.get(animationKey).reset();
+        if (animationKey.contains(animationKey)) {
+            animationMap.get(animationKey).reset();
+        }
     }
 
     public Animation get(String animationKey) {

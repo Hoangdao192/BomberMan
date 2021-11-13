@@ -7,7 +7,6 @@ import Map.Map;
 import Utils.RandomInt;
 import Utils.Vector2i;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 
 import java.util.ArrayList;
 
@@ -19,30 +18,31 @@ public class Balloon extends Enemy {
     public Balloon(int x, int y, int width, int height, Map map) {
         super(x, y, width, height, null, map);
         createAnimation();
-        createHitbox();
-        movement.setSpeed(DEFAULT_SPEED);
-        currentDirection = new Vector2i(1, 0);
         collision = true;
+        createHitBox();
+        createMovement();
     }
 
-    public void createAnimation() {
+    private void createAnimation() {
         animationManager = new AnimationManager(this);
         this.sprite = Sprite.BALLOON_MOVE_RIGHT_1;
-        Animation movingLeft = new Animation(this, null, this.width, this.height, 2);
-        movingLeft.addSprite(Sprite.BALLOON_MOVE_LEFT_1);
-        movingLeft.addSprite(Sprite.BALLOON_MOVE_LEFT_2);
-        movingLeft.addSprite(Sprite.BALLOON_MOVE_LEFT_3);
+        Animation movingLeft = new Animation(
+                this, this.width, this.height, 2,
+                Sprite.BALLOON_MOVE_LEFT_1, Sprite.BALLOON_MOVE_LEFT_2,
+                Sprite.BALLOON_MOVE_LEFT_3
+        );
 
-        Animation movingRight = new Animation(this, null, this.width, this.height, 2);
-        movingRight.addSprite(Sprite.BALLOON_MOVE_RIGHT_1);
-        movingRight.addSprite(Sprite.BALLOON_MOVE_RIGHT_2);
-        movingRight.addSprite(Sprite.BALLOON_MOVE_RIGHT_3);
+        Animation movingRight = new Animation(
+                this, this.width, this.height, 2,
+                Sprite.BALLOON_MOVE_RIGHT_1, Sprite.BALLOON_MOVE_RIGHT_2,
+                Sprite.BALLOON_MOVE_RIGHT_3
+        );
 
-        Animation dead = new Animation(this, null, this.width, this.height, 5);
-        dead.addSprite(Sprite.BALLOON_DIE);
-        dead.addSprite(Sprite.ENEMY_DIE_1);
-        dead.addSprite(Sprite.ENEMY_DIE_2);
-        dead.addSprite(Sprite.ENEMY_DIE_3);
+        Animation dead = new Animation(
+                this, this.width, this.height, 5,
+                Sprite.BALLOON_DIE, Sprite.ENEMY_DIE_1, Sprite.ENEMY_DIE_2,
+                Sprite.ENEMY_DIE_3
+        );
 
         animationManager.addAnimation("MOVING LEFT", movingLeft);
         animationManager.addAnimation("MOVING RIGHT", movingRight);
@@ -50,29 +50,50 @@ public class Balloon extends Enemy {
         animationManager.play("MOVING LEFT");
     }
 
-    public void createHitbox() {
+    private void createHitBox() {
         hitBox = new HitBox(
-                this, 1 * this.width / sprite.getWidth(), this.width / sprite.getWidth(),
+                this, this.width / sprite.getWidth(), 0,
                 14 * this.width / sprite.getWidth(),
-                14 * this.height / sprite.getHeight());
-        System.out.println(hitBox.getLeft() + " " + hitBox.getTop());
+                16 * this.height / sprite.getHeight());
+        //hitBox = new HitBox(this, 0, 0, 32,32);
+    }
+
+    private void createMovement() {
+        movement.setSpeed(DEFAULT_SPEED);
+        currentDirection = new Vector2i(1, 0);
     }
 
     public boolean collisionWithMap() {
-        /**
-         * Xét vị trí tiếp theo có va chạm với bản đồ hay không.
-         */
-        final ArrayList<Entity> entities = map.getEntityList();
-        //  Hitbox của bomber ở vị trí tiếp theo khi di chuyển.
-        HitBox nextPositionHitbox = hitBox.getNextPosition(movement);
+        final ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList = map.getStaticEntityList();
         boolean collide = false;
-        for (int i = 0; i < entities.size(); ++i) {
-            if (!entities.get(i).collisionAble()
-                || entities.get(i) instanceof Enemy) {
-                continue;
-            }
-            if (entities.get(i).ifCollideDo(this)) {
-                collide = true;
+
+        int startX = this.gridX - 1;
+        int endX = this.gridX + 1;
+        int startY = this.gridY - 1;
+        int endY = this.gridY + 1;
+        if (startX < 0) {
+            startX = 0;
+        }
+        if (startY < 0) {
+            startY = 0;
+        }
+        if (endX >= map.getMapGridWidth()) {
+            endX = map.getMapGridWidth() - 1;
+        }
+        if (endY >= map.getMapGridHeight()) {
+            endY = map.getMapGridHeight() - 1;
+        }
+        for (int row = startY; row <= endY; ++row) {
+            for (int col = startX; col <= endX; ++col) {
+                for (int k = 0; k < staticEntityList.get(row).get(col).size(); ++k) {
+                    Entity entity = staticEntityList.get(row).get(col).get(k);
+                    if (!entity.collisionAble()) {
+                        continue;
+                    }
+                    if (entity.ifCollideDo(this)) {
+                        collide = true;
+                    }
+                }
             }
         }
         return collide;
@@ -84,10 +105,76 @@ public class Balloon extends Enemy {
             return false;
         }
         if (other instanceof Bomber) {
-            System.out.println("GAME OVER");
             ((Bomber) other).die();
         }
         return true;
+    }
+
+    private void changeMoveDirection() {
+        int tempX = 1;
+        int tempY = 0;
+        ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList = map.getStaticEntityList();
+        //  Kiểm tra các hướng có thể di chuyển
+        boolean canMoveRight = true;
+        for (int i = 0; i < staticEntityList.get(gridY).get(gridX + 1).size(); ++i) {
+            if (staticEntityList.get(gridY).get(gridX + 1).get(i).collisionAble()) {
+                canMoveRight = false;
+                break;
+            }
+        }
+        boolean canMoveLeft = true;
+        for (int i = 0; i < staticEntityList.get(gridY).get(gridX - 1).size(); ++i) {
+            if (staticEntityList.get(gridY).get(gridX - 1).get(i).collisionAble()) {
+                canMoveLeft = false;
+                break;
+            }
+        }
+        boolean canMoveUp = true;
+        for (int i = 0; i < staticEntityList.get(gridY - 1).get(gridX).size(); ++i) {
+            if (staticEntityList.get(gridY - 1).get(gridX).get(i).collisionAble()) {
+                canMoveUp = false;
+                break;
+            }
+        }
+        boolean canMoveDown = true;
+        for (int i = 0; i < staticEntityList.get(gridY + 1).get(gridX).size(); ++i) {
+            if (staticEntityList.get(gridY + 1).get(gridX).get(i).collisionAble()) {
+                canMoveDown = false;
+                break;
+            }
+        }
+
+        //  Chọn 1 hướng có thể di chuyển để đi theo hướng đó
+        boolean canMove = false;
+        if (canMoveLeft || canMoveRight || canMoveUp || canMoveDown) {
+            while (!canMove) {
+                int random = RandomInt.random(0, 4);
+                switch (random) {
+                    case 0:
+                        canMove = canMoveLeft;
+                        tempX = -1;
+                        tempY = 0;
+                        break;
+                    case 1:
+                        canMove = canMoveRight;
+                        tempX = 1;
+                        tempY = 0;
+                        break;
+                    case 2:
+                        canMove = canMoveUp;
+                        tempX = 0;
+                        tempY = -1;
+                        break;
+                    case 3:
+                        canMove = canMoveDown;
+                        tempX = 0;
+                        tempY = 1;
+                        break;
+                }
+            }
+        }
+        currentDirection.x = tempX;
+        currentDirection.y = tempY;
     }
 
     @Override
@@ -95,19 +182,13 @@ public class Balloon extends Enemy {
         //  Đổi hướng di chuyển khi va chạm với một vật thể nào đó.
         movement.update(currentDirection.x, currentDirection.y);
         if (collisionWithMap()) {
-            int tempX = currentDirection.x;
-            int tempY = currentDirection.y;
-            while (tempX == currentDirection.x) {
-                tempX = RandomInt.random(-1, 2);
-            }
-            if (tempX == 0) {
-                while (tempY == currentDirection.y) {
-                    tempY = RandomInt.random(-1, 2);
-                }
-            } else tempY = 0;
-            currentDirection.x = tempX;
-            currentDirection.y = tempY;
+            changeMoveDirection();
         } else {
+            //  Xác suất đổi chiều tự động là 20%
+            if (hitBox.getLeft() == gridX * gridSize && hitBox.getTop() == gridY * gridSize) {
+                changeMoveDirection();
+                movement.update(currentDirection.x, currentDirection.y);
+            }
             movement.move();
         }
     }
@@ -117,7 +198,7 @@ public class Balloon extends Enemy {
         if (animationManager.getCurrentAnimationKey().equals("DEAD")) {
             movement.setSpeed(0);
             if (animationManager.get("DEAD").getCurrentFrame() == animationManager.get("DEAD").getNumberOfFrame() - 1) {
-                exist = false;
+                destroy();
             }
         }
         else if (currentDirection.x > 0) {
@@ -129,21 +210,22 @@ public class Balloon extends Enemy {
 
     @Override
     public void die() {
-        System.out.println("Balloon die");
         animationManager.play("DEAD");
     }
 
     @Override
     public void update() {
         updateMovement();
-        updateGridPosition();
         hitBox.update();
+        updateGridPosition();
         updateAnimation();
     }
 
     @Override
     public void render(int x, int y, GraphicsContext graphicsContext) {
-        if (exist)
-        animationManager.render(graphicsContext, x, y);
+        // hitBox.render(x + hitBox.getOffsetX(), y + hitBox.getOffsetY(), graphicsContext);
+        if (exist) {
+            animationManager.render(graphicsContext, x, y);
+        }
     }
 }

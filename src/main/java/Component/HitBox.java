@@ -3,20 +3,22 @@ package Component;
 import Entities.Entity;
 import Utils.Vector2i;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
 public class HitBox {
+    private final Entity entity;
+
     //  Tọa độ trong map.
     private int left;
     private int top;
     private int right;
     private int bottom;
 
-    private int width;
-    private int height;
-    private int offsetX;
-    private int offsetY;
-    Entity entity;
+    private final int width;
+    private final int height;
+    private final int offsetX;
+    private final int offsetY;
 
     //  CONSTRUCTOR
     public HitBox(Entity entity, int offsetX, int offsetY, int width, int height) {
@@ -31,12 +33,12 @@ public class HitBox {
     //  SETTER
     public void setLeft(int left) {
         this.left = left;
-        right = this.left + width;
+        right = this.left + width - 1;
     }
 
     public void setTop(int top) {
         this.top = top;
-        bottom = this.top + height;
+        bottom = this.top + height - 1;
     }
 
     //  GETTER
@@ -99,14 +101,14 @@ public class HitBox {
      */
     public boolean contains(HitBox other) {
         if (this.left <= other.left && other.right <= this.right
-                && this.top <= other.top && other.bottom <= this.bottom) {
+            && this.top <= other.top && other.bottom <= this.bottom) {
             return true;
         }
         return false;
     }
 
     /**
-     * Kiểm tra giao nhau.
+     * Hitbox giao nhau.
      */
     public boolean intersects(HitBox other) {
         if (this.left <= other.right && this.right >= other.left
@@ -117,22 +119,27 @@ public class HitBox {
     }
 
     /**
-     * Render theo tọa độ map.
-     */
-    public void render(GraphicsContext graphicsContext) {
-        Paint old = graphicsContext.getFill();
-        graphicsContext.setFill(Paint.valueOf("Black"));
-        graphicsContext.strokeRect(left, top, width, height);
-        graphicsContext.setFill(old);
-    }
-
-    /**
      * Render tại tọa độ x y.
      */
     public void render(int x, int y, GraphicsContext graphicsContext) {
         Paint old = graphicsContext.getFill();
-        graphicsContext.setFill(Paint.valueOf("Black"));
+        graphicsContext.setStroke(Color.BLACK);
         graphicsContext.strokeRect(x, y, width, height);
-        graphicsContext.setFill(old);
+        graphicsContext.setStroke(old);
+        /*
+        if (entity instanceof Stone) {
+            graphicsContext.setFill(Color.WHITE);
+        }
+        if (entity instanceof Brick) {
+            graphicsContext.setFill(Color.DODGERBLUE);
+        }
+        if (entity instanceof Balloon) {
+            graphicsContext.setFill(Color.RED);
+        }
+        if (entity instanceof Bomber) {
+            graphicsContext.setFill(Color.DODGERBLUE);
+        }
+        graphicsContext.fillRect(x, y, width, height);
+        */
     }
 }

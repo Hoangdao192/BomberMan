@@ -1,12 +1,9 @@
 package Map;
 
-import Component.HitBox;
 import Entities.*;
 import Entities.Enemy.Balloon;
 import Utils.Vector2i;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -23,9 +20,14 @@ public class Map {
     private Camera camera;
     //  Danh sách các Entity có trong map.
     private ArrayList<Entity> entities;
+    private ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList;
+    private ArrayList<Entity> dynamicEntityList;
 
     public Map(String path, int cameraWidth, int cameraHeight) {
+        staticEntityList = new ArrayList<>();
+        dynamicEntityList = new ArrayList<>();
         loadMapFromFile(path);
+        printList();
         createCamera(cameraWidth, cameraHeight);
     }
 
@@ -42,6 +44,18 @@ public class Map {
         return gridSize;
     }
 
+    public ArrayList<ArrayList<ArrayList<Entity>>> getStaticEntityList() {
+        return staticEntityList;
+    }
+
+    public int getMapGridHeight() {
+        return mapGridHeight;
+    }
+
+    public int getMapGridWidth() {
+        return mapGridWidth;
+    }
+
     //  FUNCTIONS
     public void loadMapFromFile(String path) {
         try {
@@ -52,7 +66,9 @@ public class Map {
 
             entities = new ArrayList<>();
             for (int row = 0; row < mapGridHeight; ++row) {
+                staticEntityList.add(new ArrayList<>());
                 for (int col = 0; col < mapGridWidth; ++col) {
+                    staticEntityList.get(row).add(new ArrayList<>());
                     int tileStyle = scanner.nextInt();
                     Entity newEntity = null;
                     if (tileStyle == 1) {
@@ -64,12 +80,34 @@ public class Map {
                     else if (tileStyle == 3) {
                         newEntity = createBrickEntity(col * gridSize, row * gridSize);
                     }
-                    if (newEntity != null) entities.add(newEntity);
+                    if (newEntity != null) {
+                        entities.add(newEntity);
+                        if (newEntity instanceof StaticEntity) {
+                            staticEntityList.get(row).get(col).add(newEntity);
+                        } else {
+                            dynamicEntityList.add(newEntity);
+                        }
+                    }
                 }
             }
         } catch (FileNotFoundException e) {
             System.out.println("Không tìm thấy file: " + path);
         }
+    }
+
+    public void printList() {
+        for (int i = 0; i < staticEntityList.size(); ++i) {
+            for (int j = 0; j < staticEntityList.get(i).size(); ++j) {
+                if (staticEntityList.get(i).get(j).size() == 0) {
+                    System.out.print("0 ");
+                } else {
+                    System.out.print("1 ");
+                }
+            }
+            System.out.println();
+        }
+
+        System.out.println(dynamicEntityList.size());
     }
 
     //  ENTITY CREATOR.
@@ -98,7 +136,15 @@ public class Map {
     }
 
     public void addEntity(Entity entity) {
+        if (entity == null) {
+            return;
+        }
         entities.add(entity);
+        if (entity instanceof StaticEntity) {
+            staticEntityList.get(entity.getGridY()).get(entity.getGridX()).add(entity);
+        } else if (entity instanceof DynamicEntity) {
+            dynamicEntityList.add(entity);
+        }
     }
 
     public void createCamera(int width, int height) {
@@ -125,6 +171,26 @@ public class Map {
             } else {
                 currentEntity.update();
                 ++i;
+            }
+        }
+        //  Dynamic entity
+        for (int i = 0; i < dynamicEntityList.size();) {
+            if (!dynamicEntityList.get(i).isExist()) {
+                dynamicEntityList.remove(i);
+            } else {
+                ++i;
+            }
+        }
+        //  Static entity
+        for (int i = 0; i < staticEntityList.size(); ++i) {
+            for (int j = 0; j < staticEntityList.get(i).size(); ++j) {
+                for (int k = 0; k < staticEntityList.get(i).get(j).size();) {
+                    if (!staticEntityList.get(i).get(j).get(k).isExist()) {
+                        staticEntityList.get(i).get(j).remove(k);
+                    } else {
+                        ++k;
+                    }
+                }
             }
         }
     }

@@ -7,8 +7,9 @@ public class Movement {
     private int speed;
     private Vector2i velocity;
     private Vector2i direction;
-    private DynamicEntity entity;
+    private final DynamicEntity entity;
 
+    //  CONSTRUCTOR
     public Movement(DynamicEntity entity, int speed) {
         this.speed = speed;
         this.entity = entity;
@@ -16,22 +17,16 @@ public class Movement {
         direction = new Vector2i();
     }
 
+    //  SETTER
     public void setSpeed(int speed) {
         this.speed = speed;
     }
 
+    //  GETTER
     public int getSpeed() {
         return speed;
     }
 
-    public void update(int directionX, int directionY) {
-        velocity.x = directionX * speed;
-        velocity.y = directionY * speed;
-        direction.x = directionX;
-        direction.y = directionY;
-    }
-
-    //  GETTER
     public Vector2i getVelocity() {
         return velocity;
     }
@@ -40,9 +35,22 @@ public class Movement {
         return direction;
     }
 
+    //  FUNCTION
+    public void update(int directionX, int directionY) {
+        direction.x = directionX;
+        direction.y = directionY;
+        velocity.x = directionX * speed;
+        velocity.y = directionY * speed;
+    }
+
+    /**
+     * Tọa độ ở vị trí tiếp theo.
+     */
     public Vector2i getNextPosition() {
-        return new Vector2i(entity.getX() + velocity.x,
-                entity.getY() + velocity.y);
+        return new Vector2i(
+                entity.getX() + velocity.x,
+                entity.getY() + velocity.y
+        );
     }
 
     public void move() {

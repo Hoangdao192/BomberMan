@@ -4,9 +4,12 @@ import Entities.Entity;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Animation {
+    private Entity entity;
     private ArrayList<Sprite> spriteList;
+
     private int delayTime;
     private int delayCount;
 
@@ -15,23 +18,20 @@ public class Animation {
     private final int frameWidth;
     private final int frameHeight;
 
-    private Entity entity;
-
     private boolean playing = true;
     private boolean paused = false;
 
-    public Animation(Entity entity, ArrayList<Sprite> spriteList, int width, int height, int delayTime) {
+    public Animation(Entity entity, int frameWidth, int frameHeight, int delayTime, Sprite... spriteList) {
         this.entity = entity;
-        this.spriteList = new ArrayList<>();
-        if (spriteList != null) {
-            this.spriteList.addAll(spriteList);
-        }
-        numberOfFrame = this.spriteList.size();
-        this.frameWidth = width;
-        this.frameHeight = height;
+        numberOfFrame = spriteList.length;
+        this.frameWidth = frameWidth;
+        this.frameHeight = frameHeight;
         this.currentFrame = 0;
         this.delayTime = delayTime;
-        delayCount = 0;
+        this.delayCount = 0;
+
+        this.spriteList = new ArrayList<>();
+        this.spriteList.addAll(Arrays.asList(spriteList));
     }
 
     public void addSprite(Sprite sprite) {
@@ -55,6 +55,10 @@ public class Animation {
         }
     }
 
+    public boolean isPlaying() {
+        return playing;
+    }
+
     public void play() {
         playing = true;
     }
@@ -71,6 +75,7 @@ public class Animation {
         currentFrame = 0;
     }
 
+    //  GETTERS
     public int getCurrentFrame() {
         return currentFrame;
     }
@@ -87,7 +92,8 @@ public class Animation {
     }
 
     public void render(int x, int y, GraphicsContext graphicsContext) {
-        if (spriteList.size() > 0)
-        spriteList.get(currentFrame).render(x, y, frameWidth, frameHeight, graphicsContext);
+        if (spriteList.size() > 0) {
+            spriteList.get(currentFrame).render(x, y, frameWidth, frameHeight, graphicsContext);
+        }
     }
 }

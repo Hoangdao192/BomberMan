@@ -27,7 +27,7 @@ public abstract class StaticEntity extends Entity {
                 && other.getHitBox().getTop() < hitBox.getTop()) {
             other.setHitBoxPosition(
                     other.getHitBox().getLeft(),
-                    hitBox.getTop() - 1 - other.getHitBox().getHeight()
+                    hitBox.getTop() - other.getHitBox().getHeight()
             );
             ((DynamicEntity) other).getMovement().getVelocity().y = 0;
         }
@@ -53,7 +53,7 @@ public abstract class StaticEntity extends Entity {
         else if (other.getHitBox().getRight() <= hitBox.getLeft()
                 && other.getHitBox().getLeft() < hitBox.getLeft()) {
             other.setHitBoxPosition(
-                    hitBox.getLeft() - 1 - other.getHitBox().getWidth(),
+                    hitBox.getLeft() - other.getHitBox().getWidth(),
                     other.getHitBox().getTop()
             );
             ((DynamicEntity) other).getMovement().getVelocity().x = 0;

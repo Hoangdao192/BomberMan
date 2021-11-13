@@ -3,16 +3,12 @@ package Entities;
 import Component.*;
 import Map.Map;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 
 import java.util.ArrayList;
 
 public class Bomb extends StaticEntity {
-    private Animation mainAnimation;
+    private Animation animation;
     private Map map;
-    private boolean exploded;
-
-    private ArrayList<BombFlame> bombFlames;
 
     //  Phạm vi nổ tối đa
     private int explodeRadius;
@@ -22,15 +18,14 @@ public class Bomb extends StaticEntity {
     private int maxUp;
     private int maxDown;
 
-    //  Thời gian tính theo nanoSecond
-    //  Thời gian chờ đến khi bom nổ
+    //  Thời gian chờ đến khi bom nổ (nano second)
     private long waitToExplode = 1500000000;
-    private long waitToDelete = 2000000000;
     //  Thời gian bom được đặt
     private long startTime;
     //  Đếm thời gian từ khi bom được đặt
     private long countTime;
 
+    //  CONSTRUCTOR
     public Bomb(int explodeRadius, int x, int y, int width, int height, Map map) {
         super(x, y, width, height, map.getGridSize(), null);
         createAnimation();
@@ -40,7 +35,6 @@ public class Bomb extends StaticEntity {
 
         collision = true;
 
-        exploded = false;
         //  Khởi tạo phạm vi nổ
         this.explodeRadius = explodeRadius;
         maxLeft = explodeRadius;
@@ -48,48 +42,52 @@ public class Bomb extends StaticEntity {
         maxDown = explodeRadius;
         maxUp = explodeRadius;
 
-        createHitbox();
+        createHitBox();
     }
 
+    public void createAnimation() {
+        sprite = Sprite.BOMB_NORMAL_1;
+        animation = new Animation(
+                this, this.width, this.height, 4,
+                Sprite.BOMB_NORMAL_1, Sprite.BOMB_NORMAL_2, Sprite.BOMB_NORMAL_3
+        );
+    }
+
+    private void createHitBox() {
+        hitBox = new HitBox(
+                this,
+                width / sprite.getWidth(), 2 * height / sprite.getHeight(),
+                width / sprite.getWidth() * 14, height / sprite.getHeight() * 14
+        );
+    }
+
+    //  FUNCTIONS
     @Override
     public void update() {
-        mainAnimation.update();
+        animation.update();
         countTime = System.nanoTime() - startTime;
-        if (!exploded && countTime >= waitToExplode) {
+        if (countTime >= waitToExplode) {
             explode();
-            countTime = 0;
-        }
-        if (exploded &&
-                bombFlames.get(0).getAnimation().getCurrentFrame()
-                == bombFlames.get(0).getAnimation().getNumberOfFrame() - 1) {
-            exist = false;
-            removeBombExplode();
-            countTime = 0;
+            destroy();
         }
     }
 
     private void explode() {
-        exploded = true;
         calculateExplodeRadius();
         createBombExplode();
     }
 
-    private void removeBombExplode() {
-        for (int i = 0; i < bombFlames.size(); ++i) {
-            bombFlames.get(i).setExist(false);
+    /**
+     * Kiểm tra xem entity có thể chặn phạm vi nổ của bom không.
+     */
+    private boolean entityCanBlockBomb(Entity entity) {
+        if (entity instanceof Brick || entity instanceof Stone || entity instanceof Bomb) {
+            if (entity instanceof Brick) {
+                entity.die();
+            }
+            return true;
         }
-        bombFlames.clear();
-    }
-
-    public void createAnimation() {
-        mainAnimation = new Animation(this, null, this.width, this.height, 4);
-        mainAnimation.addSprite(Sprite.BOMB_NORMAL_1);
-        mainAnimation.addSprite(Sprite.BOMB_NORMAL_2);
-        mainAnimation.addSprite(Sprite.BOMB_NORMAL_3);
-    }
-
-    private void createHitbox() {
-        hitBox = new HitBox(this, 0, 0, width, height);
+        return false;
     }
 
     /**
@@ -97,165 +95,143 @@ public class Bomb extends StaticEntity {
      * Nếu gặp vật cản thì phạm vi nổ sẽ nhỏ lại
      */
     private void calculateExplodeRadius() {
-        int gridSize = map.getGridSize();
-        System.out.println(gridSize);
-        int gridX = x / gridSize;
-        int gridY = y / gridSize;
-        System.out.println("This: " + gridX + " " + gridY);
-        ArrayList<Entity> entities = map.getEntityList();
-        for (int i = 0; i < entities.size(); ++i) {
-            Entity currentEntity = entities.get(i);
-            if (currentEntity == this || !currentEntity.collisionAble()
-                || (!(currentEntity instanceof Stone)
-                && !(currentEntity instanceof Brick))) continue;
-            //  Lấy tọa độ grid của entity
-            int entityGridX = currentEntity.x / gridSize;
-            int entityGridY = currentEntity.y / gridSize;
-
-            //  Kiểm tra bên phải
-            if (currentEntity.getX() >= x + gridSize - 1
-                    && currentEntity.getX() <= x + (explodeRadius + 1) * gridSize - 1
-                    && gridY == entityGridY) {
-                //  Có thể có nhiều vật cản cản trở phạm vi nổ
-                //  Lấy phạm vi nổ nhỏ nhất
-                if (maxRight > entityGridX - 1 - gridX) {
-                    maxRight = entityGridX - 1 - gridX;
-                    if (currentEntity instanceof Brick) {
-                        currentEntity.die();
-                    }
-                }
-                System.out.println("Other: " + entityGridX + " " + entityGridY);
+        ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList = map.getStaticEntityList();
+        //  Duyệt bên phải
+        for (int col = gridX + 1; col <= gridX + explodeRadius; ++col) {
+            if (col >= staticEntityList.get(gridY).size()) {
+                continue;
             }
-            //  Kiểm tra bên trái
-            else if (currentEntity.getX() >= x - explodeRadius * gridSize - 1
-                    && currentEntity.x <= x
-                    && gridY == entityGridY) {
-                if (maxLeft > gridX - 1 - entityGridX) {
-                    maxLeft = gridX - 1 - entityGridX;
-                    if (currentEntity instanceof Brick) {
-                        currentEntity.die();
+            for (int j = 0; j < staticEntityList.get(gridY).get(col).size(); ++j) {
+                Entity entity = staticEntityList.get(gridY).get(col).get(j);
+                //  Danh sách entity có thể chặn được bom
+                if (entityCanBlockBomb(entity)) {
+                    if (maxRight > col - gridX - 1) {
+                        maxRight = col - gridX - 1;
                     }
                 }
-                System.out.println("Other: " + entityGridX + " " + entityGridY);
-            }
-            //  Kiểm tra bên trên
-            else if (currentEntity.getY() <= y
-                    && currentEntity.getY() >= y - explodeRadius * gridSize - 1
-                    && gridX == entityGridX) {
-                if (maxUp > gridY - 1 - entityGridY) {
-                    maxUp = gridY - 1 - entityGridY;
-                    if (currentEntity instanceof Brick) {
-                        currentEntity.die();
-                    }
-                }
-                System.out.println("Other: " + entityGridX + " " + entityGridY);
-            }
-            //  Kiểm tra bên dưới
-            else if (currentEntity.getY() >= y + gridSize - 1
-                    && currentEntity.getY() <= y + (explodeRadius + 1) * gridSize - 1
-                    && gridX == entityGridX) {
-                if(maxDown > entityGridY - 1 - gridY) {
-                    maxDown = entityGridY - 1 - gridY;
-                    if (currentEntity instanceof Brick) {
-                        currentEntity.die();
-                    }
-                }
-                System.out.println("Other: " + entityGridX + " " + entityGridY);
             }
         }
-        System.out.println(maxLeft + " " + maxRight + " " + maxUp + " " + maxDown);
+        //  Duyệt bên trái
+        for (int col = gridX - 1; col >= gridX - explodeRadius; --col) {
+            if (col < 0) {
+                continue;
+            }
+            for (int j = 0; j < staticEntityList.get(gridY).get(col).size(); ++j) {
+                Entity entity = staticEntityList.get(gridY).get(col).get(j);
+                //  Danh sách entity có thể chặn được bom
+                if (entityCanBlockBomb(entity)) {
+                    if (maxLeft > gridX - col - 1) {
+                        maxLeft = gridX - col - 1;
+                    }
+                }
+            }
+        }
+        //  Duyệt bên dưới
+        for (int row = gridY + 1; row <= gridY + explodeRadius; ++row) {
+            if (row >= staticEntityList.size()) {
+                continue;
+            }
+            for (int j = 0; j < staticEntityList.get(row).get(gridX).size(); ++j) {
+                Entity entity = staticEntityList.get(row).get(gridX).get(j);
+                //  Danh sách entity có thể chặn được bom
+                if (entityCanBlockBomb(entity)) {
+                    if (maxDown > row - gridY - 1) {
+                        maxDown = row - gridY - 1;
+                    }
+                }
+            }
+        }
+        //  Duyệt bên trên
+        for (int row = gridY - 1; row >= gridY - explodeRadius; --row) {
+            if (row >= staticEntityList.size()) {
+                continue;
+            }
+            for (int j = 0; j < staticEntityList.get(row).get(gridX).size(); ++j) {
+                Entity entity = staticEntityList.get(row).get(gridX).get(j);
+                //  Danh sách entity có thể chặn được bom
+                if (entityCanBlockBomb(entity)) {
+                    if (maxUp > gridY - row - 1) {
+                        maxUp = gridY - row - 1;
+                    }
+                }
+            }
+        }
     }
 
+    /**
+     * Tạo ra các quầng lửa khi bom nổ.
+     */
     private void createBombExplode() {
-        bombFlames = new ArrayList<>();
         //  Center
-        BombFlame explode1 = new BombFlame(
+        BombFlame explodeCenter = new BombFlame(
                 x, y, gridSize, gridSize, gridSize, BombFlame.FLAME_CENTER
         );
-        explode1.createHitBox(4, 4, 24, 24);
-        explode1.setCollision(true);
-        bombFlames.add(explode1);
         //  Bên phải
+        BombFlame explodeRight = null;
         for (int i = 1; i <= maxRight; ++i) {
-            BombFlame explodeRight;
             if (i == maxRight) {
                 explodeRight  = new BombFlame(
                         x + i * gridSize, y, gridSize, gridSize, gridSize,
                         BombFlame.FLAME_RIGHT);
-                explodeRight.createHitBox(8, 10, 24, 16);
             } else {
                 explodeRight  = new BombFlame(
                         x + i * gridSize, y, gridSize, gridSize, gridSize,
                         BombFlame.FLAME_HORIZON);
-                explodeRight.createHitBox(0, 10, 32, 16);
             }
-            explodeRight.setCollision(true);
-            bombFlames.add(explodeRight);
         }
 
         //  Vẽ trái
+        BombFlame explodeLeft = null;
         for (int i = 1; i <= maxLeft; ++i) {
-            BombFlame explodeLeft;
             if (i == maxLeft) {
                 explodeLeft = new BombFlame(
                         x - i * gridSize, y, gridSize, gridSize, gridSize,
                         BombFlame.FLAME_LEFT);
-                explodeLeft.createHitBox(0, 10, 24, 16);
             } else {
                 explodeLeft = new BombFlame(
                         x - i * gridSize, y, gridSize, gridSize, gridSize,
                         BombFlame.FLAME_HORIZON);
-                explodeLeft.createHitBox(0, 10, 32, 16);
             }
-            explodeLeft.setCollision(true);
-            bombFlames.add(explodeLeft);
         }
 
         //  Vẽ dưới
+        BombFlame explodeDown = null;
         for (int i = 1; i <= maxDown; ++i) {
-            BombFlame explodeDown;
             if (i == maxDown) {
                 explodeDown = new BombFlame(
                         x, y + i * gridSize, gridSize, gridSize, gridSize,
                         BombFlame.FLAME_DOWN);
-                explodeDown.createHitBox(8, 0, 16, 24);
             } else {
                 explodeDown = new BombFlame(
                         x, y + i * gridSize, gridSize, gridSize, gridSize,
                         BombFlame.FLAME_VERTICAL);
-                explodeDown.createHitBox(8, 0, 16, 32);
             }
-            explodeDown.setCollision(true);
-            bombFlames.add(explodeDown);
         }
 
         //  vẽ trên
+        BombFlame explodeUp = null;
         for (int i = 1; i <= maxUp; ++i) {
-            BombFlame explodeUp;
             if (i == maxUp) {
-                explodeUp  = new BombFlame(
+                explodeUp = new BombFlame(
                         x, y - i * gridSize, gridSize, gridSize, gridSize,
                         BombFlame.FLAME_UP);
-                explodeUp.createHitBox(8, 8, 16, 24);
             } else {
-                explodeUp  = new BombFlame(
+                explodeUp = new BombFlame(
                         x, y - i * gridSize, gridSize, gridSize, gridSize,
                         BombFlame.FLAME_VERTICAL);
-                explodeUp.createHitBox(8, 0, 16, 32);
             }
-            explodeUp.setCollision(true);
-            bombFlames.add(explodeUp);
         }
-
-        for (int i = 0; i < bombFlames.size(); ++i) {
-            map.addEntity(bombFlames.get(i));
-        }
+        map.addEntity(explodeCenter);
+        map.addEntity(explodeRight);
+        map.addEntity(explodeLeft);
+        map.addEntity(explodeUp);
+        map.addEntity(explodeDown);
     }
 
     @Override
     public void render(int x, int y, GraphicsContext graphicsContext) {
         if (exist) {
-            if (!exploded) mainAnimation.render(x, y, graphicsContext);
+            animation.render(x, y, graphicsContext);
         }
     }
 }

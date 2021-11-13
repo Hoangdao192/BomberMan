@@ -16,6 +16,7 @@ public class Stone extends StaticEntity{
 
     @Override
     public void render(int x, int y, GraphicsContext graphicsContext) {
+        //  hitBox.render(x, y, graphicsContext);
         sprite.render(x, y, this.width, this.height, graphicsContext);
     }
 }

@@ -2,13 +2,9 @@ package Entities;
 
 import Component.HitBox;
 import Component.Sprite;
-import Entities.Enemy.Balloon;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 
 public abstract class Entity {
-    protected String id;
     //  Tọa độ theo map.
     protected int x;
     protected int y;
@@ -25,11 +21,10 @@ public abstract class Entity {
 
     protected HitBox hitBox;
 
-    protected boolean exist;
+    protected boolean exist = true;
 
     //  CONSTRUCTOR
     public Entity(int x, int y, int width, int height, int gridSize, Sprite sprite) {
-        id = "Entity";
         this.sprite = sprite;
         this.x = x;
         this.y = y;
@@ -42,16 +37,16 @@ public abstract class Entity {
 
         //  Hit box mặc định
         hitBox = new HitBox(this, 0, 0,0,0);
-        exist = true;
+    }
+
+    public void destroy() {
+        collision = false;
+        exist = false;
     }
 
     //  SETTER
     public void setSprite(Sprite sprite) {
         this.sprite = sprite;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public void setCollision(boolean collision) {
@@ -73,10 +68,6 @@ public abstract class Entity {
     //  GETTER
     public boolean isExist() {
         return exist;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public HitBox getHitBox() {
@@ -120,6 +111,14 @@ public abstract class Entity {
         }
     }
 
+    public int getGridX() {
+        return gridX;
+    }
+
+    public int getGridY() {
+        return gridY;
+    }
+
     public void createHitBox(int offsetX, int offsetY, int width, int height) {
         hitBox = new HitBox(this, offsetX, offsetY, width, height);
     }
@@ -149,11 +148,6 @@ public abstract class Entity {
      */
     public boolean ifCollideDo(Entity other) {
         return false;
-    }
-
-    //  Render theo tọa độ map.
-    public void render(GraphicsContext graphicsContext) {
-        sprite.render(x, y, width, height, graphicsContext);
     }
 
     /**

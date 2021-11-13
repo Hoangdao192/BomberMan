@@ -3,6 +3,7 @@ package Entities;
 import Component.Animation;
 import Component.Sprite;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 public class Brick extends StaticEntity {
     private Animation animation;
@@ -15,10 +16,10 @@ public class Brick extends StaticEntity {
     }
 
     private void createAnimation() {
-        animation = new Animation(this, null, this.width, this.height, 2);
-        animation.addSprite(Sprite.BRICK_EXPLODE_1);
-        animation.addSprite(Sprite.BRICK_EXPLODE_2);
-        animation.addSprite(Sprite.BRICK_EXPLODE_3);
+        animation = new Animation(
+                this, this.width, this.height, 2,
+                Sprite.BRICK_EXPLODE_1, Sprite.BRICK_EXPLODE_2, Sprite.BRICK_EXPLODE_3
+        );
     }
 
     @Override
@@ -40,6 +41,7 @@ public class Brick extends StaticEntity {
     @Override
     public void render(int x, int y, GraphicsContext graphicsContext) {
         if (!explode) {
+            //  hitBox.render(x, y, graphicsContext);
             sprite.render(x, y, this.width, this.height, graphicsContext);
         } else {
             animation.render(x, y, graphicsContext);
