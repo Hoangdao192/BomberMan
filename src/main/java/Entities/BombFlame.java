@@ -49,6 +49,7 @@ public class BombFlame extends StaticEntity {
     }
 
     private void createAnimation(int flameType) {
+        System.out.println(flameType);
         switch (flameType) {
             //  Center
             case 0: {
@@ -62,6 +63,7 @@ public class BombFlame extends StaticEntity {
             }
             //  Horizon
             case 1: {
+                System.out.println("create");
                 animation = new Animation(
                         this, this.width, this.height, 2,
                         Sprite.BOMB_FLAME_HORIZON_1, Sprite.BOMB_FLAME_HORIZON_2,
@@ -118,6 +120,7 @@ public class BombFlame extends StaticEntity {
                         Sprite.BOMB_FLAME_BOTTOM_3, Sprite.BOMB_FLAME_BOTTOM_2,
                         Sprite.BOMB_FLAME_BOTTOM_1
                 );
+                break;
             }
         }
     }

@@ -103,11 +103,11 @@ public class Bomb extends StaticEntity {
             }
             for (int j = 0; j < staticEntityList.get(gridY).get(col).size(); ++j) {
                 Entity entity = staticEntityList.get(gridY).get(col).get(j);
-                //  Danh sách entity có thể chặn được bom
                 if (entityCanBlockBomb(entity)) {
-                    if (maxRight > col - gridX - 1) {
-                        maxRight = col - gridX - 1;
-                    }
+                    maxRight = col - gridX - 1;
+                    //  Phá vỡ vòng lặp
+                    col = gridX + explodeRadius + 1;
+                    break;
                 }
             }
         }
@@ -118,11 +118,11 @@ public class Bomb extends StaticEntity {
             }
             for (int j = 0; j < staticEntityList.get(gridY).get(col).size(); ++j) {
                 Entity entity = staticEntityList.get(gridY).get(col).get(j);
-                //  Danh sách entity có thể chặn được bom
                 if (entityCanBlockBomb(entity)) {
-                    if (maxLeft > gridX - col - 1) {
-                        maxLeft = gridX - col - 1;
-                    }
+                    maxLeft = gridX - col - 1;
+                    //  Phá vỡ vòng lặp
+                    col = gridX - explodeRadius - 1;
+                    break;
                 }
             }
         }
@@ -135,9 +135,10 @@ public class Bomb extends StaticEntity {
                 Entity entity = staticEntityList.get(row).get(gridX).get(j);
                 //  Danh sách entity có thể chặn được bom
                 if (entityCanBlockBomb(entity)) {
-                    if (maxDown > row - gridY - 1) {
-                        maxDown = row - gridY - 1;
-                    }
+                    maxDown = row - gridY - 1;
+                    //  Phá vỡ vòng lặp
+                    row = gridY + explodeRadius + 1;
+                    break;
                 }
             }
         }
@@ -150,9 +151,10 @@ public class Bomb extends StaticEntity {
                 Entity entity = staticEntityList.get(row).get(gridX).get(j);
                 //  Danh sách entity có thể chặn được bom
                 if (entityCanBlockBomb(entity)) {
-                    if (maxUp > gridY - row - 1) {
-                        maxUp = gridY - row - 1;
-                    }
+                    maxUp = gridY - row - 1;
+                    //  Phá vỡ vòng lặp
+                    row = gridY - explodeRadius - 1;
+                    break;
                 }
             }
         }
@@ -166,9 +168,10 @@ public class Bomb extends StaticEntity {
         BombFlame explodeCenter = new BombFlame(
                 x, y, gridSize, gridSize, gridSize, BombFlame.FLAME_CENTER
         );
+        map.addEntity(explodeCenter);
         //  Bên phải
-        BombFlame explodeRight = null;
         for (int i = 1; i <= maxRight; ++i) {
+            BombFlame explodeRight = null;
             if (i == maxRight) {
                 explodeRight  = new BombFlame(
                         x + i * gridSize, y, gridSize, gridSize, gridSize,
@@ -178,11 +181,12 @@ public class Bomb extends StaticEntity {
                         x + i * gridSize, y, gridSize, gridSize, gridSize,
                         BombFlame.FLAME_HORIZON);
             }
+            map.addEntity(explodeRight);
         }
 
         //  Vẽ trái
-        BombFlame explodeLeft = null;
         for (int i = 1; i <= maxLeft; ++i) {
+            BombFlame explodeLeft = null;
             if (i == maxLeft) {
                 explodeLeft = new BombFlame(
                         x - i * gridSize, y, gridSize, gridSize, gridSize,
@@ -192,11 +196,13 @@ public class Bomb extends StaticEntity {
                         x - i * gridSize, y, gridSize, gridSize, gridSize,
                         BombFlame.FLAME_HORIZON);
             }
+            map.addEntity(explodeLeft);
         }
 
         //  Vẽ dưới
-        BombFlame explodeDown = null;
+
         for (int i = 1; i <= maxDown; ++i) {
+            BombFlame explodeDown = null;
             if (i == maxDown) {
                 explodeDown = new BombFlame(
                         x, y + i * gridSize, gridSize, gridSize, gridSize,
@@ -206,11 +212,13 @@ public class Bomb extends StaticEntity {
                         x, y + i * gridSize, gridSize, gridSize, gridSize,
                         BombFlame.FLAME_VERTICAL);
             }
+            map.addEntity(explodeDown);
         }
 
         //  vẽ trên
-        BombFlame explodeUp = null;
+
         for (int i = 1; i <= maxUp; ++i) {
+            BombFlame explodeUp = null;
             if (i == maxUp) {
                 explodeUp = new BombFlame(
                         x, y - i * gridSize, gridSize, gridSize, gridSize,
@@ -220,12 +228,8 @@ public class Bomb extends StaticEntity {
                         x, y - i * gridSize, gridSize, gridSize, gridSize,
                         BombFlame.FLAME_VERTICAL);
             }
+            map.addEntity(explodeUp);
         }
-        map.addEntity(explodeCenter);
-        map.addEntity(explodeRight);
-        map.addEntity(explodeLeft);
-        map.addEntity(explodeUp);
-        map.addEntity(explodeDown);
     }
 
     @Override

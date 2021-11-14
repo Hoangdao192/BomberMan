@@ -109,6 +109,14 @@ public class Sprite {
     //  Die
     public static final Sprite BALLOON_DIE = SPRITE_SHEET.getSpriteAtPosition(9, 3);
 
+    /**
+     * Power up
+     */
+    //  Fire - Tăng phạm vi nổ
+    public static final Sprite FIRE = SPRITE_SHEET.getSpriteAtPosition(1, 10);
+    //  Bomb up - Tăng số lượng bom
+    public static final Sprite BOMB_UP = SPRITE_SHEET.getSpriteAtPosition(0, 10);
+
     private Image image;
     private int x;
     private int y;

@@ -81,8 +81,8 @@ public class Camera {
     }
 
     public void update() {
-        start.x += velocity.x;
-        start.y += velocity.y;
+        //start.x += velocity.x;
+        //start.y += velocity.y;
         //  X
         if (start.x < 0) {
             start.x = 0;

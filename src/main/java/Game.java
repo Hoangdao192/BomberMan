@@ -6,16 +6,27 @@ import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.SubScene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
+import java.io.FileInputStream;
 
 public class Game {
     //  Kích thước cửa sổ mặc định
     private final int DEFAULT_WIDTH = 800;
-    private final int DEFAULT_HEIGHT = 600;
+    private final int DEFAULT_HEIGHT = 416;
     //  Kích thước cửa sổ
     private double screenWidth;
     private double screenHeight;
@@ -28,6 +39,14 @@ public class Game {
     private Group mainContainer;
     private Canvas mainCanvas;
     private GraphicsContext graphicsContext;
+
+    //  UI
+    private SubScene subScene;
+    private Label timeCounter;
+
+    private long startTime;
+    private long countTime;
+    private long maxTime;
 
     Bomber bomber;
     Map map;
@@ -45,6 +64,8 @@ public class Game {
 
         mainScene = new Scene(mainContainer, screenWidth, screenHeight);
         mainStage = new Stage();
+        mainStage.setMinHeight(DEFAULT_HEIGHT + 30);
+        mainStage.setMinWidth(DEFAULT_WIDTH);
         mainStage.setScene(mainScene);
 
         mainCanvas.setScaleX(1);
@@ -56,6 +77,38 @@ public class Game {
         createPlayer();
         initEventHandler();
         createResizeEventHandle();
+
+        //createGameTime();
+        //createUI();
+    }
+
+    private void createGameTime() {
+        maxTime = 200000000000L;
+        startTime = System.nanoTime();
+        countTime = maxTime;
+    }
+
+    private void createUI() {
+        AnchorPane anchorPane = new AnchorPane();
+        subScene = new SubScene(anchorPane, DEFAULT_WIDTH, 100);
+
+        timeCounter = new Label(String.format("%d", countTime  / 1000000000));
+        try {
+            timeCounter.setFont(Font.loadFont(new FileInputStream("src/main/resources/Font/kenvector_future.ttf"), 50));
+        } catch (Exception e) {
+            System.out.println("cannot");
+        }
+        timeCounter.setTextFill(Color.WHITE);
+        timeCounter.setLayoutX(100);
+        timeCounter.setLayoutY(0);
+
+        Shape shape = new Rectangle(0, 0, 800, 100);
+        anchorPane.getChildren().add(shape);
+        anchorPane.getChildren().add(timeCounter);
+
+        subScene.setLayoutX(0);
+        subScene.setLayoutY(500);
+        mainContainer.getChildren().add(subScene);
     }
 
     private void createResizeEventHandle() {
@@ -65,11 +118,13 @@ public class Game {
             mainCanvas.setScaleY(mainScene.getWidth() / mainCanvas.getWidth());
             mainCanvas.setLayoutX((mainCanvas.getWidth() * (mainCanvas.getScaleX() - 1))/2);
             mainCanvas.setLayoutY((mainCanvas.getHeight() * (mainCanvas.getScaleY() - 1))/2);
+
+            int deltaHeight = (int) (mainCanvas.getHeight() * mainCanvas.getScaleY() - mainCanvas.getHeight());
             map.getCamera().setSize(
                     map.getCamera().getSize().x,
-                    (int)(2 * mainCanvas.getHeight() - mainCanvas.getHeight() * mainCanvas.getScaleY())
-                    );/*
-            map.getCamera().setCenter(bomber.getX(), bomber.getY());*/
+                    (int) (mainCanvas.getHeight() - deltaHeight / 1.5)
+                    );
+            map.getCamera().setCenter(bomber.getX(), bomber.getY());
         });
         /*mainScene.heightProperty().addListener((obs, oldVal, newVal) -> {
             double scaleRatio = (double) newVal / (double) oldVal;
@@ -131,14 +186,27 @@ public class Game {
     public void update() {
         bomber.update();
         if (!bomber.isAlive()) mainStage.close();
+        //map.getCamera().move(bomber.getMovement().getVelocity());
         map.getCamera().setCenter(bomber.getX(), bomber.getY());
         map.update();
+        //updateGameTime();
+        //updateUI();
+    }
+
+    private void updateGameTime() {
+        countTime = maxTime - (System.nanoTime() - startTime);
+    }
+
+    private void updateUI() {
+        timeCounter.setText(String.format("%d", countTime / 1000000000));
     }
 
     public void render() {
         graphicsContext.clearRect(0, 0, screenWidth, screenHeight);
         graphicsContext.setFill(Paint.valueOf("Blue"));
         graphicsContext.fillRect(0, 0, screenWidth, screenHeight);
+        Camera camera = map.getCamera();
+        graphicsContext.strokeRect(0, 0, camera.getSize().x, camera.getSize().y);
         map.render(graphicsContext);
         bomber.render(graphicsContext);
     }

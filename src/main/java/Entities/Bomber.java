@@ -21,6 +21,7 @@ public class Bomber extends DynamicEntity {
 
     private boolean alive;
     // Số bom nhiều nhất có thể đặt
+    private int bombExplodeRadius = 1;
     private int maxBomb = 1;
     private ArrayList<Bomb> bombList = new ArrayList<>();
 
@@ -70,7 +71,7 @@ public class Bomber extends DynamicEntity {
             return;
         }
         Entity bomb = new Bomb(
-                1,
+                bombExplodeRadius,
                 //  Lấy chỉ số hàng cột của ô hiện tại đang đứng
                 hitBox.getCenter().x / map.getGridSize() * map.getGridSize()
                         + (hitBox.getLeft() % map.getGridSize() != 0 ? 1 : 0),
@@ -79,6 +80,14 @@ public class Bomber extends DynamicEntity {
                 32, 32, map);
         map.addEntity(bomb);
         bombList.add((Bomb) bomb);
+    }
+
+    public void increaseNumberOfBomb() {
+        ++maxBomb;
+    }
+
+    public void increaseBombRadius() {
+        ++bombExplodeRadius;
     }
 
     /**
@@ -237,7 +246,6 @@ public class Bomber extends DynamicEntity {
         updateBombList();
     }
 
-    @Override
     public void render(GraphicsContext graphicsContext) {
         animationManager.render(graphicsContext,
                 this.x - map.getCamera().getStart().x,

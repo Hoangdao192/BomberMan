@@ -2,6 +2,9 @@ package Map;
 
 import Entities.*;
 import Entities.Enemy.Balloon;
+import Entities.PowerUp.BombUp;
+import Entities.PowerUp.Fire;
+import Entities.PowerUp.PowerUp;
 import Utils.Vector2i;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -12,6 +15,15 @@ import java.util.Scanner;
 
 /**
  * Map được chia thành các ô vuông có kích thước là gridSize
+ */
+/**
+ * Map Entity
+ * 0: Grass
+ * 1: Wall (Stone)
+ * 2: Balloon
+ * 3: Brick
+ * 4: PowerUp Fire
+ * 5: PowerUp BombUp
  */
 public class Map {
     private int mapGridWidth;
@@ -79,6 +91,10 @@ public class Map {
                     }
                     else if (tileStyle == 3) {
                         newEntity = createBrickEntity(col * gridSize, row * gridSize);
+                    } else if (tileStyle == 4) {
+                        newEntity = createFirePowerUp(col * gridSize, row * gridSize);
+                    } else if (tileStyle == 5) {
+                        newEntity = createBombUpPowerUp(col * gridSize, row * gridSize);
                     }
                     if (newEntity != null) {
                         entities.add(newEntity);
@@ -86,6 +102,11 @@ public class Map {
                             staticEntityList.get(row).get(col).add(newEntity);
                         } else {
                             dynamicEntityList.add(newEntity);
+                        }
+                        if (newEntity instanceof PowerUp) {
+                            Entity brick = createBrickEntity(col * gridSize, row * gridSize);
+                            entities.add(brick);
+                            staticEntityList.get(row).get(col).add(brick);
                         }
                     }
                 }
@@ -108,6 +129,17 @@ public class Map {
         }
 
         System.out.println(dynamicEntityList.size());
+    }
+
+    //  POWER UP CREATOR
+    public Entity createFirePowerUp(int x, int y) {
+        Fire fire = new Fire(x, y, gridSize, gridSize, gridSize);
+        return fire;
+    }
+
+    public Entity createBombUpPowerUp(int x, int y) {
+        BombUp bombUp = new BombUp(x, y, gridSize, gridSize, gridSize);
+        return bombUp;
     }
 
     //  ENTITY CREATOR.
