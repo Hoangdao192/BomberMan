@@ -21,6 +21,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import javax.annotation.processing.Messager;
 import java.io.FileInputStream;
 
 public class Game {
@@ -51,6 +52,8 @@ public class Game {
     Bomber bomber;
     Map map;
 
+    private boolean running = true;
+
     public Game() {
         screenHeight = (double) DEFAULT_HEIGHT;
         screenWidth = (double) DEFAULT_WIDTH;
@@ -75,6 +78,7 @@ public class Game {
         setFPS(30);
         createMap();
         createPlayer();
+        map.setPlayer(bomber);
         initEventHandler();
         createResizeEventHandle();
 
@@ -174,8 +178,12 @@ public class Game {
             @Override
             public void handle(long now) {
                 if (now - lastUpdate >= frameDelayTime) {
-                    update();
-                    render();
+                    if (running) {
+                        update();
+                        render();
+                    } else {
+                        System.out.println("Game over");
+                    }
                     lastUpdate = now;
                 }
             }
@@ -184,8 +192,10 @@ public class Game {
     }
 
     public void update() {
+        if (!bomber.isExist()) {
+            running = false;
+        }
         bomber.update();
-        if (!bomber.isAlive()) mainStage.close();
         //map.getCamera().move(bomber.getMovement().getVelocity());
         map.getCamera().setCenter(bomber.getX(), bomber.getY());
         map.update();

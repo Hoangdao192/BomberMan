@@ -2,6 +2,7 @@ package Map;
 
 import Entities.*;
 import Entities.Enemy.Balloon;
+import Entities.Enemy.Oneal;
 import Entities.PowerUp.BombUp;
 import Entities.PowerUp.Fire;
 import Entities.PowerUp.PowerUp;
@@ -34,6 +35,7 @@ public class Map {
     private ArrayList<Entity> entities;
     private ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList;
     private ArrayList<Entity> dynamicEntityList;
+    private Bomber player;
 
     public Map(String path, int cameraWidth, int cameraHeight) {
         staticEntityList = new ArrayList<>();
@@ -41,6 +43,14 @@ public class Map {
         loadMapFromFile(path);
         printList();
         createCamera(cameraWidth, cameraHeight);
+    }
+
+    public void setPlayer(Bomber player) {
+        this.player = player;
+    }
+
+    public Bomber getPlayer() {
+        return player;
     }
 
     //  GETTER
@@ -58,6 +68,10 @@ public class Map {
 
     public ArrayList<ArrayList<ArrayList<Entity>>> getStaticEntityList() {
         return staticEntityList;
+    }
+
+    public ArrayList<Entity> getDynamicEntityList() {
+        return dynamicEntityList;
     }
 
     public int getMapGridHeight() {
@@ -87,7 +101,7 @@ public class Map {
                         newEntity = createStoneEntity(col * gridSize, row * gridSize);
                     }
                     else if (tileStyle == 2) {
-                        newEntity = createBalloonEnemy(col * gridSize, row * gridSize);
+                        newEntity = createOnealEnemy(col * gridSize, row * gridSize);
                     }
                     else if (tileStyle == 3) {
                         newEntity = createBrickEntity(col * gridSize, row * gridSize);
@@ -143,6 +157,11 @@ public class Map {
     }
 
     //  ENTITY CREATOR.
+    public Entity createOnealEnemy(int x, int y) {
+        Oneal oneal = new Oneal(x, y, 32, 32, this);
+        return oneal;
+    }
+
     public Entity createBrickEntity(int x, int y) {
         Brick brick = new Brick(x, y, gridSize, gridSize, gridSize);
         brick.createHitBox(0, 0, 32, 32);

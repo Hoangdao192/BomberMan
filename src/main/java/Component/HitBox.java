@@ -122,10 +122,12 @@ public class HitBox {
      * Render tại tọa độ x y.
      */
     public void render(int x, int y, GraphicsContext graphicsContext) {
-        Paint old = graphicsContext.getFill();
+        /*Paint old = graphicsContext.getFill();
         graphicsContext.setStroke(Color.BLACK);
         graphicsContext.strokeRect(x, y, width, height);
-        graphicsContext.setStroke(old);
+        graphicsContext.setStroke(old);*/
+        graphicsContext.setFill(Color.WHITE);
+        graphicsContext.fillRect(x, y, width, height);
         /*
         if (entity instanceof Stone) {
             graphicsContext.setFill(Color.WHITE);

@@ -7,14 +7,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Animation {
+    //  Entity mà animation này thuộc về
     private Entity entity;
+    //  Danh sách các Sprite
     private ArrayList<Sprite> spriteList;
 
+    //  Thời gian chờ để animation chuyển sang sprite tiếp theo
     private int delayTime;
+    //  Đếm thời gian chờ
     private int delayCount;
 
     private int currentFrame;
     private int numberOfFrame;
+    //  Kích thước của Sprite khi render ra màn hình
     private final int frameWidth;
     private final int frameHeight;
 

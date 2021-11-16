@@ -106,8 +106,8 @@ public abstract class Entity {
             this.gridX = x / this.gridSize;
             this.gridY = y / this.gridSize;
         } else {
-            this.gridX = hitBox.getLeft() / this.gridSize;
-            this.gridY = hitBox.getTop() / this.gridSize;
+            this.gridX = (hitBox.getLeft() + hitBox.getWidth() / 2) / this.gridSize;
+            this.gridY = (hitBox.getTop() + hitBox.getHeight() / 2) / this.gridSize;
         }
     }
 
@@ -130,6 +130,16 @@ public abstract class Entity {
         hitBox.setLeft(x);
         hitBox.setTop(y);
         this.x = x - hitBox.getOffsetX();
+        this.y = y - hitBox.getOffsetY();
+    }
+
+    public void setHitBoxPositionX(int x) {
+        hitBox.setLeft(x);
+        this.x = x - hitBox.getOffsetX();
+    }
+
+    public void setHitBoxPositionY(int y) {
+        hitBox.setTop(y);
         this.y = y - hitBox.getOffsetY();
     }
 

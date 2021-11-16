@@ -24,6 +24,7 @@ public class Bomber extends DynamicEntity {
     private int bombExplodeRadius = 1;
     private int maxBomb = 1;
     private ArrayList<Bomb> bombList = new ArrayList<>();
+    private boolean dead = false;
 
     //  CONSTRUCTOR
     public Bomber(int x, int y, Map map) {
@@ -58,10 +59,15 @@ public class Bomber extends DynamicEntity {
                 Sprite.BOMBER_WALK_RIGHT_1, Sprite.BOMBER_WALK_RIGHT_2, Sprite.BOMBER_WALK_RIGHT_3
         );
 
+        Animation deadAnimation = new Animation(this, this.width, this.height, 2,
+                Sprite.BOMBER_DIE_1, Sprite.BOMBER_DIE_2, Sprite.BOMBER_DIE_3
+        );
+
         animationManager.addAnimation("WALK_UP", walkUpAnimation);
         animationManager.addAnimation("WALK_DOWN", walkDownAnimation);
         animationManager.addAnimation("WALK_LEFT", walkLeftAnimation);
         animationManager.addAnimation("WALK_RIGHT", walkRightAnimation);
+        animationManager.addAnimation("DEAD", deadAnimation);
         //  Default animation
         animationManager.play("WALK_DOWN");
     }
@@ -110,18 +116,25 @@ public class Bomber extends DynamicEntity {
         if (keyEvent.getCode() == KeyCode.DOWN) {
             moveDown = isKeyPressed;
         }
-        int directionX = 0, directionY = 0;
+        int directionX = movement.getDirection().x;
+        int directionY = movement.getDirection().y;
         if (moveRight) {
             directionX = 1;
         }
-        if (moveLeft) {
+        else if (moveLeft) {
             directionX = -1;
+        }
+        else {
+            directionX = 0;
         }
         if (moveDown) {
             directionY = 1;
         }
-        if (moveUp) {
+        else if (moveUp) {
             directionY = -1;
+        }
+        else {
+            directionY = 0;
         }
         movement.update(directionX, directionY);
     }
@@ -131,7 +144,7 @@ public class Bomber extends DynamicEntity {
      */
     protected void updateMovement() {
         movement.move();
-        map.moveCamera(movement.getVelocity());
+        //map.moveCamera(movement.getVelocity());
     }
 
     /**
@@ -145,19 +158,27 @@ public class Bomber extends DynamicEntity {
      * Cập nhập animation.
      */
     private void updateAnimation() {
-        if (moveUp) {
+        if (!alive) {
+            animationManager.play("DEAD");
+            if (animationManager.getCurrentAnimation().getCurrentFrame()
+                    == animationManager.getCurrentAnimation().getNumberOfFrame() - 1) {
+                exist = false;
+            }
+        }
+        else if (moveUp) {
             animationManager.play("WALK_UP");
         }
-        if (moveDown) {
+        else if (moveDown) {
             animationManager.play("WALK_DOWN");
         }
-        if (moveLeft) {
+        else if (moveLeft) {
             animationManager.play("WALK_LEFT");
         }
-        if (moveRight) {
+        else if (moveRight) {
             animationManager.play("WALK_RIGHT");
         }
-        if (!moveUp && !moveDown && !moveRight && !moveLeft){
+        //if (!moveUp && !moveDown && !moveRight && !moveLeft){
+        else {
             animationManager.reset();
             animationManager.getCurrentAnimation().stop();
         }
@@ -171,11 +192,9 @@ public class Bomber extends DynamicEntity {
         /**
          * Xét vị trí tiếp theo có va chạm với bản đồ hay không.
          */
-        final ArrayList<Entity> entities = map.getEntityList();
-        //  Hitbox của bomber ở vị trí tiếp theo khi di chuyển.
-        HitBox nextPositionHitbox = hitBox.getNextPosition(movement);
         boolean collide = false;
 
+        //  Va chạm với vật thể tĩnh
         int startX = this.gridX - 2;
         int endX = this.gridX + 2;
         int startY = this.gridY - 2;
@@ -206,13 +225,17 @@ public class Bomber extends DynamicEntity {
                 }
             }
         }
-        /*
-        for (int i = 0; i < entities.size(); ++i) {
-            if (!entities.get(i).collisionAble()) {
+        //  Va chạm với vật thể động
+        ArrayList<Entity> dynamicEntityList = map.getDynamicEntityList();
+        for (int i = 0; i < dynamicEntityList.size(); ++i) {
+            Entity entity = dynamicEntityList.get(i);
+            if (!entity.collisionAble()) {
                 continue;
             }
-            collide = entities.get(i).ifCollideDo(this);
-        }*/
+            if (entity.ifCollideDo(this)) {
+                collide = true;
+            }
+        }
         return collide;
     }
 
@@ -228,7 +251,7 @@ public class Bomber extends DynamicEntity {
 
     @Override
     public void die() {
-        System.out.println("collide");
+        alive = false;
     }
 
     public boolean isAlive() {
@@ -237,6 +260,7 @@ public class Bomber extends DynamicEntity {
 
     @Override
     public void update() {
+        movement.update(movement.getDirection().x, movement.getDirection().y);
         collisionWithMapEntities();
         updateMovement();
         updateAnimation();
@@ -247,6 +271,9 @@ public class Bomber extends DynamicEntity {
     }
 
     public void render(GraphicsContext graphicsContext) {
+        /*if (!exist) {
+            return;
+        }*/
         animationManager.render(graphicsContext,
                 this.x - map.getCamera().getStart().x,
                 this.y - map.getCamera().getStart().y);

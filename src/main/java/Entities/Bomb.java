@@ -19,7 +19,7 @@ public class Bomb extends StaticEntity {
     private int maxDown;
 
     //  Thời gian chờ đến khi bom nổ (nano second)
-    private long waitToExplode = 1500000000;
+    private long waitToExplode = 2000000000;
     //  Thời gian bom được đặt
     private long startTime;
     //  Đếm thời gian từ khi bom được đặt
