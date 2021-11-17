@@ -29,11 +29,11 @@ public class Bomber extends DynamicEntity {
 
     //  Chức năng
     //  Có thể đi xuyên tường
-    private boolean wallPass = true;
+    private boolean wallPass = false;
     //  Có thể đi xuyên bom
-    private boolean bombPass = true;
+    private boolean bombPass = false;
     //  Miễn nhiễm với bom nổ
-    private boolean flamePass = true;
+    private boolean flamePass = false;
 
     //  CONSTRUCTOR
     public Bomber(int x, int y, Map map) {
