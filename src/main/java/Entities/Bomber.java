@@ -1,6 +1,7 @@
 package Entities;
 
 import Component.*;
+import Entities.PowerUp.PowerUp;
 import Map.Map;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
@@ -25,6 +26,14 @@ public class Bomber extends DynamicEntity {
     private int maxBomb = 1;
     private ArrayList<Bomb> bombList = new ArrayList<>();
     private boolean dead = false;
+
+    //  Chức năng
+    //  Có thể đi xuyên tường
+    private boolean wallPass = true;
+    //  Có thể đi xuyên bom
+    private boolean bombPass = true;
+    //  Miễn nhiễm với bom nổ
+    private boolean flamePass = true;
 
     //  CONSTRUCTOR
     public Bomber(int x, int y, Map map) {
@@ -186,45 +195,27 @@ public class Bomber extends DynamicEntity {
     }
 
     /**
+     * Kiểm tra entity truyền vào có thể va chạm với this hay không
+     */
+    public boolean canCollideWithStaticEntity(Entity entity) {
+        if (entity instanceof Stone
+            || (entity instanceof Brick && !wallPass)
+            || (entity instanceof Bomb && !bombPass)
+            || (entity instanceof BombFlame && !flamePass)
+            || entity instanceof PowerUp) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Va chạm với bản đồ.
      */
     public boolean collisionWithMapEntities() {
         /**
          * Xét vị trí tiếp theo có va chạm với bản đồ hay không.
          */
-        boolean collide = false;
-
-        //  Va chạm với vật thể tĩnh
-        int startX = this.gridX - 2;
-        int endX = this.gridX + 2;
-        int startY = this.gridY - 2;
-        int endY = this.gridY + 2;
-        if (startX < 0) {
-            startX = 0;
-        }
-        if (startY < 0) {
-            startY = 0;
-        }
-        if (endX >= map.getMapGridWidth()) {
-            endX = map.getMapGridWidth() - 1;
-        }
-        if (endY >= map.getMapGridHeight()) {
-            endY = map.getMapGridHeight() - 1;
-        }
-        ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList = map.getStaticEntityList();
-        for (int i = startY; i <= endY; ++i) {
-            for (int j = startX; j <= endX; ++j) {
-                for (int k = 0; k < staticEntityList.get(i).get(j).size(); ++k) {
-                    Entity entity = staticEntityList.get(i).get(j).get(k);
-                    if (!entity.collisionAble()) {
-                        continue;
-                    }
-                    if (entity.ifCollideDo(this)) {
-                        collide = true;
-                    }
-                }
-            }
-        }
+        boolean collide = collisionWithMap();
         //  Va chạm với vật thể động
         ArrayList<Entity> dynamicEntityList = map.getDynamicEntityList();
         for (int i = 0; i < dynamicEntityList.size(); ++i) {
@@ -252,6 +243,7 @@ public class Bomber extends DynamicEntity {
     @Override
     public void die() {
         alive = false;
+        movement.setSpeed(0);
     }
 
     public boolean isAlive() {

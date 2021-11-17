@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class AnimationManager {
     private HashMap<String, Animation> animationMap;
-    private Animation currentAnimation;
+    private Animation currentAnimation = null;
     private Entity entity;
 
     //  CONSTRUCTOR

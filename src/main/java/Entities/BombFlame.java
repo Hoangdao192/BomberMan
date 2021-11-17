@@ -54,7 +54,7 @@ public class BombFlame extends StaticEntity {
             //  Center
             case 0: {
                 animation = new Animation(
-                        this, this.width, this.height, 2,
+                        this, this.width, this.height, 1,
                         Sprite.BOMB_FLAME_CENTER_1, Sprite.BOMB_FLAME_CENTER_2,
                         Sprite.BOMB_FLAME_CENTER_3, Sprite.BOMB_FLAME_CENTER_2,
                         Sprite.BOMB_FLAME_CENTER_1
@@ -65,7 +65,7 @@ public class BombFlame extends StaticEntity {
             case 1: {
                 System.out.println("create");
                 animation = new Animation(
-                        this, this.width, this.height, 2,
+                        this, this.width, this.height, 1,
                         Sprite.BOMB_FLAME_HORIZON_1, Sprite.BOMB_FLAME_HORIZON_2,
                         Sprite.BOMB_FLAME_HORIZON_3, Sprite.BOMB_FLAME_HORIZON_2,
                         Sprite.BOMB_FLAME_HORIZON_1
@@ -75,7 +75,7 @@ public class BombFlame extends StaticEntity {
             //  Left
             case 2: {
                 animation = new Animation(
-                        this, this.width, this.height, 2,
+                        this, this.width, this.height, 1,
                         Sprite.BOMB_FlAME_LEFT_1, Sprite.BOMB_FlAME_LEFT_2,
                         Sprite.BOMB_FlAME_LEFT_3, Sprite.BOMB_FlAME_LEFT_2,
                         Sprite.BOMB_FlAME_LEFT_1
@@ -85,7 +85,7 @@ public class BombFlame extends StaticEntity {
             //  Right
             case 3: {
                 animation = new Animation(
-                        this, this.width, this.height, 2,
+                        this, this.width, this.height, 1,
                         Sprite.BOMB_FLAME_RIGHT_1, Sprite.BOMB_FLAME_RIGHT_2,
                         Sprite.BOMB_FLAME_RIGHT_3, Sprite.BOMB_FLAME_RIGHT_2,
                         Sprite.BOMB_FLAME_RIGHT_1
@@ -95,7 +95,7 @@ public class BombFlame extends StaticEntity {
             //  Vertical
             case 4: {
                 animation = new Animation(
-                        this, this.width, this.height, 2,
+                        this, this.width, this.height, 1,
                         Sprite.BOMB_FLAME_VERTICAL_1, Sprite.BOMB_FLAME_VERTICAL_2,
                         Sprite.BOMB_FLAME_VERTICAL_3, Sprite.BOMB_FLAME_VERTICAL_2,
                         Sprite.BOMB_FLAME_VERTICAL_1
@@ -105,7 +105,7 @@ public class BombFlame extends StaticEntity {
             //  Up
             case 5: {
                 animation = new Animation(
-                        this, this.width, this.height, 2,
+                        this, this.width, this.height, 1,
                         Sprite.BOMB_FLAME_TOP_1, Sprite.BOMB_FLAME_TOP_2,
                         Sprite.BOMB_FLAME_TOP_3, Sprite.BOMB_FLAME_TOP_2,
                         Sprite.BOMB_FLAME_TOP_1
@@ -115,7 +115,7 @@ public class BombFlame extends StaticEntity {
             //  Down
             case 6: {
                 animation = new Animation(
-                        this, this.width, this.height, 2,
+                        this, this.width, this.height, 1,
                         Sprite.BOMB_FLAME_BOTTOM_1, Sprite.BOMB_FLAME_BOTTOM_2,
                         Sprite.BOMB_FLAME_BOTTOM_3, Sprite.BOMB_FLAME_BOTTOM_2,
                         Sprite.BOMB_FLAME_BOTTOM_1

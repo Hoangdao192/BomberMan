@@ -13,9 +13,11 @@ public class Sprite {
     public static final int SPRITE_SIZE = 16;
     public static final SpriteSheet SPRITE_SHEET = new SpriteSheet(SPRITE_SHEET_IMAGE, SPRITE_SIZE, SPRITE_SIZE);
 
-    /**
-     * Bomber
-     */
+    /*
+	|--------------------------------------------------------------------------
+	| Bomber
+	|--------------------------------------------------------------------------
+	 */
     //  Walk left
     public static final Sprite BOMBER_WALK_LEFT_1 = SPRITE_SHEET.getSprite(3, 0);
     public static final Sprite BOMBER_WALK_LEFT_2 = SPRITE_SHEET.getSprite(3, 1);
@@ -37,9 +39,11 @@ public class Sprite {
     public static final Sprite BOMBER_DIE_2 = SPRITE_SHEET.getSprite(5, 2);
     public static final Sprite BOMBER_DIE_3 = SPRITE_SHEET.getSprite(6, 2);
 
-    /**
-     *  Bomb
-     */
+    /*
+	|--------------------------------------------------------------------------
+	| Bomb
+	|--------------------------------------------------------------------------
+	 */
     //  Bomb normal
     public static final Sprite BOMB_NORMAL_1 = SPRITE_SHEET.getSprite(0, 3);
     public static final Sprite BOMB_NORMAL_2 = SPRITE_SHEET.getSprite(1, 3);
@@ -88,13 +92,17 @@ public class Sprite {
     public static final Sprite BRICK_EXPLODE_2 = SPRITE_SHEET.getSprite(7, 2);
     public static final Sprite BRICK_EXPLODE_3 = SPRITE_SHEET.getSprite(7, 3);
 
+    /*
+	|--------------------------------------------------------------------------
+	| Enemies
+	|--------------------------------------------------------------------------
+	 */
     /**
      * Enemy die
      */
     public static final Sprite ENEMY_DIE_1 = SPRITE_SHEET.getSprite(15, 0);
     public static final Sprite ENEMY_DIE_2 = SPRITE_SHEET.getSprite(15, 1);
     public static final Sprite ENEMY_DIE_3 = SPRITE_SHEET.getSprite(15, 2);
-
     /**
      * Balloon
      */
@@ -121,10 +129,51 @@ public class Sprite {
     public static final Sprite ONEAL_MOVE_RIGHT_3 = SPRITE_SHEET.getSprite(12, 2);
     //  Die
     public static final Sprite ONEAL_DIE = SPRITE_SHEET.getSprite(11, 3);
-
     /**
-     * Power up
+     * Doll
      */
+    //  Move left
+    public static final Sprite DOLL_MOVE_LEFT_1 = SPRITE_SHEET.getSprite(13, 0);
+    public static final Sprite DOLL_MOVE_LEFT_2 = SPRITE_SHEET.getSprite(13, 1);
+    public static final Sprite DOLL_MOVE_LEFT_3 = SPRITE_SHEET.getSprite(13, 2);
+    //  Move right
+    public static final Sprite DOLL_MOVE_RIGHT_1 = SPRITE_SHEET.getSprite(14, 0);
+    public static final Sprite DOLL_MOVE_RIGHT_2 = SPRITE_SHEET.getSprite(14, 1);
+    public static final Sprite DOLL_MOVE_RIGHT_3 = SPRITE_SHEET.getSprite(14, 2);
+    //  Die
+    public static final Sprite DOLL_DIE = SPRITE_SHEET.getSprite(13, 3);
+    /**
+     * Minvo
+     */
+    //  Move left
+    public static final Sprite MINVO_MOVE_LEFT_1 = SPRITE_SHEET.getSprite(8, 5);
+    public static final Sprite MINVO_MOVE_LEFT_2 = SPRITE_SHEET.getSprite(8, 6);
+    public static final Sprite MINVO_MOVE_LEFT_3 = SPRITE_SHEET.getSprite(8, 7);
+    //  Move right
+    public static final Sprite MINVO_MOVE_RIGHT_1 = SPRITE_SHEET.getSprite(9, 5);
+    public static final Sprite MINVO_MOVE_RIGHT_2 = SPRITE_SHEET.getSprite(9, 6);
+    public static final Sprite MINVO_MOVE_RIGHT_3 = SPRITE_SHEET.getSprite(9, 7);
+    //  Die
+    public static final Sprite MINVO_DIE = SPRITE_SHEET.getSprite(8, 8);
+    /**
+     * Ovapi
+     */
+    //  Move left
+    public static final Sprite OVAPI_MOVE_LEFT_1 = SPRITE_SHEET.getSprite(6, 5);
+    public static final Sprite OVAPI_MOVE_LEFT_2 = SPRITE_SHEET.getSprite(6, 6);
+    public static final Sprite OVAPI_MOVE_LEFT_3 = SPRITE_SHEET.getSprite(6, 7);
+    //  Move right
+    public static final Sprite OVAPI_MOVE_RIGHT_1 = SPRITE_SHEET.getSprite(7, 5);
+    public static final Sprite OVAPI_MOVE_RIGHT_2 = SPRITE_SHEET.getSprite(7, 6);
+    public static final Sprite OVAPI_MOVE_RIGHT_3 = SPRITE_SHEET.getSprite(7, 7);
+    //  Die
+    public static final Sprite OVAPI_DIE = SPRITE_SHEET.getSprite(6, 8);
+
+    /*
+	|--------------------------------------------------------------------------
+	| Power up
+	|--------------------------------------------------------------------------
+	 */
     //  Fire - Tăng phạm vi nổ
     public static final Sprite FIRE = SPRITE_SHEET.getSprite(1, 10);
     //  Bomb up - Tăng số lượng bom

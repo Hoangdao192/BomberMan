@@ -4,27 +4,23 @@ import Component.Animation;
 import Component.AnimationManager;
 import Component.PathFinding.ChasingPlayer;
 import Component.Sprite;
-import Entities.*;
 import Map.Map;
-import Utils.RandomInt;
 import Utils.Vector2i;
 import javafx.scene.canvas.GraphicsContext;
 
-import java.util.ArrayList;
-
 /**
- * Tốc độ: 3
+ * Tốc độ: 5
  * Thông minh: bình thường
  */
-public class Oneal extends Enemy {
-    private final int DEFAULT_SPEED = 3;
+public class Minvo extends Enemy {
+    private final int DEFAULT_SPEED = 5;
     private AnimationManager animationManager;
     private Vector2i currentDirection;
     //  Phạm vi lớn nhất để xác định Player
     private final int MAX_DETECT_RADIUS = 5;
     ChasingPlayer chasingPlayer;
 
-    public Oneal(int x, int y, int width, int height, Map map) {
+    public Minvo(int x, int y, int width, int height, Map map) {
         super(x, y, width, height, null, map);
         createAnimation();
         createHitBox();
@@ -32,7 +28,7 @@ public class Oneal extends Enemy {
     }
 
     private void createHitBox() {
-        createHitBox(2, 2, 28, 28);
+        createHitBox(1, 1, 30, 30);
     }
 
     private void createMovement() {
@@ -45,17 +41,17 @@ public class Oneal extends Enemy {
         animationManager = new AnimationManager(this);
         Animation moveLeftAnimation = new Animation(
                 this, this.width, this.height, 2,
-                Sprite.ONEAL_MOVE_LEFT_1, Sprite.ONEAL_MOVE_LEFT_2, Sprite.ONEAL_MOVE_LEFT_3
+                Sprite.MINVO_MOVE_LEFT_1, Sprite.MINVO_MOVE_LEFT_2, Sprite.MINVO_MOVE_LEFT_3
         );
 
         Animation moveRightAnimation = new Animation(
                 this, this.width, this.height, 2,
-                Sprite.ONEAL_MOVE_RIGHT_1, Sprite.ONEAL_MOVE_RIGHT_2, Sprite.ONEAL_MOVE_RIGHT_3
+                Sprite.MINVO_MOVE_RIGHT_1, Sprite.MINVO_MOVE_RIGHT_2, Sprite.MINVO_MOVE_RIGHT_3
         );
 
         Animation dieAnimation = new Animation(
                 this, this.width, this.height, 4,
-                Sprite.ONEAL_DIE, Sprite.ENEMY_DIE_1, Sprite.ENEMY_DIE_2, Sprite.ENEMY_DIE_3
+                Sprite.MINVO_DIE, Sprite.ENEMY_DIE_1, Sprite.ENEMY_DIE_2, Sprite.ENEMY_DIE_3
         );
 
         animationManager.addAnimation("MOVING LEFT", moveLeftAnimation);
@@ -78,6 +74,7 @@ public class Oneal extends Enemy {
     }
 
     private void updateAnimation() {
+        animationManager.update();
         if (animationManager.getCurrentAnimationKey().equals("DEAD")) {
             movement.setSpeed(0);
             if (animationManager.get("DEAD").getCurrentFrame() == animationManager.get("DEAD").getNumberOfFrame() - 1) {
@@ -89,7 +86,6 @@ public class Oneal extends Enemy {
         } else {
             animationManager.play("MOVING LEFT");
         }
-        animationManager.update();
     }
 
     @Override

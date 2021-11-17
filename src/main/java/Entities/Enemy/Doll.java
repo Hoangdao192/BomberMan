@@ -1,22 +1,19 @@
 package Entities.Enemy;
 
-import Component.*;
+import Component.Animation;
+import Component.AnimationManager;
+import Component.HitBox;
 import Component.PathFinding.RandomMove;
-import Entities.Bomber;
-import Entities.Entity;
+import Component.Sprite;
 import Map.Map;
-import Utils.RandomInt;
-import Utils.Vector2i;
 import javafx.scene.canvas.GraphicsContext;
 
-import java.util.ArrayList;
-
-public class Balloon extends Enemy {
-    private final int DEFAULT_SPEED = 2;
+public class Doll extends Enemy{
+    private final int DEFAULT_SPEED = 4;
     AnimationManager animationManager;
     RandomMove randomMove;
 
-    public Balloon(int x, int y, int width, int height, Map map) {
+    public Doll(int x, int y, int width, int height, Map map) {
         super(x, y, width, height, null, map);
         createAnimation();
         collision = true;
@@ -29,19 +26,19 @@ public class Balloon extends Enemy {
         this.sprite = Sprite.BALLOON_MOVE_RIGHT_1;
         Animation movingLeft = new Animation(
                 this, this.width, this.height, 2,
-                Sprite.BALLOON_MOVE_LEFT_1, Sprite.BALLOON_MOVE_LEFT_2,
-                Sprite.BALLOON_MOVE_LEFT_3
+                Sprite.DOLL_MOVE_LEFT_1, Sprite.DOLL_MOVE_LEFT_2,
+                Sprite.DOLL_MOVE_LEFT_3
         );
 
         Animation movingRight = new Animation(
                 this, this.width, this.height, 2,
-                Sprite.BALLOON_MOVE_RIGHT_1, Sprite.BALLOON_MOVE_RIGHT_2,
-                Sprite.BALLOON_MOVE_RIGHT_3
+                Sprite.DOLL_MOVE_RIGHT_1, Sprite.DOLL_MOVE_RIGHT_2,
+                Sprite.DOLL_MOVE_RIGHT_3
         );
 
         Animation dead = new Animation(
                 this, this.width, this.height, 5,
-                Sprite.BALLOON_DIE, Sprite.ENEMY_DIE_1, Sprite.ENEMY_DIE_2,
+                Sprite.DOLL_DIE, Sprite.ENEMY_DIE_1, Sprite.ENEMY_DIE_2,
                 Sprite.ENEMY_DIE_3
         );
 

@@ -2,6 +2,7 @@ package Entities;
 
 import Component.Movement;
 import Component.Sprite;
+import Entities.Enemy.Enemy;
 import Map.Map;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
@@ -16,6 +17,17 @@ public abstract class DynamicEntity extends Entity {
         super(x, y, width, height, gridSize, sprite);
         this.map = map;
         movement = new Movement(this, 0);
+    }
+
+    /**
+     * Kiểm tra entity truyền vào có thể va chạm với this hay không
+     */
+    public boolean canCollideWithStaticEntity(Entity entity) {
+        if (entity instanceof Stone || entity instanceof Brick
+            || entity instanceof Bomb) {
+            return true;
+        }
+        return false;
     }
 
     public boolean collisionWithMap() {
@@ -42,7 +54,7 @@ public abstract class DynamicEntity extends Entity {
             for (int col = startX; col <= endX; ++col) {
                 for (int k = 0; k < staticEntityList.get(row).get(col).size(); ++k) {
                     Entity entity = staticEntityList.get(row).get(col).get(k);
-                    if (!entity.collisionAble()) {
+                    if (!entity.collisionAble() || !canCollideWithStaticEntity(entity)) {
                         continue;
                     }
                     if (entity.ifCollideDo(this)) {

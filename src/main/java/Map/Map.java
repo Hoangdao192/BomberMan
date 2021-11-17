@@ -1,8 +1,7 @@
 package Map;
 
 import Entities.*;
-import Entities.Enemy.Balloon;
-import Entities.Enemy.Oneal;
+import Entities.Enemy.*;
 import Entities.PowerUp.BombUp;
 import Entities.PowerUp.Fire;
 import Entities.PowerUp.PowerUp;
@@ -19,12 +18,17 @@ import java.util.Scanner;
  */
 /**
  * Map Entity
- * 0: Grass
- * 1: Wall (Stone)
- * 2: Balloon
- * 3: Brick
- * 4: PowerUp Fire
- * 5: PowerUp BombUp
+ * #: Wall (Stone)
+ * *: Brick
+ * Enemies:
+ * 1: Balloon (Speed: slow, Smart: low)
+ * 2: Oneal (Speed: normal, Smart: normal)
+ * 3: Doll (Speed: normal, Smart: low)
+ * 4: Minvo (Speed: fast, Smart: normal)
+ * 5: Ovapi (Speed: slow, Smart: normal, Special: wall pass)
+ * Items:
+ * f: PowerUp Fire
+ * b: PowerUp BombUp
  */
 public class Map {
     private int mapGridWidth;
@@ -38,9 +42,10 @@ public class Map {
     private Bomber player;
 
     public Map(String path, int cameraWidth, int cameraHeight) {
+        entities = new ArrayList<>();
         staticEntityList = new ArrayList<>();
         dynamicEntityList = new ArrayList<>();
-        loadMapFromFile(path);
+        loadFromFile(path);
         printList();
         createCamera(cameraWidth, cameraHeight);
     }
@@ -82,6 +87,62 @@ public class Map {
         return mapGridWidth;
     }
 
+    public void loadFromFile(String path) {
+        try {
+            Scanner scanner = new Scanner(new FileReader(path));
+            gridSize = scanner.nextInt();
+            mapGridWidth = scanner.nextInt();
+            mapGridHeight = scanner.nextInt();
+            System.out.println(scanner.nextLine());
+            for (int rowIndex = 0; rowIndex < mapGridHeight; ++rowIndex) {
+                staticEntityList.add(new ArrayList<>());
+                String line = scanner.nextLine();
+                for (int colIndex = 0; colIndex < line.length(); ++colIndex) {
+                    staticEntityList.get(rowIndex).add(new ArrayList<>());
+                    switch (line.charAt(colIndex)) {
+                        case '#': {
+                            addEntity(createStoneEntity(colIndex * gridSize, rowIndex * gridSize));
+                            break;
+                        }
+                        case '*': {
+                            addEntity(createBrickEntity(colIndex * gridSize, rowIndex * gridSize));
+                            break;
+                        }
+                        case '1': {
+                            addEntity(createOnealEnemy(colIndex * gridSize, rowIndex * gridSize));
+                            break;
+                        }
+                        case '3': {
+                            addEntity(createDollEnemy(colIndex * gridSize, rowIndex * gridSize));
+                            break;
+                        }
+                        case '4': {
+                            addEntity(createMinvoEnemy(colIndex * gridSize, rowIndex * gridSize));
+                            break;
+                        }
+                        case '5': {
+                            addEntity(createOvapiEnemy(colIndex * gridSize, rowIndex * gridSize));
+                            break;
+                        }
+                        case 'b': {
+                            addEntity(createBombUpPowerUp(colIndex * gridSize, rowIndex * gridSize));
+                            addEntity(createBrickEntity(colIndex * gridSize, rowIndex * gridSize));
+                            break;
+                        }
+                        case 'f': {
+                            addEntity(createFirePowerUp(colIndex * gridSize, rowIndex * gridSize));
+                            addEntity(createBrickEntity(colIndex * gridSize, rowIndex * gridSize));
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Không tìm thấy file cấu hình: " + path);
+        }
+    }
+
+    /*
     //  FUNCTIONS
     public void loadMapFromFile(String path) {
         try {
@@ -129,6 +190,7 @@ public class Map {
             System.out.println("Không tìm thấy file: " + path);
         }
     }
+     */
 
     public void printList() {
         for (int i = 0; i < staticEntityList.size(); ++i) {
@@ -160,6 +222,21 @@ public class Map {
     public Entity createOnealEnemy(int x, int y) {
         Oneal oneal = new Oneal(x, y, 32, 32, this);
         return oneal;
+    }
+
+    public Entity createDollEnemy(int x, int y) {
+        Doll doll = new Doll(x, y, 32, 32, this);
+        return doll;
+    }
+
+    public Entity createMinvoEnemy(int x, int y) {
+        Minvo minvo = new Minvo(x, y, 32, 32, this);
+        return minvo;
+    }
+
+    public Entity createOvapiEnemy(int x, int y) {
+        Ovapi ovapi = new Ovapi(x, y, 32, 32, this);
+        return ovapi;
     }
 
     public Entity createBrickEntity(int x, int y) {
