@@ -10,11 +10,13 @@ import javafx.scene.canvas.GraphicsContext;
 
 public class Doll extends Enemy{
     private final int DEFAULT_SPEED = 4;
+    private final int SCORE_DOLL = 400;
     AnimationManager animationManager;
     RandomMove randomMove;
 
     public Doll(int x, int y, int width, int height, Map map) {
         super(x, y, width, height, null, map);
+        setScore(SCORE_DOLL);
         createAnimation();
         collision = true;
         createHitBox();

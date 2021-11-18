@@ -13,6 +13,9 @@ public class Sprite {
     public static final int SPRITE_SIZE = 16;
     public static final SpriteSheet SPRITE_SHEET = new SpriteSheet(SPRITE_SHEET_IMAGE, SPRITE_SIZE, SPRITE_SIZE);
 
+
+    //  Ảnh trong suốt
+    public static final Sprite IMAGE_TRASPARENT = SPRITE_SHEET.getSprite(10, 10);
     /*
 	|--------------------------------------------------------------------------
 	| Bomber
@@ -183,9 +186,14 @@ public class Sprite {
     // BombPass - Xuyên Bom
     public static final Sprite BOMB_PASS = SPRITE_SHEET.getSprite(5, 10);
     // FlamePass - Không bị bom nổ ảnh hưởng
-    public static final Sprite FLAME_PASS = SPRITE_SHEET.getSprite(4, 10);
+    public static final Sprite FLAME_PASS = SPRITE_SHEET.getSprite(6, 10);
     // WallPass - Xuyên tường
     public static final Sprite WALL_PASS = SPRITE_SHEET.getSprite(3, 10);
+    //Detonator - Kip nổ boom
+    public static final Sprite DETONATOR = SPRITE_SHEET.getSprite(4, 10);
+    //Mystery - Vô hiệu hóa mọi ảnh hưởng xấu trong 10s
+    public static final Sprite MYSTERY = SPRITE_SHEET.getSprite(7, 10);
+
 
     /**
      * Portal

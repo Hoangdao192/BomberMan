@@ -82,4 +82,8 @@ public class BombManager {
     public void disableDetonator() {
         detonatorEnable = false;
     }
+
+    public boolean isDetonatorEnable() {
+        return detonatorEnable;
+    }
 }

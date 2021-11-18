@@ -11,6 +11,7 @@ import javafx.scene.canvas.GraphicsContext;
 
 public class Ovapi extends Enemy {
     private final int DEFAULT_SPEED = 2;
+    private final int SCORE_OVAPI = 2000;
     private AnimationManager animationManager;
     private Vector2i currentDirection;
     //  Phạm vi lớn nhất để xác định Player
@@ -19,6 +20,7 @@ public class Ovapi extends Enemy {
 
     public Ovapi(int x, int y, int width, int height, Map map) {
         super(x, y, width, height, null, map);
+        setScore(SCORE_OVAPI);
         createAnimation();
         createHitBox();
         createMovement();

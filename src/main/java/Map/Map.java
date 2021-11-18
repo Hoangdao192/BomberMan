@@ -29,8 +29,10 @@ import java.util.Scanner;
  * f: PowerUp Fire
  * b: PowerUp BombUp
  * s: PowerUp SpeedUp
- * W: WallPass
  * B: BombPass
+ * D: Detonator
+ * M: Mystery
+ * W: WallPass
  * F: FlamePass
  */
 public class Map {
@@ -171,6 +173,16 @@ public class Map {
                             addEntity(createBrickEntity(colIndex * gridSize, rowIndex * gridSize));
                             break;
                         }
+                        case 'D': {
+                            addEntity(createDetonatorPowerUp(colIndex * gridSize, rowIndex * gridSize));
+                            addEntity(createBrickEntity(colIndex * gridSize, rowIndex * gridSize));
+                            break;
+                        }
+                        case 'M': {
+                            addEntity(createMysteryPowerUp(colIndex * gridSize, rowIndex * gridSize));
+                            addEntity(createBrickEntity(colIndex * gridSize, rowIndex * gridSize));
+                            break;
+                        }
                      }
                 }
             }
@@ -263,6 +275,16 @@ public class Map {
     public Entity createBombPassPowerUp(int x, int y) {
         BombPass bombPass = new BombPass(x, y, gridSize, gridSize, gridSize, this);
         return bombPass;
+    }
+
+    public Entity createDetonatorPowerUp(int x, int y) {
+        Detonator detonator = new Detonator(x, y, gridSize, gridSize, gridSize, this);
+        return detonator;
+    }
+
+    public Entity createMysteryPowerUp(int x, int y) {
+        Mystery mystery = new Mystery(x, y, gridSize, gridSize, gridSize, this);
+        return mystery;
     }
 
     public Entity createFlamePassPowerUp(int x, int y) {

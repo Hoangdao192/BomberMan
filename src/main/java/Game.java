@@ -1,7 +1,6 @@
 import Entities.Bomber;
 import Map.Map;
 import Map.Camera;
-import Utils.RandomInt;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -12,12 +11,15 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -39,7 +41,15 @@ public class Game {
     private Scene mainScene;
     private Group mainContainer;
     private Canvas mainCanvas;
+
+    // Heap map
+    private Canvas HpCavas;
+    private Canvas MiniMapCavas;
     private GraphicsContext graphicsContext;
+    private GraphicsContext graphicsComponent;
+
+    //Front
+    private Font font;
 
     //  UI
     private SubScene subScene;
@@ -62,10 +72,39 @@ public class Game {
         graphicsContext = mainCanvas.getGraphicsContext2D();
         graphicsContext.setImageSmoothing(false);
 
-        mainContainer = new Group();
-        mainContainer.getChildren().add(mainCanvas);
 
-        mainScene = new Scene(mainContainer, screenWidth, screenHeight);
+        GridPane mainPain = new GridPane();
+        mainPain.setHgap(3);
+        mainPain.setVgap(1);
+
+
+        Pane headPane = new Pane();
+        HpCavas = new Canvas(screenWidth, screenHeight / 10);
+        graphicsComponent = HpCavas.getGraphicsContext2D();
+        headPane.getChildren().add(HpCavas);
+
+        graphicsComponent.setFill(Color.BLACK);
+        graphicsComponent.fillRect(0, 0, screenWidth, screenHeight / 10);
+
+        Font font = Font.font("Segoe UI Black", FontWeight.BOLD, 25);
+
+        graphicsComponent.setFill(Color.RED);
+        graphicsComponent.setFont(font);
+        graphicsComponent.fillText("Time: ",30, 30);
+
+        graphicsComponent.setFill(Color.RED);
+        graphicsComponent.setFont(font);
+        graphicsComponent.fillText("Score: ",screenWidth / 3, 30);
+
+
+        mainPain.add(headPane, 0, 0);
+        mainPain.add(mainCanvas, 0, 1);
+
+
+        mainContainer = new Group();
+        mainContainer.getChildren().addAll(mainPain);
+
+        mainScene = new Scene(mainContainer, screenWidth, screenHeight + 100);
         mainStage = new Stage();
         mainStage.setMinHeight(DEFAULT_HEIGHT + 30);
         mainStage.setMinWidth(DEFAULT_WIDTH);
@@ -213,7 +252,7 @@ public class Game {
 
     public void render() {
         graphicsContext.clearRect(0, 0, screenWidth, screenHeight);
-        graphicsContext.setFill(Paint.valueOf("Blue"));
+        graphicsContext.setFill(Paint.valueOf("Green"));
         graphicsContext.fillRect(0, 0, screenWidth, screenHeight);
         Camera camera = map.getCamera();
         graphicsContext.strokeRect(0, 0, camera.getSize().x, camera.getSize().y);

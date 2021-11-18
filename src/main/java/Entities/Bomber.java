@@ -1,6 +1,7 @@
 package Entities;
 
 import Component.*;
+import Entities.Enemy.Enemy;
 import Entities.PowerUp.PowerUp;
 import Map.Map;
 import javafx.scene.canvas.GraphicsContext;
@@ -35,6 +36,8 @@ public class Bomber extends DynamicEntity {
     private boolean bombPass = false;
     //  Miễn nhiễm với bom nổ
     private boolean flamePass = false;
+    //  Miễn ảnh hưởng khi va chạm với Enemy
+    private boolean enemyPass = false;
 
     //  CONSTRUCTOR
     public Bomber(int x, int y, Map map) {
@@ -45,7 +48,7 @@ public class Bomber extends DynamicEntity {
         createHitBox();
         alive = true;
         bombManager = new BombManager(this, map, 1, 1);
-        bombManager.enableDetonator();
+        bombManager.disableDetonator();
     }
 
     private void createHitBox() {
@@ -88,6 +91,34 @@ public class Bomber extends DynamicEntity {
         animationManager.play("WALK_DOWN");
     }
 
+    /**
+     * Set Item.
+     */
+
+    public boolean isEnemyPass() {
+        return enemyPass;
+    }
+
+    public void setEnemyPass(boolean enemyPass) {
+        this.enemyPass = enemyPass;
+    }
+
+    public boolean isFlamePass() {
+        return flamePass;
+    }
+
+    public void setWallPass(boolean wallPass) {
+        this.wallPass = wallPass;
+    }
+
+    public void setBombPass(boolean bombPass) {
+        this.bombPass = bombPass;
+    }
+
+    public void setFlamePass(boolean flamePass) {
+        this.flamePass = flamePass;
+    }
+
     private void createBomb() {
         bombManager.createBomb();
     }
@@ -103,6 +134,14 @@ public class Bomber extends DynamicEntity {
     public void increaseSpeed() {
         ++speed;
         movement.setSpeed(speed * BASIS_SPEED);
+    }
+
+    public void setDetonator() {
+        if (bombManager.isDetonatorEnable()) {
+            bombManager.disableDetonator();
+        } else {
+            bombManager.enableDetonator();
+        }
     }
 
     /**
@@ -197,28 +236,18 @@ public class Bomber extends DynamicEntity {
         animationManager.update();
     }
 
+
+
+
     /**
      * Kiểm tra entity truyền vào có thể va chạm với this hay không
      */
-
-    public void setWallPass(boolean wallPass) {
-        this.wallPass = wallPass;
-    }
-
-    public void setBombPass(boolean bombPass) {
-        this.bombPass = bombPass;
-    }
-
-    public void setFlamePass(boolean flamePass) {
-        this.flamePass = flamePass;
-    }
-
     public boolean canCollideWithStaticEntity(Entity entity) {
         if (entity instanceof Stone
-            || (entity instanceof Brick && !wallPass)
-            || (entity instanceof Bomb && !bombPass)
-            || (entity instanceof BombFlame && !flamePass)
-            || entity instanceof PowerUp) {
+                || (entity instanceof Brick && !wallPass)
+                || (entity instanceof Bomb && !bombPass)
+                || (entity instanceof BombFlame && !flamePass)
+                || entity instanceof PowerUp) {
             return true;
         }
         return false;
@@ -232,6 +261,9 @@ public class Bomber extends DynamicEntity {
          * Xét vị trí tiếp theo có va chạm với bản đồ hay không.
          */
         boolean collide = collisionWithMap();
+        if (enemyPass) {
+            return !enemyPass;
+        }
         //  Va chạm với vật thể động
         ArrayList<Entity> dynamicEntityList = map.getDynamicEntityList();
         for (int i = 0; i < dynamicEntityList.size(); ++i) {

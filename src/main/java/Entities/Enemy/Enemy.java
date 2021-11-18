@@ -1,10 +1,13 @@
 package Entities.Enemy;
 
+import Component.Score;
 import Component.Sprite;
 import Entities.*;
 import Map.Map;
 
 public abstract class Enemy extends DynamicEntity {
+    protected int Score;
+
     public Enemy(int x, int y, int width, int height, Sprite sprite, Map map) {
         super(x, y, width, height, map.getGridSize(), sprite, map);
         collision = true;
@@ -28,5 +31,12 @@ public abstract class Enemy extends DynamicEntity {
             ((Bomber) other).die();
         }
         return true;
+    }
+
+    public void setScore(int score) {
+        Score = score;
+    }
+    public int getScore() {
+        return Score;
     }
 }

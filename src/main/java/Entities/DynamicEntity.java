@@ -23,8 +23,9 @@ public abstract class DynamicEntity extends Entity {
      * Kiểm tra entity truyền vào có thể va chạm với this hay không
      */
     public boolean canCollideWithStaticEntity(Entity entity) {
-        if (entity instanceof Stone || entity instanceof Brick
-            || entity instanceof Bomb) {
+        if (entity instanceof Stone
+                || entity instanceof Brick
+                || entity instanceof Bomb) {
             return true;
         }
         return false;

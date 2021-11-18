@@ -18,6 +18,7 @@ import java.util.ArrayList;
  */
 public class Oneal extends Enemy {
     private final int DEFAULT_SPEED = 3;
+    private final int SCORE_ONEAL = 200;
     private AnimationManager animationManager;
     private Vector2i currentDirection;
     //  Phạm vi lớn nhất để xác định Player
@@ -26,6 +27,7 @@ public class Oneal extends Enemy {
 
     public Oneal(int x, int y, int width, int height, Map map) {
         super(x, y, width, height, null, map);
+        setScore(SCORE_ONEAL);
         createAnimation();
         createHitBox();
         createMovement();
