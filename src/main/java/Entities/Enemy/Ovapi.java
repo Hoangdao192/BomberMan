@@ -73,6 +73,7 @@ public class Ovapi extends Enemy {
         animationManager.play("DEAD");
         collision = false;
         movement.setSpeed(0);
+        movement.update(0, 0);
     }
 
     @Override

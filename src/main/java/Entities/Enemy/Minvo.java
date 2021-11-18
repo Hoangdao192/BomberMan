@@ -28,7 +28,7 @@ public class Minvo extends Enemy {
     }
 
     private void createHitBox() {
-        createHitBox(1, 1, 30, 30);
+        createHitBox(0, 0, width, height);
     }
 
     private void createMovement() {
@@ -65,6 +65,7 @@ public class Minvo extends Enemy {
         animationManager.play("DEAD");
         collision = false;
         movement.setSpeed(0);
+        movement.update(0, 0);
     }
 
     @Override

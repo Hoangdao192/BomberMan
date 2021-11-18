@@ -220,7 +220,7 @@ public class Map {
 
     //  ENTITY CREATOR.
     public Entity createOnealEnemy(int x, int y) {
-        Oneal oneal = new Oneal(x, y, 32, 32, this);
+        Oneal oneal = new Oneal(x, y, gridSize - 2, gridSize - 2, this);
         return oneal;
     }
 
@@ -230,7 +230,7 @@ public class Map {
     }
 
     public Entity createMinvoEnemy(int x, int y) {
-        Minvo minvo = new Minvo(x, y, 32, 32, this);
+        Minvo minvo = new Minvo(x, y, gridSize - 2, gridSize - 2, this);
         return minvo;
     }
 
@@ -332,8 +332,45 @@ public class Map {
      * Render tất cả các entity nằm trong vùng camera.
      */
     public void render(GraphicsContext graphicsContext) {
-        for (int i = 0; i < entities.size(); ++i) {
+       /* for (int i = 0; i < entities.size(); ++i) {
             Entity currentEntity = entities.get(i);
+            //  Không render nếu Entity nằm ngoài vùng camera
+            if (currentEntity.getX() >= camera.getEnd().x
+                    || currentEntity.getX() + currentEntity.getWidth() <= camera.getStart().x
+                    || currentEntity.getY() >= camera.getEnd().y
+                    || currentEntity.getY() + currentEntity.getHeight() <= camera.getStart().y) {
+                continue;
+            }
+
+            currentEntity.render(
+                    currentEntity.getX() - camera.getStart().x,
+                    currentEntity.getY() - camera.getStart().y,
+                    graphicsContext
+            );
+        }*/
+
+        for (int i = 0; i < staticEntityList.size(); ++i) {
+            for (int j = 0; j < staticEntityList.get(i).size(); ++j) {
+                for (int k = 0; k < staticEntityList.get(i).get(j).size(); ++k) {
+                    Entity currentEntity = staticEntityList.get(i).get(j).get(k);
+                    //  Không render nếu Entity nằm ngoài vùng camera
+                    if (currentEntity.getX() >= camera.getEnd().x
+                            || currentEntity.getX() + currentEntity.getWidth() <= camera.getStart().x
+                            || currentEntity.getY() >= camera.getEnd().y
+                            || currentEntity.getY() + currentEntity.getHeight() <= camera.getStart().y) {
+                        continue;
+                    }
+
+                    currentEntity.render(
+                            currentEntity.getX() - camera.getStart().x,
+                            currentEntity.getY() - camera.getStart().y,
+                            graphicsContext
+                    );
+                }
+            }
+        }
+        for (int i = 0; i < dynamicEntityList.size(); ++i) {
+            Entity currentEntity = dynamicEntityList.get(i);
             //  Không render nếu Entity nằm ngoài vùng camera
             if (currentEntity.getX() >= camera.getEnd().x
                     || currentEntity.getX() + currentEntity.getWidth() <= camera.getStart().x

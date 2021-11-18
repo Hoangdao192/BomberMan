@@ -34,10 +34,10 @@ public abstract class DynamicEntity extends Entity {
         final ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList = map.getStaticEntityList();
         boolean collide = false;
 
-        int startX = this.gridX - 1;
-        int endX = this.gridX + 1;
-        int startY = this.gridY - 1;
-        int endY = this.gridY + 1;
+        int startX = this.gridX - 2;
+        int endX = this.gridX + 2;
+        int startY = this.gridY - 2;
+        int endY = this.gridY + 2;
         if (startX < 0) {
             startX = 0;
         }

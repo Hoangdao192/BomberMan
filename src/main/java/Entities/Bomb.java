@@ -61,6 +61,10 @@ public class Bomb extends StaticEntity {
         );
     }
 
+    public void setWaitTime(long waitTime) {
+        this.waitToExplode = waitTime;
+    }
+
     //  FUNCTIONS
     @Override
     public void update() {

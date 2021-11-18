@@ -41,7 +41,7 @@ public class Brick extends StaticEntity {
     @Override
     public void render(int x, int y, GraphicsContext graphicsContext) {
         if (!explode) {
-            //  hitBox.render(x, y, graphicsContext);
+            //hitBox.render(x + hitBox.getOffsetX(), y + hitBox.getOffsetY(), graphicsContext);
             sprite.render(x, y, this.width, this.height, graphicsContext);
         } else {
             animation.render(x, y, graphicsContext);

@@ -32,7 +32,7 @@ public class Oneal extends Enemy {
     }
 
     private void createHitBox() {
-        createHitBox(2, 2, 28, 28);
+        createHitBox(0, 0, width, height);
     }
 
     private void createMovement() {
@@ -69,6 +69,7 @@ public class Oneal extends Enemy {
         animationManager.play("DEAD");
         collision = false;
         movement.setSpeed(0);
+        movement.update(0, 0);
     }
 
     @Override

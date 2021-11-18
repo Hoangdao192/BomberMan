@@ -94,6 +94,10 @@ public abstract class Entity {
         return height;
     }
 
+    public int getGridSize() {
+        return gridSize;
+    }
+
     //  FUNCTIONS
     public void die() {
         exist = false;

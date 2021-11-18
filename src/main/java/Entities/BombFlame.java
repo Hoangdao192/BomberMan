@@ -31,19 +31,19 @@ public class BombFlame extends StaticEntity {
                 createHitBox(0, 10, 32, 16);
                 break;
             case FLAME_RIGHT:
-                createHitBox(8, 10, 24, 16);
+                createHitBox(4, 10, 24, 16);
                 break;
             case FLAME_LEFT:
-                createHitBox(0, 10, 24, 16);
+                createHitBox(4, 10, 24, 16);
                 break;
             case FLAME_VERTICAL:
                 createHitBox(8, 0, 16, 32);
                 break;
             case FLAME_UP:
-                createHitBox(8, 8, 16, 24);
+                createHitBox(8, 4, 16, 24);
                 break;
             case FLAME_DOWN:
-                createHitBox(8, 0, 16, 24);
+                createHitBox(8, 4, 16, 24);
                 break;
         }
     }
@@ -128,6 +128,9 @@ public class BombFlame extends StaticEntity {
     @Override
     public boolean ifCollideDo(Entity other) {
         if (collision(other) || hitBox.contains(other.hitBox)) {
+            if (other instanceof Bomber) {
+                System.out.println("Bomber");
+            }
             other.die();
             return true;
         }
@@ -140,6 +143,7 @@ public class BombFlame extends StaticEntity {
             destroy();
         }
         animation.update();
+        hitBox.update();
     }
 
     public Animation getAnimation() {
@@ -147,6 +151,7 @@ public class BombFlame extends StaticEntity {
     }
 
     public void render(int x, int y, GraphicsContext graphicsContext) {
+        //hitBox.render(x + hitBox.getOffsetX(), y + hitBox.getOffsetY(), graphicsContext);
         animation.render(x, y, graphicsContext);
     }
 }

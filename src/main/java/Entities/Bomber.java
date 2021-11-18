@@ -17,15 +17,12 @@ public class Bomber extends DynamicEntity {
     boolean moveUp = false;
     boolean moveDown = false;
 
+    BombManager bombManager;
+
     private static final int SPRITE_WIDTH = 16;
     private static final int SPRITE_HEIGHT = 16;
 
     private boolean alive;
-    // Số bom nhiều nhất có thể đặt
-    private int bombExplodeRadius = 1;
-    private int maxBomb = 1;
-    private ArrayList<Bomb> bombList = new ArrayList<>();
-    private boolean dead = false;
 
     //  Chức năng
     //  Có thể đi xuyên tường
@@ -41,8 +38,14 @@ public class Bomber extends DynamicEntity {
         createAnimation();
         setMap(map);
         movement.setSpeed(4);
-        createHitBox(2, 0, (SPRITE_WIDTH - 6)  * 2, (SPRITE_HEIGHT - 2) * 2);
+        createHitBox();
         alive = true;
+        bombManager = new BombManager(this, map, 1, 1);
+        bombManager.enableDetonator();
+    }
+
+    private void createHitBox() {
+        createHitBox(2, 0, (SPRITE_WIDTH - 6)  * 2, SPRITE_HEIGHT * 2);
     }
 
     private void createAnimation() {
@@ -59,12 +62,12 @@ public class Bomber extends DynamicEntity {
         );
 
         Animation walkLeftAnimation = new Animation(
-                this, this.width, this.height, 1,
+                this, this.width, this.height, 2,
                 Sprite.BOMBER_WALK_LEFT_1, Sprite.BOMBER_WALK_LEFT_2, Sprite.BOMBER_WALK_LEFT_3
         );
 
         Animation walkRightAnimation = new Animation(
-                this, this.width, this.height, 1,
+                this, this.width, this.height, 2,
                 Sprite.BOMBER_WALK_RIGHT_1, Sprite.BOMBER_WALK_RIGHT_2, Sprite.BOMBER_WALK_RIGHT_3
         );
 
@@ -82,27 +85,15 @@ public class Bomber extends DynamicEntity {
     }
 
     private void createBomb() {
-        if (bombList.size() >= maxBomb) {
-            return;
-        }
-        Entity bomb = new Bomb(
-                bombExplodeRadius,
-                //  Lấy chỉ số hàng cột của ô hiện tại đang đứng
-                hitBox.getCenter().x / map.getGridSize() * map.getGridSize()
-                        + (hitBox.getLeft() % map.getGridSize() != 0 ? 1 : 0),
-                hitBox.getCenter().y / map.getGridSize() * map.getGridSize()
-                        + (hitBox.getTop() % map.getGridSize() != 0 ? 1 : 0),
-                32, 32, map);
-        map.addEntity(bomb);
-        bombList.add((Bomb) bomb);
+        bombManager.createBomb();
     }
 
     public void increaseNumberOfBomb() {
-        ++maxBomb;
+        bombManager.increaseNumberOfBomb();
     }
 
     public void increaseBombRadius() {
-        ++bombExplodeRadius;
+        bombManager.increaseBombRadius();
     }
 
     /**
@@ -112,6 +103,9 @@ public class Bomber extends DynamicEntity {
     public void updateInput(KeyEvent keyEvent, boolean isKeyPressed) {
         if (keyEvent.getCode() == KeyCode.A && isKeyPressed) {
             createBomb();
+        }
+        if (keyEvent.getCode() == KeyCode.S && isKeyPressed) {
+            bombManager.explodeLatestBomb();
         }
         if (keyEvent.getCode() == KeyCode.RIGHT) {
             moveRight = isKeyPressed;
@@ -230,16 +224,6 @@ public class Bomber extends DynamicEntity {
         return collide;
     }
 
-    public void updateBombList() {
-        for (int i = 0; i < bombList.size();) {
-            if (!bombList.get(i).isExist()) {
-                bombList.remove(i);
-            } else {
-                ++i;
-            }
-        }
-    }
-
     @Override
     public void die() {
         alive = false;
@@ -259,7 +243,8 @@ public class Bomber extends DynamicEntity {
         updateGridPosition();
         updateHitBox();
 
-        updateBombList();
+        //updateBombList();
+        bombManager.update();
     }
 
     public void render(GraphicsContext graphicsContext) {

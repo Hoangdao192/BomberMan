@@ -2,6 +2,7 @@ package Component.PathFinding;
 
 import Entities.*;
 import Map.Map;
+import Utils.Vector2i;
 
 import java.util.ArrayList;
 
@@ -85,7 +86,7 @@ public class ChasingPlayer extends RandomMove{
     //  Đuổi theo Player về bên phải nếu không có vật cản
     private boolean canMoveRight() {
         ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList = map.getStaticEntityList();
-        for (int i = entity.getGridX() + 1; i < bomber.getGridX(); ++i) {
+        for (int i = entity.getGridX() + 1; i <= bomber.getGridX(); ++i) {
             for (int j = 0; j < staticEntityList.get(entity.getGridY()).get(i).size(); ++j) {
                 Entity currentEntity = staticEntityList.get(entity.getGridY()).get(i).get(j);
                 if (ifEntityIs(currentEntity)) {
@@ -99,7 +100,7 @@ public class ChasingPlayer extends RandomMove{
     //  Đuổi theo Player về bên trái nếu không có vật cản
     private boolean canMoveLeft() {
         ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList = map.getStaticEntityList();
-        for (int i = entity.getGridX() - 1; i > bomber.getGridX(); --i) {
+        for (int i = entity.getGridX() - 1; i >= bomber.getGridX(); --i) {
             for (int j = 0; j < staticEntityList.get(entity.getGridY()).get(i).size(); ++j) {
                 Entity currentEntity = staticEntityList.get(entity.getGridY()).get(i).get(j);
                 if (ifEntityIs(currentEntity)) {
@@ -113,7 +114,7 @@ public class ChasingPlayer extends RandomMove{
     //  Đuổi theo Player về bên trên nếu không có vật cản
     private boolean canMoveUp() {
         ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList = map.getStaticEntityList();
-        for (int i = entity.getGridY() - 1; i > bomber.getGridY(); --i) {
+        for (int i = entity.getGridY() - 1; i >= bomber.getGridY(); --i) {
             for (int j = 0; j < staticEntityList.get(i).get(entity.getGridX()).size(); ++j) {
                 Entity currentEntity = staticEntityList.get(i).get(entity.getGridX()).get(j);
                 if (ifEntityIs(currentEntity)) {
@@ -127,7 +128,7 @@ public class ChasingPlayer extends RandomMove{
     //  Đuổi theo Player về bên dưới nếu không có vật cản
     private boolean canMoveDown() {
         ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList = map.getStaticEntityList();
-        for (int i = entity.getGridY() + 1; i < bomber.getGridY(); ++i) {
+        for (int i = entity.getGridY() + 1; i <= bomber.getGridY(); ++i) {
             for (int j = 0; j < staticEntityList.get(i).get(entity.getGridX()).size(); ++j) {
                 Entity currentEntity = staticEntityList.get(i).get(entity.getGridX()).get(j);
                 if (ifEntityIs(currentEntity)) {
@@ -143,30 +144,25 @@ public class ChasingPlayer extends RandomMove{
         int desGridX = bomber.getGridX();
         int desGridY = bomber.getGridY();
         ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList = map.getStaticEntityList();
-        if (playerPosition == DETECT_FAILED) {
+        Vector2i oldDirection = entity.getMovement().getDirection().clone();
+        if (playerPosition == PLAYER_ON_RIGHT && canMoveRight()) {
+            entity.getMovement().update(1, 0);
+        }
+        else if (playerPosition == PLAYER_ON_LEFT && canMoveLeft()) {
+            entity.getMovement().update(-1, 0);
+        }
+        else if (playerPosition == PLAYER_ON_TOP && canMoveUp()) {
+            entity.getMovement().update(0, -1);
+        }
+        else if (playerPosition == PLAYER_ON_BOTTOM && canMoveDown()) {
+            entity.getMovement().update(0, 1);
+        } else {
             super.calculatePath();
         }
-        else if (playerPosition == PLAYER_ON_RIGHT) {
-            if (canMoveRight()) {
-                entity.getMovement().update(1, 0);
-            }
+        if (entity.collisionWithMap()) {
+            entity.getMovement().update(oldDirection.x, oldDirection.y);
+            entity.collisionWithMap();
         }
-        else if (playerPosition == PLAYER_ON_LEFT) {
-            if (canMoveLeft()) {
-                entity.getMovement().update(-1, 0);
-            }
-        }
-        else if (playerPosition == PLAYER_ON_TOP) {
-            if (canMoveUp()) {
-                entity.getMovement().update(0, -1);
-            }
-        }
-        else if (playerPosition == PLAYER_ON_BOTTOM) {
-            if (canMoveDown()) {
-                entity.getMovement().update(0, 1);
-            }
-        }
-        entity.collisionWithMap();
     }
     /*public void update() {
 

@@ -85,6 +85,9 @@ public class Doll extends Enemy{
     @Override
     public void die() {
         animationManager.play("DEAD");
+        collision = false;
+        movement.setSpeed(0);
+        movement.update(0, 0);
     }
 
     @Override

@@ -32,28 +32,32 @@ public class RandomMove {
         //  Kiểm tra các hướng có thể di chuyển
         boolean canMoveRight = true;
         for (int i = 0; i < staticEntityList.get(gridY).get(gridX + 1).size(); ++i) {
-            if (staticEntityList.get(gridY).get(gridX + 1).get(i).collisionAble()) {
+            Entity currentEntity = staticEntityList.get(gridY).get(gridX + 1).get(i);
+            if (entity.canCollideWithStaticEntity(currentEntity)) {
                 canMoveRight = false;
                 break;
             }
         }
         boolean canMoveLeft = true;
         for (int i = 0; i < staticEntityList.get(gridY).get(gridX - 1).size(); ++i) {
-            if (staticEntityList.get(gridY).get(gridX - 1).get(i).collisionAble()) {
+            Entity currentEntity = staticEntityList.get(gridY).get(gridX - 1).get(i);
+            if (entity.canCollideWithStaticEntity(currentEntity)) {
                 canMoveLeft = false;
                 break;
             }
         }
         boolean canMoveUp = true;
         for (int i = 0; i < staticEntityList.get(gridY - 1).get(gridX).size(); ++i) {
-            if (staticEntityList.get(gridY - 1).get(gridX).get(i).collisionAble()) {
+            Entity currentEntity = staticEntityList.get(gridY - 1).get(gridX).get(i);
+            if (entity.canCollideWithStaticEntity(currentEntity)) {
                 canMoveUp = false;
                 break;
             }
         }
         boolean canMoveDown = true;
         for (int i = 0; i < staticEntityList.get(gridY + 1).get(gridX).size(); ++i) {
-            if (staticEntityList.get(gridY + 1).get(gridX).get(i).collisionAble()) {
+            Entity currentEntity = staticEntityList.get(gridY + 1).get(gridX).get(i);
+            if (entity.canCollideWithStaticEntity(currentEntity)) {
                 canMoveDown = false;
                 break;
             }
