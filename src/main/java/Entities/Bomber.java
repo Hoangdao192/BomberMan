@@ -24,6 +24,10 @@ public class Bomber extends DynamicEntity {
 
     private boolean alive;
 
+    //Speed up.
+    private int BASIS_SPEED = 2;
+    private int speed = 2;
+
     //  Chức năng
     //  Có thể đi xuyên tường
     private boolean wallPass = false;
@@ -37,7 +41,7 @@ public class Bomber extends DynamicEntity {
         super(x, y, SPRITE_WIDTH * 2, SPRITE_HEIGHT * 2, map.getGridSize(), null, map);
         createAnimation();
         setMap(map);
-        movement.setSpeed(4);
+        movement.setSpeed(speed * BASIS_SPEED);
         createHitBox();
         alive = true;
         bombManager = new BombManager(this, map, 1, 1);
@@ -93,6 +97,11 @@ public class Bomber extends DynamicEntity {
 
     public void increaseBombRadius() {
         bombManager.increaseBombRadius();
+    }
+
+    public void increaseSpeed() {
+        ++speed;
+        movement.setSpeed(speed * BASIS_SPEED);
     }
 
     /**

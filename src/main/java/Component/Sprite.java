@@ -178,6 +178,14 @@ public class Sprite {
     public static final Sprite FIRE = SPRITE_SHEET.getSprite(1, 10);
     //  Bomb up - Tăng số lượng bom
     public static final Sprite BOMB_UP = SPRITE_SHEET.getSprite(0, 10);
+    // Speed up - tăng tốc độ
+    public static final Sprite SPEED_UP = SPRITE_SHEET.getSprite(2, 10);
+
+    /**
+     * Portal
+     */
+    // Portal - cổng ra
+    public static final Sprite PORTAL = SPRITE_SHEET.getSprite(4, 0);
 
     private Image image;
     private int x;

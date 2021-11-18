@@ -144,4 +144,57 @@ public class HitBox {
         graphicsContext.fillRect(x, y, width, height);
         */
     }
+
+    /**
+     * Check va chạm 2 đối tượng bất kỳ
+     * @param entity1
+     * @param entity2
+     * @return
+     */
+    public static boolean checkHixbox(Entity entity1, Entity entity2) {
+        HitBox hitBox1 = entity1.getHitBox();
+        HitBox hitBox2 = entity2.getHitBox();
+        int HIT = 0;
+        int xLeft1 = hitBox1.left;
+        int xRight1 = hitBox1.right;
+        int yUp1 = hitBox1.top;
+        int yDown1 = hitBox1.bottom;
+
+        int xLeft2 = hitBox2.left;
+        int xRight2 = hitBox2.right;
+        int yUp2 = hitBox2.top;
+        int yDown2 = hitBox2.bottom;
+
+        if (xLeft2 >= (xLeft1 + HIT) && xLeft2 <= (xRight1 - HIT) && yUp2 >= (yUp1 + HIT) && yUp2 <= (yDown1 - HIT)) {
+            return true;
+        } else if (xRight2 >= (xLeft1 + HIT) && xRight2 <= (xRight1 - HIT) && yUp2 >= (yUp1 + HIT) && yUp2 <= (yDown1 - HIT)) {
+            return true;
+        } else if (xLeft2 >= (xLeft1 + HIT) && xLeft2 <= (xRight1 - HIT) && yDown2 >= (yUp1 + HIT) && yDown2 <= (yDown1 - HIT)) {
+            return true;
+        } else if (xRight2 >= (xLeft1 + HIT) && xRight2 <= (xRight1 - HIT) && yDown2 >= (yUp1 + HIT) && yDown2 <= (yDown1 - HIT)) {
+            return true;
+        }
+
+        if (xLeft1 >= (xLeft2 + HIT) && xLeft1 <= (xRight2 - HIT) && yUp1 >= (yUp2 + HIT) && yUp1 <= (yDown2 - HIT)) {
+            return true;
+        } else if (xRight1 >= (xLeft2 + HIT) && xRight1 <= (xRight2 - HIT) && yUp1 >= (yUp2 + HIT) && yUp1 <= (yDown2 - HIT)) {
+            return true;
+        } else if (xLeft1 >= (xLeft2 + HIT) && xLeft1 <= (xRight2 - HIT) && yDown1 >= (yUp2 + HIT) && yDown1 <= (yDown2 - HIT)) {
+            return true;
+        } else if (xRight1 >= (xLeft2 + HIT) && xRight1 <= (xRight2 - HIT) && yDown1 >= (yUp2 + HIT) && yDown1 <= (yDown2 - HIT)) {
+            return true;
+        }
+
+        if (xLeft1 == (xLeft2 + HIT) && xLeft1 == (xRight2 - HIT) && yUp1 == (yUp2 + HIT) && yUp1 == (yDown2 - HIT)) {
+            return true;
+        } else if (xRight1 == (xLeft2 + HIT) && xRight1 == (xRight2 - HIT) && yUp1 == (yUp2 + HIT) && yUp1 == (yDown2 - HIT)) {
+            return true;
+        } else if (xLeft1 == (xLeft2 + HIT) && xLeft1 == (xRight2 - HIT) && yDown1 == (yUp2 + HIT) && yDown1 == (yDown2 - HIT)) {
+            return true;
+        } else if (xRight1 == (xLeft2 + HIT) && xRight1 == (xRight2 - HIT) && yDown1 == (yUp2 + HIT) && yDown1 == (yDown2 - HIT)) {
+            return true;
+        }
+
+        return false;
+    }
 }
