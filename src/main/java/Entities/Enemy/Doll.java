@@ -49,11 +49,11 @@ public class Doll extends Enemy{
     }
 
     private void createHitBox() {
-        hitBox = new HitBox(
+        /*hitBox = new HitBox(
                 this, this.width / sprite.getWidth(), 0,
                 14 * this.width / sprite.getWidth(),
-                16 * this.height / sprite.getHeight());
-        //hitBox = new HitBox(this, 0, 0, 32,32);
+                16 * this.height / sprite.getHeight());*/
+        hitBox = new HitBox(this, 0, 0, width,height);
     }
 
     private void createMovement() {

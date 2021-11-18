@@ -41,7 +41,6 @@ public class Bomber extends DynamicEntity {
         createHitBox();
         alive = true;
         bombManager = new BombManager(this, map, 1, 1);
-        bombManager.enableDetonator();
     }
 
     private void createHitBox() {

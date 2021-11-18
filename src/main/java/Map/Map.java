@@ -17,6 +17,7 @@ import java.util.Scanner;
  * Map được chia thành các ô vuông có kích thước là gridSize
  */
 /**
+ * p: player
  * Map Entity
  * #: Wall (Stone)
  * *: Brick
@@ -39,6 +40,8 @@ public class Map {
     private ArrayList<Entity> entities;
     private ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList;
     private ArrayList<Entity> dynamicEntityList;
+
+    private Vector2i playerStartPosition = new Vector2i(100, 100);
     private Bomber player;
 
     public Map(String path, int cameraWidth, int cameraHeight) {
@@ -52,6 +55,8 @@ public class Map {
 
     public void setPlayer(Bomber player) {
         this.player = player;
+        player.setX(playerStartPosition.x);
+        player.setY(playerStartPosition.y);
     }
 
     public Bomber getPlayer() {
@@ -65,6 +70,10 @@ public class Map {
 
     public Camera getCamera() {
         return camera;
+    }
+
+    public Vector2i getPlayerStartPosition() {
+        return playerStartPosition;
     }
 
     public int getGridSize() {
@@ -100,6 +109,11 @@ public class Map {
                 for (int colIndex = 0; colIndex < line.length(); ++colIndex) {
                     staticEntityList.get(rowIndex).add(new ArrayList<>());
                     switch (line.charAt(colIndex)) {
+                        case 'p': {
+                            playerStartPosition.x = colIndex * gridSize;
+                            playerStartPosition.y = rowIndex * gridSize;
+                            break;
+                        }
                         case '#': {
                             addEntity(createStoneEntity(colIndex * gridSize, rowIndex * gridSize));
                             break;
@@ -109,6 +123,10 @@ public class Map {
                             break;
                         }
                         case '1': {
+                            addEntity(createBalloonEnemy(colIndex * gridSize, rowIndex * gridSize));
+                            break;
+                        }
+                        case '2': {
                             addEntity(createOnealEnemy(colIndex * gridSize, rowIndex * gridSize));
                             break;
                         }
@@ -225,7 +243,7 @@ public class Map {
     }
 
     public Entity createDollEnemy(int x, int y) {
-        Doll doll = new Doll(x, y, 32, 32, this);
+        Doll doll = new Doll(x, y, gridSize - 2, gridSize - 2, this);
         return doll;
     }
 
@@ -235,10 +253,16 @@ public class Map {
     }
 
     public Entity createOvapiEnemy(int x, int y) {
-        Ovapi ovapi = new Ovapi(x, y, 32, 32, this);
+        Ovapi ovapi = new Ovapi(x, y, gridSize - 2, gridSize - 2, this);
         return ovapi;
     }
 
+    public Entity createBalloonEnemy(int x, int y) {
+        Balloon balloon = new Balloon(x, y, gridSize - 2, gridSize - 2, this);
+        return balloon;
+    }
+
+    //
     public Entity createBrickEntity(int x, int y) {
         Brick brick = new Brick(x, y, gridSize, gridSize, gridSize);
         brick.createHitBox(0, 0, 32, 32);
@@ -253,14 +277,6 @@ public class Map {
         stone.setCollision(true);
         stone.createHitBox(0, 0, 32, 32);
         return stone;
-    }
-
-    /**
-     * Tạo kẻ địch Balloon.
-     */
-    public Entity createBalloonEnemy(int x, int y) {
-        Balloon balloon = new Balloon(x, y, 32, 32, this);
-        return balloon;
     }
 
     public void addEntity(Entity entity) {

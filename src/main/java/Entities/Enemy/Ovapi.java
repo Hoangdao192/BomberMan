@@ -25,7 +25,7 @@ public class Ovapi extends Enemy {
     }
 
     private void createHitBox() {
-        createHitBox(1, 1, 30, 30);
+        createHitBox(0, 0, width, height);
     }
 
     private void createMovement() {
