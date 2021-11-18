@@ -2,10 +2,7 @@ package Map;
 
 import Entities.*;
 import Entities.Enemy.*;
-import Entities.PowerUp.BombUp;
-import Entities.PowerUp.Fire;
-import Entities.PowerUp.PowerUp;
-import Entities.PowerUp.SpeedUp;
+import Entities.PowerUp.*;
 import Utils.Vector2i;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -32,7 +29,9 @@ import java.util.Scanner;
  * f: PowerUp Fire
  * b: PowerUp BombUp
  * s: PowerUp SpeedUp
- *
+ * W: WallPass
+ * B: BombPass
+ * F: FlamePass
  */
 public class Map {
     private String path = "";
@@ -157,6 +156,21 @@ public class Map {
                             addEntity(createBrickEntity(colIndex * gridSize, rowIndex * gridSize));
                             break;
                         }
+                        case 'B': {
+                            addEntity(createBombPassPowerUp(colIndex * gridSize, rowIndex * gridSize));
+                            addEntity(createBrickEntity(colIndex * gridSize, rowIndex * gridSize));
+                            break;
+                        }
+                        case 'F': {
+                            addEntity(createFlamePassPowerUp(colIndex * gridSize, rowIndex * gridSize));
+                            addEntity(createBrickEntity(colIndex * gridSize, rowIndex * gridSize));
+                            break;
+                        }
+                        case 'W': {
+                            addEntity(createWallPassPowerUp(colIndex * gridSize, rowIndex * gridSize));
+                            addEntity(createBrickEntity(colIndex * gridSize, rowIndex * gridSize));
+                            break;
+                        }
                      }
                 }
             }
@@ -232,18 +246,33 @@ public class Map {
 
     //  POWER UP CREATOR
     public Entity createFirePowerUp(int x, int y) {
-        Fire fire = new Fire(x, y, gridSize, gridSize, gridSize);
+        Fire fire = new Fire(x, y, gridSize, gridSize, gridSize, this);
         return fire;
     }
 
     public Entity createBombUpPowerUp(int x, int y) {
-        BombUp bombUp = new BombUp(x, y, gridSize, gridSize, gridSize);
+        BombUp bombUp = new BombUp(x, y, gridSize, gridSize, gridSize, this);
         return bombUp;
     }
 
     public Entity createSpeedUpPowerUp(int x, int y) {
-        SpeedUp speedUp = new SpeedUp(x, y, gridSize, gridSize, gridSize);
+        SpeedUp speedUp = new SpeedUp(x, y, gridSize, gridSize, gridSize, this);
         return speedUp;
+    }
+
+    public Entity createBombPassPowerUp(int x, int y) {
+        BombPass bombPass = new BombPass(x, y, gridSize, gridSize, gridSize, this);
+        return bombPass;
+    }
+
+    public Entity createFlamePassPowerUp(int x, int y) {
+        FlamePass flamePass = new FlamePass(x, y, gridSize, gridSize, gridSize, this);
+        return flamePass;
+    }
+
+    public Entity createWallPassPowerUp(int x, int y) {
+        WallPass wallPass = new WallPass(x, y, gridSize, gridSize, gridSize, this);
+        return wallPass;
     }
 
     //  ENTITY CREATOR.

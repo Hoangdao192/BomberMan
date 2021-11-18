@@ -10,12 +10,10 @@ import javafx.scene.canvas.GraphicsContext;
 import java.util.ArrayList;
 
 public class Portal extends PowerUp {
-    Map map = null;
 
     public Portal(int x, int y, int width, int height, int gridSize, Map map) {
-        super(x, y, width, height, gridSize, Sprite.SPEED_UP);
+        super(x, y, width, height, gridSize, Sprite.PORTAL, map);
         collision = true;
-        this.map = map;
     }
 
     @Override
@@ -24,6 +22,9 @@ public class Portal extends PowerUp {
     }
 
     public boolean ifCollideDo(Entity other) {
+        if (hasBrick()) {
+            return false;
+        }
         if (other instanceof Bomber) {
             if (HitBox.checkHixbox(other, this)) {
                 ArrayList<Entity> arrayList = map.getEntityList();

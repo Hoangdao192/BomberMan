@@ -178,8 +178,14 @@ public class Sprite {
     public static final Sprite FIRE = SPRITE_SHEET.getSprite(1, 10);
     //  Bomb up - Tăng số lượng bom
     public static final Sprite BOMB_UP = SPRITE_SHEET.getSprite(0, 10);
-    // Speed up - tăng tốc độ
+    // Speed up - Tăng tốc độ
     public static final Sprite SPEED_UP = SPRITE_SHEET.getSprite(2, 10);
+    // BombPass - Xuyên Bom
+    public static final Sprite BOMB_PASS = SPRITE_SHEET.getSprite(5, 10);
+    // FlamePass - Không bị bom nổ ảnh hưởng
+    public static final Sprite FLAME_PASS = SPRITE_SHEET.getSprite(4, 10);
+    // WallPass - Xuyên tường
+    public static final Sprite WALL_PASS = SPRITE_SHEET.getSprite(3, 10);
 
     /**
      * Portal

@@ -200,6 +200,19 @@ public class Bomber extends DynamicEntity {
     /**
      * Kiểm tra entity truyền vào có thể va chạm với this hay không
      */
+
+    public void setWallPass(boolean wallPass) {
+        this.wallPass = wallPass;
+    }
+
+    public void setBombPass(boolean bombPass) {
+        this.bombPass = bombPass;
+    }
+
+    public void setFlamePass(boolean flamePass) {
+        this.flamePass = flamePass;
+    }
+
     public boolean canCollideWithStaticEntity(Entity entity) {
         if (entity instanceof Stone
             || (entity instanceof Brick && !wallPass)

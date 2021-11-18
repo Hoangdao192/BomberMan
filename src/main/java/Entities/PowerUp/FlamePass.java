@@ -5,9 +5,9 @@ import Entities.Bomber;
 import Entities.Entity;
 import Map.Map;
 
-public class Fire extends PowerUp{
-    public Fire(int x, int y, int width, int height, int gridSize, Map map) {
-        super(x, y, width, height, gridSize, Sprite.FIRE, map);
+public class FlamePass extends PowerUp {
+    public FlamePass(int x, int y, int width, int height, int gridSize, Map map) {
+        super(x, y, width, height, gridSize, Sprite.FLAME_PASS, map);
         collision = true;
     }
 
@@ -22,7 +22,7 @@ public class Fire extends PowerUp{
             return false;
         }
         if (collision(other) && other instanceof Bomber) {
-            ((Bomber) other).increaseBombRadius();
+            ((Bomber) other).setFlamePass(true);
             destroy();
             return true;
         }
