@@ -5,6 +5,7 @@ import Entities.Enemy.*;
 import Entities.PowerUp.BombUp;
 import Entities.PowerUp.Fire;
 import Entities.PowerUp.PowerUp;
+import Entities.PowerUp.SpeedUp;
 import Utils.Vector2i;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -20,6 +21,7 @@ import java.util.Scanner;
  * Map Entity
  * #: Wall (Stone)
  * *: Brick
+ * p: Portal
  * Enemies:
  * 1: Balloon (Speed: slow, Smart: low)
  * 2: Oneal (Speed: normal, Smart: normal)
@@ -29,8 +31,11 @@ import java.util.Scanner;
  * Items:
  * f: PowerUp Fire
  * b: PowerUp BombUp
+ * s: PowerUp SpeedUp
+ *
  */
 public class Map {
+    private String path = "";
     private int mapGridWidth;
     private int mapGridHeight;
     private int gridSize;
@@ -42,6 +47,7 @@ public class Map {
     private Bomber player;
 
     public Map(String path, int cameraWidth, int cameraHeight) {
+        this.path = path;
         entities = new ArrayList<>();
         staticEntityList = new ArrayList<>();
         dynamicEntityList = new ArrayList<>();
@@ -87,6 +93,13 @@ public class Map {
         return mapGridWidth;
     }
 
+    public void newMap() {
+        entities.clear();
+        staticEntityList.clear();
+        dynamicEntityList.clear();
+        loadFromFile(path);
+    }
+
     public void loadFromFile(String path) {
         try {
             Scanner scanner = new Scanner(new FileReader(path));
@@ -129,12 +142,22 @@ public class Map {
                             addEntity(createBrickEntity(colIndex * gridSize, rowIndex * gridSize));
                             break;
                         }
+                        case 's': {
+                            addEntity(createSpeedUpPowerUp(colIndex * gridSize, rowIndex * gridSize));
+                            addEntity(createBrickEntity(colIndex * gridSize, rowIndex * gridSize));
+                            break;
+                        }
                         case 'f': {
                             addEntity(createFirePowerUp(colIndex * gridSize, rowIndex * gridSize));
                             addEntity(createBrickEntity(colIndex * gridSize, rowIndex * gridSize));
                             break;
                         }
-                    }
+                        case 'p': {
+                            addEntity(createPortalEntity(colIndex * gridSize, rowIndex * gridSize));
+                            addEntity(createBrickEntity(colIndex * gridSize, rowIndex * gridSize));
+                            break;
+                        }
+                     }
                 }
             }
         } catch (FileNotFoundException e) {
@@ -218,6 +241,11 @@ public class Map {
         return bombUp;
     }
 
+    public Entity createSpeedUpPowerUp(int x, int y) {
+        SpeedUp speedUp = new SpeedUp(x, y, gridSize, gridSize, gridSize);
+        return speedUp;
+    }
+
     //  ENTITY CREATOR.
     public Entity createOnealEnemy(int x, int y) {
         Oneal oneal = new Oneal(x, y, gridSize - 2, gridSize - 2, this);
@@ -243,6 +271,11 @@ public class Map {
         Brick brick = new Brick(x, y, gridSize, gridSize, gridSize);
         brick.createHitBox(0, 0, 32, 32);
         return brick;
+    }
+
+    public Entity createPortalEntity(int x, int y) {
+        Portal portal = new Portal(x, y, gridSize, gridSize, gridSize, this);
+        return portal;
     }
 
     /**
