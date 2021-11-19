@@ -2,7 +2,7 @@ package Utils;
 
 import java.util.ArrayList;
 
-public class MinHeap<T extends Comparable<T>> {
+public class MinHeap<T extends Object & Comparable<T>> {
     private ArrayList<T> heap;
 
     public MinHeap()
@@ -28,6 +28,32 @@ public class MinHeap<T extends Comparable<T>> {
             return null;
         }
         return heap.get(0);
+    }
+
+    public boolean contains(T other) {
+        for (int i = 0; i < heap.size(); ++i) {
+            if (other.equals(heap.get(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void set(int index, T object) {
+        if (index < heap.size()) {
+            heap.set(index, object);
+            sortDown(object);
+            sortUp(object);
+        }
+    }
+
+    public int indexOf(T object) {
+        for (int i = 0; i < heap.size(); ++i) {
+            if (object.equals(heap.get(i))) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private void sortDown(T item) {

@@ -18,7 +18,8 @@ import java.util.Scanner;
  * Map được chia thành các ô vuông có kích thước là gridSize
  */
 /**
- * p: player
+ * gridSize, width, height
+ * $: player
  * Map Entity
  * #: Wall (Stone)
  * *: Brick
@@ -122,7 +123,7 @@ public class Map {
                 for (int colIndex = 0; colIndex < line.length(); ++colIndex) {
                     staticEntityList.get(rowIndex).add(new ArrayList<>());
                     switch (line.charAt(colIndex)) {
-                        case 'p': {
+                        case '$': {
                             playerStartPosition.x = colIndex * gridSize;
                             playerStartPosition.y = rowIndex * gridSize;
                             break;
@@ -156,18 +157,27 @@ public class Map {
                             break;
                         }
                         case 'b': {
-                            addEntity(createBombUpPowerUp(colIndex * gridSize, rowIndex * gridSize));
-                            addEntity(createBrickEntity(colIndex * gridSize, rowIndex * gridSize));
+                            Entity bombUp = createBombUpPowerUp(colIndex * gridSize, rowIndex * gridSize);
+                            Entity brick = createBrickEntity(colIndex * gridSize, rowIndex * gridSize);
+                            ((BombUp) bombUp).setBrickBound((Brick) brick);
+                            addEntity(bombUp);
+                            addEntity(brick);
                             break;
                         }
                         case 's': {
-                            addEntity(createSpeedUpPowerUp(colIndex * gridSize, rowIndex * gridSize));
-                            addEntity(createBrickEntity(colIndex * gridSize, rowIndex * gridSize));
+                            Entity speedUp = createSpeedUpPowerUp(colIndex * gridSize, rowIndex * gridSize);
+                            Entity brick = createBrickEntity(colIndex * gridSize, rowIndex * gridSize);
+                            ((SpeedUp) speedUp).setBrickBound((Brick) brick);
+                            addEntity(speedUp);
+                            addEntity(brick);
                             break;
                         }
                         case 'f': {
-                            addEntity(createFirePowerUp(colIndex * gridSize, rowIndex * gridSize));
-                            addEntity(createBrickEntity(colIndex * gridSize, rowIndex * gridSize));
+                            Entity flameUp = createFirePowerUp(colIndex * gridSize, rowIndex * gridSize);
+                            Entity brick = createBrickEntity(colIndex * gridSize, rowIndex * gridSize);
+                            ((Fire) flameUp).setBrickBound((Brick) brick);
+                            addEntity(flameUp);
+                            addEntity(brick);
                             break;
                         }
                         case 'p': {

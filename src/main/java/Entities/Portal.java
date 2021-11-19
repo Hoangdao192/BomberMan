@@ -13,7 +13,7 @@ public class Portal extends PowerUp {
     Map map = null;
 
     public Portal(int x, int y, int width, int height, int gridSize, Map map) {
-        super(x, y, width, height, gridSize, Sprite.SPEED_UP);
+        super(x, y, width, height, gridSize, Sprite.PORTAL);
         collision = true;
         this.map = map;
     }

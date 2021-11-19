@@ -17,6 +17,9 @@ public class Fire extends PowerUp{
 
     @Override
     public boolean ifCollideDo(Entity other) {
+        if (isBrickExist()) {
+            return false;
+        }
         if (collision(other) && other instanceof Bomber) {
             ((Bomber) other).increaseBombRadius();
             destroy();

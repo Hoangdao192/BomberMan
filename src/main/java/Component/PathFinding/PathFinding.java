@@ -43,38 +43,60 @@ public class PathFinding {
 
         while (openSet.size() > 0) {
             MapNode currentNode = heap.getRoot();
-            int startX = entity.getGridX() - 1;
-            int endX = entity.getGridX() + 1;
-            int startY = entity.getGridY() - 1;
-            int endY = entity.getGridY() + 1;
-
-            for (int rowIndex = startY; rowIndex <= endY; ++rowIndex) {
-                if (rowIndex < 0 || rowIndex > map.getMapGridHeight()) {
-                    continue;
+            boolean skipLoop = false;
+            for (int i = 0; i < closeSet.size(); ++i) {
+                if (currentNode.equals(closeSet.get(i))) {
+                    heap.removeRoot();
+                    skipLoop = true;
+                    break;
                 }
-                for (int colIndex = startX; colIndex < endX; ++colIndex) {
-                    if (colIndex < 0 || colIndex > map.getMapGridWidth()) {
+            }
+            if (skipLoop) {
+                continue;
+            }
+            int gridX = currentNode.x / map.getGridSize();
+            int gridY = currentNode.y / map.getGridSize();
+            int startX = gridX - 1;
+            int startY = gridY - 1;
+            int endX = gridX + 1;
+            int endY = gridY + 1;
+            for (int row = startY; row <= endY; ++row) {
+                if (row < 0 || row >= map.getMapGridHeight()) {
+                    return;
+                }
+                for (int col = startX; col <= endX; ++col) {
+                    if (row == gridY && col == gridX) {
                         continue;
                     }
-                    if (rowIndex == entity.getGridY() && colIndex == entity.getGridX()) {
+                    if (col < 0 || col >= map.getMapGridWidth()) {
                         continue;
                     }
                     boolean canMove = true;
-                    for (int i = 0; i < mapStaticEntity.get(rowIndex).get(colIndex).size(); ++i) {
-                        Entity currentEntity = mapStaticEntity.get(rowIndex).get(colIndex).get(i);
-                        if (ifEntityIs(currentEntity)) {
+                    //  Kiểm tra ô hiện tại có thể di chuyển qua không
+                    for (int i = 0; i < mapStaticEntity.get(gridY).get(gridX).size(); ++i) {
+                        Entity entity = mapStaticEntity.get(gridY).get(gridX).get(i);
+                        if (ifEntityIs(entity)) {
                             canMove = false;
                             break;
                         }
                     }
+
                     if (canMove) {
-                        MapNode neighbor = new MapNode(colIndex * map.getGridSize(), rowIndex * map.getGridSize());
-                        neighbor.gCost = currentNode.gCost + neighbor.getDistance(currentNode);
-                        neighbor.hCost = neighbor.getDistance(endNode);
-                        neighbor.fCost = neighbor.hCost + neighbor.gCost;
+                        MapNode newNode = new MapNode(col * map.getGridSize(), row * map.getGridSize(), map.getGridSize());
+                        newNode.gCost = currentNode.gCost + newNode.getDistance(currentNode);
+                        newNode.hCost = currentNode.getDistance(endNode);
+                        newNode.fCost = newNode.gCost + newNode.hCost;
+                        newNode.parent = currentNode;
+                        if (heap.indexOf(newNode) != -1) {
+                            heap.set(heap.indexOf(newNode), newNode);
+                        } else {
+                            heap.add(newNode);
+                        }
                     }
                 }
             }
+            closeSet.add(currentNode);
+            heap.removeRoot();
         }
     }
 }

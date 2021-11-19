@@ -14,18 +14,27 @@ public class MapNode implements Comparable<MapNode>{
     public int fCost = 0;
     public int x = 0;
     public int y = 0;
+    public int gridX;
+    public int gridY;
+    private int gridSize;
     private Entity entity;
     public MapNode parent = null;
 
-    public MapNode(int x, int y) {
+    public MapNode(int x, int y, int gridSize) {
         this.x = x;
         this.y = y;
+        this.gridSize = gridSize;
+        gridX = x / gridSize;
+        gridY = y / gridSize;
     }
 
     public MapNode(Entity entity) {
         this.entity = entity;
         x = entity.getX();
         y = entity.getY();
+        this.gridSize = entity.getGridSize();
+        gridX = entity.getGridX();
+        gridY = entity.getGridY();
     }
 
     public int getDistance(MapNode other) {
@@ -48,5 +57,12 @@ public class MapNode implements Comparable<MapNode>{
             return  -1;
         }
         return 0;
+    }
+
+    public boolean equals(MapNode other) {
+        if (x == other.x && y == other.y) {
+            return true;
+        }
+        return false;
     }
 }

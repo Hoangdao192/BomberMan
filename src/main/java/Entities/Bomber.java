@@ -30,7 +30,7 @@ public class Bomber extends DynamicEntity {
 
     //  Chức năng
     //  Có thể đi xuyên tường
-    private boolean wallPass = false;
+    private boolean wallPass = true;
     //  Có thể đi xuyên bom
     private boolean bombPass = false;
     //  Miễn nhiễm với bom nổ
@@ -38,7 +38,7 @@ public class Bomber extends DynamicEntity {
 
     //  CONSTRUCTOR
     public Bomber(int x, int y, Map map) {
-        super(x, y, SPRITE_WIDTH * 2, SPRITE_HEIGHT * 2, map.getGridSize(), null, map);
+        super(x, y, 28, 28, map.getGridSize(), null, map);
         createAnimation();
         setMap(map);
         movement.setSpeed(speed * BASIS_SPEED);
@@ -48,7 +48,7 @@ public class Bomber extends DynamicEntity {
     }
 
     private void createHitBox() {
-        createHitBox(2, 0, (SPRITE_WIDTH - 6)  * 2, SPRITE_HEIGHT * 2);
+        createHitBox(2, 0, (SPRITE_WIDTH - 6)  * 2, 28);
     }
 
     private void createAnimation() {
@@ -214,9 +214,7 @@ public class Bomber extends DynamicEntity {
      * Va chạm với bản đồ.
      */
     public boolean collisionWithMapEntities() {
-        /**
-         * Xét vị trí tiếp theo có va chạm với bản đồ hay không.
-         */
+        //  Va chạm với vật thể tĩnh
         boolean collide = collisionWithMap();
         //  Va chạm với vật thể động
         ArrayList<Entity> dynamicEntityList = map.getDynamicEntityList();
@@ -247,11 +245,10 @@ public class Bomber extends DynamicEntity {
         movement.update(movement.getDirection().x, movement.getDirection().y);
         collisionWithMapEntities();
         updateMovement();
+        updateHitBox();
         updateAnimation();
         updateGridPosition();
-        updateHitBox();
 
-        //updateBombList();
         bombManager.update();
     }
 

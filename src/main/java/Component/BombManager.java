@@ -4,6 +4,9 @@ import Entities.Bomb;
 import Entities.Bomber;
 
 import java.util.ArrayList;
+
+import Entities.Brick;
+import Entities.Entity;
 import Map.Map;
 
 public class BombManager {
@@ -23,18 +26,29 @@ public class BombManager {
         this.bomber = bomber;
     }
 
+    private boolean ifEntityIs(Entity entity) {
+        if (entity instanceof Brick || entity instanceof Bomb) {
+            return true;
+        }
+        return false;
+    }
+
     public void createBomb() {
         if (bombList.size() >= maxBomb) {
             return;
         }
-        Bomb bomb = new Bomb(
-                bombExplodeRadius,
-                //  Lấy chỉ số hàng cột của ô hiện tại đang đứng
-                bomber.getHitBox().getCenter().x / map.getGridSize() * bomber.getGridSize()
-                        + (bomber.getHitBox().getLeft() % map.getGridSize() != 0 ? 1 : 0),
-                bomber.getHitBox().getCenter().y / map.getGridSize() * bomber.getGridSize()
-                        + (bomber.getHitBox().getTop() % map.getGridSize() != 0 ? 1 : 0),
-                32, 32, map);
+        //  Lấy vị trí và chỉ số hàng cột của ô hiện tại bomber đang đứng
+        int gridX = bomber.getHitBox().getCenter().x / map.getGridSize();
+        int gridY = bomber.getHitBox().getCenter().y / map.getGridSize();
+        int x = gridX * bomber.getGridSize();
+        int y = gridY * bomber.getGridSize();
+        ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList = map.getStaticEntityList();
+        for (int i = 0; i < staticEntityList.get(gridY).get(gridX).size(); ++i) {
+            if (ifEntityIs(staticEntityList.get(gridY).get(gridX).get(i))) {
+                return;
+            }
+        }
+        Bomb bomb = new Bomb(bombExplodeRadius, x, y, 32, 32, map);
         if (detonatorEnable) {
             bomb.setWaitTime(Long.MAX_VALUE);
         }
