@@ -1,5 +1,6 @@
 package Map;
 
+import Component.Time;
 import Entities.*;
 import Entities.Enemy.*;
 import Entities.PowerUp.*;
@@ -15,6 +16,8 @@ import java.util.Scanner;
  * Map được chia thành các ô vuông có kích thước là gridSize
  */
 /**
+ * Bomber
+ * P: Player
  * Map Entity
  * #: Wall (Stone)
  * *: Brick
@@ -46,9 +49,11 @@ public class Map {
     private ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList;
     private ArrayList<Entity> dynamicEntityList;
     private Bomber player;
+    private Time time;
 
     public Map(String path, int cameraWidth, int cameraHeight) {
         this.path = path;
+        time = new Time();
         entities = new ArrayList<>();
         staticEntityList = new ArrayList<>();
         dynamicEntityList = new ArrayList<>();
@@ -66,6 +71,12 @@ public class Map {
     }
 
     //  GETTER
+
+
+    public Time getTime() {
+        return time;
+    }
+
     public Vector2i getSize() {
         return new Vector2i(mapGridWidth * gridSize, mapGridHeight * gridSize);
     }
@@ -76,6 +87,10 @@ public class Map {
 
     public int getGridSize() {
         return gridSize;
+    }
+
+    public ArrayList<Entity> getEntityList() {
+        return entities;
     }
 
     public ArrayList<ArrayList<ArrayList<Entity>>> getStaticEntityList() {
@@ -95,6 +110,7 @@ public class Map {
     }
 
     public void newMap() {
+        time.reset();
         entities.clear();
         staticEntityList.clear();
         dynamicEntityList.clear();
@@ -181,6 +197,13 @@ public class Map {
                         case 'M': {
                             addEntity(createMysteryPowerUp(colIndex * gridSize, rowIndex * gridSize));
                             addEntity(createBrickEntity(colIndex * gridSize, rowIndex * gridSize));
+                            break;
+                        }
+                        case 'P': {
+                            if (player != null) {
+                                player.setX(colIndex * gridSize);
+                                player.setY(rowIndex * gridSize);
+                            }
                             break;
                         }
                      }
@@ -367,10 +390,6 @@ public class Map {
         );
     }
 
-    public ArrayList<Entity> getEntityList() {
-        return entities;
-    }
-
     public void moveCamera(Vector2i velocity) {
         camera.move(velocity);
     }
@@ -379,6 +398,9 @@ public class Map {
         for (int i = 0; i < entities.size(); ) {
             Entity currentEntity = entities.get(i);
             if (!currentEntity.isExist()) {
+                if (currentEntity instanceof Enemy) {
+                    player.getScore().addScore(((Enemy) currentEntity).getScore());
+                }
                 entities.remove(i);
             } else {
                 currentEntity.update();
@@ -388,6 +410,7 @@ public class Map {
         //  Dynamic entity
         for (int i = 0; i < dynamicEntityList.size();) {
             if (!dynamicEntityList.get(i).isExist()) {
+
                 dynamicEntityList.remove(i);
             } else {
                 ++i;

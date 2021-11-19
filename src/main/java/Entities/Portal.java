@@ -27,20 +27,20 @@ public class Portal extends PowerUp {
         }
         if (other instanceof Bomber) {
             if (HitBox.checkHixbox(other, this)) {
-                ArrayList<Entity> arrayList = map.getEntityList();
-                int numEnemy = 0;
-                for (Entity entity : arrayList) {
-                    if (entity instanceof Enemy) {
-                        numEnemy++;
-                    }
-                }
-                if (numEnemy != 0) {
-                    System.out.println("num = " + numEnemy);
-                    return false;
-                } else {
-                    System.out.println("portal");
+//                ArrayList<Entity> arrayList = map.getEntityList();
+//                int numEnemy = 0;
+//                for (Entity entity : arrayList) {
+//                    if (entity instanceof Enemy) {
+//                        numEnemy++;
+//                    }
+//                }
+//                if (numEnemy != 0) {
+//                    System.out.println("num = " + numEnemy);
+//                    return false;
+//                } else {
+//                    System.out.println("portal");
                     map.newMap();
-                }
+//                }
                 return true;
             }
         }

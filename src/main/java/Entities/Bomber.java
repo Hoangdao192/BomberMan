@@ -25,6 +25,18 @@ public class Bomber extends DynamicEntity {
 
     private boolean alive;
 
+    //Score
+    private Score Score = null;
+
+    //HP
+    private int HP = 3;
+
+    // Tọa độ 10 bước trước của bomber;
+    int count_feed = 0;
+    private int beforeX = 0;
+    private int beforeY = 0;
+
+
     //Speed up.
     private int BASIS_SPEED = 2;
     private int speed = 2;
@@ -49,6 +61,9 @@ public class Bomber extends DynamicEntity {
         alive = true;
         bombManager = new BombManager(this, map, 1, 1);
         bombManager.disableDetonator();
+        Score = new Score();
+        beforeX = x;
+        beforeY = y;
     }
 
     private void createHitBox() {
@@ -89,6 +104,34 @@ public class Bomber extends DynamicEntity {
         animationManager.addAnimation("DEAD", deadAnimation);
         //  Default animation
         animationManager.play("WALK_DOWN");
+    }
+
+    /**
+     * setHp
+     */
+
+    public int getHP() {
+        return HP;
+    }
+
+    /**
+     * Set beforeX, beforeY
+     */
+
+    public int getCount_feed() {
+        return count_feed;
+    }
+
+    public void setCount_feed(int count_feed) {
+        this.count_feed = count_feed;
+    }
+
+    /**
+     * Set Score
+     */
+
+    public Component.Score getScore() {
+        return Score;
     }
 
     /**
@@ -170,24 +213,29 @@ public class Bomber extends DynamicEntity {
         int directionX = movement.getDirection().x;
         int directionY = movement.getDirection().y;
         if (moveRight) {
+//            count_feed ++;
             directionX = 1;
         }
         else if (moveLeft) {
+//            count_feed ++;
             directionX = -1;
         }
         else {
             directionX = 0;
         }
         if (moveDown) {
+//            count_feed ++;
             directionY = 1;
         }
         else if (moveUp) {
+//            count_feed ++;
             directionY = -1;
         }
         else {
             directionY = 0;
         }
         movement.update(directionX, directionY);
+
     }
 
     /**
@@ -280,8 +328,15 @@ public class Bomber extends DynamicEntity {
 
     @Override
     public void die() {
-        alive = false;
-        movement.setSpeed(0);
+        if (HP <= 0) {
+            alive = false;
+            movement.setSpeed(0);
+        } else {
+            HP--;
+            x = beforeX;
+            y = beforeY;
+            count_feed = 0;
+        }
     }
 
     public boolean isAlive() {

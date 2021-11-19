@@ -1,6 +1,7 @@
 import Entities.Bomber;
 import Map.Map;
 import Map.Camera;
+import SupportMap.HeadMap;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -43,6 +44,7 @@ public class Game {
     private Canvas mainCanvas;
 
     // Heap map
+    private HeadMap headMap;
     private Canvas HpCavas;
     private Canvas MiniMapCavas;
     private GraphicsContext graphicsContext;
@@ -117,6 +119,7 @@ public class Game {
         setFPS(30);
         createMap();
         createPlayer();
+        createdHeadMap();
         map.setPlayer(bomber);
         initEventHandler();
         createResizeEventHandle();
@@ -191,6 +194,10 @@ public class Game {
          map = new Map("src/main/resources/Map/map1.txt", (int) screenWidth, (int) screenHeight);
     }
 
+    private void createdHeadMap() {
+        headMap = new HeadMap(bomber, map, (int) screenWidth, (int) screenHeight / 10);
+    }
+
     private void createPlayer() {
         bomber = new Bomber(100, 200, map);
         map.getCamera().setCenter(100, 200);
@@ -238,6 +245,7 @@ public class Game {
         //map.getCamera().move(bomber.getMovement().getVelocity());
         map.getCamera().setCenter(bomber.getX(), bomber.getY());
         map.update();
+        headMap.update();
         //updateGameTime();
         //updateUI();
     }
@@ -258,5 +266,6 @@ public class Game {
         graphicsContext.strokeRect(0, 0, camera.getSize().x, camera.getSize().y);
         map.render(graphicsContext);
         bomber.render(graphicsContext);
+        headMap.render(graphicsComponent);
     }
 }
