@@ -99,4 +99,8 @@ public class PathFinding {
             heap.removeRoot();
         }
     }
+
+    public void Test() {
+
+    }
 }
