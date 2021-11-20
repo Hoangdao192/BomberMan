@@ -24,6 +24,8 @@ public class Bomber extends DynamicEntity {
     private static final int SPRITE_HEIGHT = 16;
 
     private boolean alive;
+    private boolean newDied = false;
+    private int timedied = 0; // thời gian bị mất mạng gần nhất
 
     //Score
     private Score Score = null;
@@ -31,7 +33,7 @@ public class Bomber extends DynamicEntity {
     //HP
     private int HP = 3;
 
-    // Tọa độ 10 bước trước của bomber;
+    // Tọa độ ban đầu của bomber;
     int count_feed = 0;
     private int beforeX = 0;
     private int beforeY = 0;
@@ -48,8 +50,10 @@ public class Bomber extends DynamicEntity {
     private boolean bombPass = false;
     //  Miễn nhiễm với bom nổ
     private boolean flamePass = false;
+    private boolean eatenFlamePass = false;
     //  Miễn ảnh hưởng khi va chạm với Enemy
     private boolean enemyPass = false;
+    private boolean eatenEnemyPass = false;
 
     //  CONSTRUCTOR
     public Bomber(int x, int y, Map map) {
@@ -137,6 +141,22 @@ public class Bomber extends DynamicEntity {
     /**
      * Set Item.
      */
+
+    public boolean isEatenFlamePass() {
+        return eatenFlamePass;
+    }
+
+    public boolean isEatenEnemyPass() {
+        return eatenEnemyPass;
+    }
+
+    public void setEatenFlamePass(boolean eatenFlamePass) {
+        this.eatenFlamePass = eatenFlamePass;
+    }
+
+    public void setEatenEnemyPass(boolean eatenEnemyPass) {
+        this.eatenEnemyPass = eatenEnemyPass;
+    }
 
     public boolean isEnemyPass() {
         return enemyPass;
@@ -328,13 +348,21 @@ public class Bomber extends DynamicEntity {
 
     @Override
     public void die() {
+        if (newDied) {
+            return;
+        }
         if (HP <= 0) {
+            newDied = false;
             alive = false;
             movement.setSpeed(0);
         } else {
             HP--;
-            x = beforeX;
-            y = beforeY;
+            if (HP != 0) {
+                x = beforeX;
+                y = beforeY;
+            }
+            timedied = map.getTime().countSecond();
+            newDied = true;
             count_feed = 0;
         }
     }
@@ -345,6 +373,24 @@ public class Bomber extends DynamicEntity {
 
     @Override
     public void update() {
+        if (HP <= 0) {
+            newDied = false;
+            alive = false;
+        }
+        if (newDied) {
+            if (map.getTime().countSecond() - timedied <= 10) {
+                enemyPass = true;
+                flamePass = true;
+            } else {
+                if (!eatenFlamePass) {
+                    flamePass = false;
+                }
+                if (!eatenEnemyPass) {
+                    enemyPass = false;
+                }
+                newDied = false;
+            }
+        }
         movement.update(movement.getDirection().x, movement.getDirection().y);
         collisionWithMapEntities();
         updateMovement();
@@ -354,6 +400,7 @@ public class Bomber extends DynamicEntity {
 
         //updateBombList();
         bombManager.update();
+
     }
 
     public void render(GraphicsContext graphicsContext) {

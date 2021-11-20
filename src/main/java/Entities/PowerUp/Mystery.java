@@ -29,6 +29,7 @@ public class Mystery extends PowerUp {
                 Bomber bomber = map.getPlayer();
                 bomber.setFlamePass(checkFlamePass);
                 bomber.setEnemyPass(false);
+                bomber.setEatenEnemyPass(false);
             }
             destroy();
         }
@@ -51,6 +52,7 @@ public class Mystery extends PowerUp {
                 bomber.setFlamePass(true);
             }
             bomber.setEnemyPass(true);
+            bomber.setEatenEnemyPass(true);
             this.sprite = Sprite.IMAGE_TRASPARENT;
             return true;
         }

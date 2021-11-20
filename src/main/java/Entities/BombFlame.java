@@ -129,7 +129,8 @@ public class BombFlame extends StaticEntity {
     public boolean ifCollideDo(Entity other) {
         if (collision(other) || hitBox.contains(other.hitBox)) {
             if (other instanceof Bomber) {
-                System.out.println("Bomber");
+                Bomber bomber = (Bomber) other;
+                System.out.println("Bomber : " + bomber.getHP());
             }
             other.die();
             return true;

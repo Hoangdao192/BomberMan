@@ -23,6 +23,7 @@ public class FlamePass extends PowerUp {
         }
         if (collision(other) && other instanceof Bomber) {
             ((Bomber) other).setFlamePass(true);
+            ((Bomber) other).setEatenFlamePass(true);
             destroy();
             return true;
         }

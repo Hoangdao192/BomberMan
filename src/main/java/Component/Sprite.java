@@ -194,6 +194,23 @@ public class Sprite {
     //Mystery - Vô hiệu hóa mọi ảnh hưởng xấu trong 10s
     public static final Sprite MYSTERY = SPRITE_SHEET.getSprite(7, 10);
 
+    /*
+	|--------------------------------------------------------------------------
+	| Bonus Iteam
+	|--------------------------------------------------------------------------
+	 */
+    // Bonus Target - Tìm lối ra mà không giết một boss nào
+    public static final Sprite BONUS_TARGET = SPRITE_SHEET.getSprite(0, 11);
+    // Goddess Mask - giết hết boss đi 1 vòng sân khấu
+    public static final Sprite GODDESS_MASK = SPRITE_SHEET.getSprite(1, 11);
+    // Cola Bottle - trước khi giết tất cả kẻ thù, xuất hiện trước lối ra và đi quanh 1 vòng
+    public static final Sprite COLA_BOTTLE = SPRITE_SHEET.getSprite(4, 11);
+    // Famicom - sau khi tiêu diệt mọi kẻ thù nổ 248 trái bom bằng phản ứng liên hoàn
+    public static final Sprite FAMICOM = SPRITE_SHEET.getSprite(3, 11);
+    // Nakamoto-san - giết tất cả kẻ thù mà không phá hủy một bức tường nào
+    public static final Sprite NAKAMOTO_SAN = SPRITE_SHEET.getSprite(2, 11);
+    // Dezeniman-san - ko giết kẻ thù nào, hãy phá hủy mọi bức tường trên map và kích nổ bom trên lối ra 3 lần
+    public static final Sprite DEZENIMAN_SAN = SPRITE_SHEET.getSprite(5, 11);
 
     /**
      * Portal

@@ -2,6 +2,7 @@ import Entities.Bomber;
 import Map.Map;
 import Map.Camera;
 import SupportMap.HeadMap;
+import SupportMap.TransferMap;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -31,6 +32,7 @@ public class Game {
     //  Kích thước cửa sổ mặc định
     private final int DEFAULT_WIDTH = 800;
     private final int DEFAULT_HEIGHT = 416;
+
     //  Kích thước cửa sổ
     private double screenWidth;
     private double screenHeight;
@@ -43,12 +45,17 @@ public class Game {
     private Group mainContainer;
     private Canvas mainCanvas;
 
+    // Support Map
     // Heap map
     private HeadMap headMap;
     private Canvas HpCavas;
     private Canvas MiniMapCavas;
     private GraphicsContext graphicsContext;
     private GraphicsContext graphicsComponent;
+
+    //Transfer Map
+    private TransferMap transferMap;
+
 
     //Front
     private Font font;
@@ -119,7 +126,8 @@ public class Game {
         setFPS(30);
         createMap();
         createPlayer();
-        createdHeadMap();
+        createHeadMap();
+        createTransferMap();
         map.setPlayer(bomber);
         initEventHandler();
         createResizeEventHandle();
@@ -194,8 +202,12 @@ public class Game {
          map = new Map("src/main/resources/Map/map1.txt", (int) screenWidth, (int) screenHeight);
     }
 
-    private void createdHeadMap() {
+    private void createHeadMap() {
         headMap = new HeadMap(bomber, map, (int) screenWidth, (int) screenHeight / 10);
+    }
+
+    private void createTransferMap() {
+        transferMap = new TransferMap((int) screenWidth, (int) screenHeight, map.getGridSize());
     }
 
     private void createPlayer() {
@@ -238,14 +250,29 @@ public class Game {
     }
 
     public void update() {
-        if (!bomber.isExist()) {
-            running = false;
+        if (!map.isTransfer()) {
+            if (!bomber.isExist()) {
+                running = false;
+            }
+            bomber.update();
+            //map.getCamera().move(bomber.getMovement().getVelocity());
+            map.getCamera().setCenter(bomber.getX(), bomber.getY());
+            map.update();
+            headMap.update();
+        } else {
+            headMap.setTransfer(true);
+            if (!transferMap.isLoading()) {
+                transferMap.reset(headMap.getScore(), headMap.getMaxTime() - headMap.getTime());
+            }
+            if (transferMap.getPercent() >= 100) {
+                map.newMap();
+                map.setTransfer(false);
+                transferMap.setLoading(false);
+                headMap.setTransfer(false);
+            }
+            transferMap.update();
         }
-        bomber.update();
-        //map.getCamera().move(bomber.getMovement().getVelocity());
-        map.getCamera().setCenter(bomber.getX(), bomber.getY());
-        map.update();
-        headMap.update();
+
         //updateGameTime();
         //updateUI();
     }
@@ -259,13 +286,18 @@ public class Game {
     }
 
     public void render() {
-        graphicsContext.clearRect(0, 0, screenWidth, screenHeight);
-        graphicsContext.setFill(Paint.valueOf("Green"));
-        graphicsContext.fillRect(0, 0, screenWidth, screenHeight);
-        Camera camera = map.getCamera();
-        graphicsContext.strokeRect(0, 0, camera.getSize().x, camera.getSize().y);
-        map.render(graphicsContext);
-        bomber.render(graphicsContext);
-        headMap.render(graphicsComponent);
+        if (!map.isTransfer()) {
+            graphicsContext.clearRect(0, 0, screenWidth, screenHeight);
+            graphicsContext.setFill(Paint.valueOf("Green"));
+            graphicsContext.fillRect(0, 0, screenWidth, screenHeight);
+            Camera camera = map.getCamera();
+            graphicsContext.strokeRect(0, 0, camera.getSize().x, camera.getSize().y);
+            map.render(graphicsContext);
+            bomber.render(graphicsContext);
+            headMap.render(graphicsComponent);
+        } else {
+            headMap.render(graphicsComponent);
+            transferMap.render(graphicsContext);
+        }
     }
 }

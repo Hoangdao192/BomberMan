@@ -44,6 +44,10 @@ public class Map {
     private int mapGridHeight;
     private int gridSize;
     private Camera camera;
+
+    //Check transfer
+    private boolean transfer = false;
+
     //  Danh sách các Entity có trong map.
     private ArrayList<Entity> entities;
     private ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList;
@@ -72,6 +76,13 @@ public class Map {
 
     //  GETTER
 
+    public boolean isTransfer() {
+        return transfer;
+    }
+
+    public void setTransfer(boolean transfer) {
+        this.transfer = transfer;
+    }
 
     public Time getTime() {
         return time;
@@ -110,6 +121,10 @@ public class Map {
     }
 
     public void newMap() {
+        if (!transfer) {
+            transfer = true;
+            return;
+        }
         time.reset();
         entities.clear();
         staticEntityList.clear();
