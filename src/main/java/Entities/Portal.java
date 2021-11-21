@@ -1,24 +1,29 @@
 package Entities;
 
-import Component.HitBox;
 import Component.Sprite;
-import Entities.Enemy.Enemy;
+import Component.Time;
 import Entities.PowerUp.PowerUp;
 import Map.Map;
-import javafx.scene.canvas.GraphicsContext;
-
-import java.util.ArrayList;
 
 public class Portal extends PowerUp {
+    private boolean up = false;
+    private boolean down = false;
+    private boolean left = false;
+    private boolean right = false;
+    public static boolean checkColaBottle = false;
+
+    private Time time = null;
+    private Bomber bomber = null;
+    private boolean checkHitBox = false;
 
     public Portal(int x, int y, int width, int height, int gridSize, Map map) {
         super(x, y, width, height, gridSize, Sprite.PORTAL, map);
         collision = true;
+        time = new Time();
     }
 
     @Override
     public void update() {
-
     }
 
     public boolean ifCollideDo(Entity other) {
@@ -26,21 +31,37 @@ public class Portal extends PowerUp {
             return false;
         }
         if (other instanceof Bomber) {
-            if (HitBox.checkHixbox(other, this)) {
-//                ArrayList<Entity> arrayList = map.getEntityList();
-//                int numEnemy = 0;
-//                for (Entity entity : arrayList) {
-//                    if (entity instanceof Enemy) {
-//                        numEnemy++;
-//                    }
-//                }
-//                if (numEnemy != 0) {
-//                    System.out.println("num = " + numEnemy);
-//                    return false;
-//                } else {
-//                    System.out.println("portal");
+            if (collision(other)) {
+                bomber = map.getPlayer();
+                if (!checkHitBox) {
+                    checkHitBox = true;
+                    time.reset();
+                    left = false;
+                    right = false;
+                    up = false;
+                    down = false;
+                }
+                if (time.countSecond() >= 3) {
                     map.newMap();
-//                }
+                    checkHitBox = false;
+                    checkColaBottle = false;
+                } else {
+                    if (!checkColaBottle) {
+                        if (up && down && left && right) {
+                            checkColaBottle = true;
+                            System.out.println("Cola true");
+                        }
+                        if (bomber.isMoveDown()) {
+                            down = true;
+                        } else if (bomber.isMoveLeft()) {
+                            left = true;
+                        } else if (bomber.isMoveRight()) {
+                            right = true;
+                        } else if (bomber.isMoveUp()) {
+                            up = true;
+                        }
+                    }
+                }
                 return true;
             }
         }

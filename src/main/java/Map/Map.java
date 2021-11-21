@@ -38,6 +38,7 @@ import java.util.Scanner;
  * W: WallPass
  * F: FlamePass
  */
+
 public class Map {
     private String path = "";
     private int mapGridWidth;
@@ -54,6 +55,24 @@ public class Map {
     private ArrayList<Entity> dynamicEntityList;
     private Bomber player;
     private Time time;
+
+    //check Bonus
+    private boolean[] checkBonus = new boolean[6];
+
+    private boolean checkTarget = false;
+    private boolean checkColaBottle = false;
+    private boolean checkDezeniman_san = false;
+    private boolean checkFamicom = false;
+    private boolean checkGoddessMask = false;
+    private boolean checkNakamoto_san = false;
+
+    private int numEnemyDie = 0;
+    private int numEnemyExist = 0;
+    private int numBrickDestoy = 0;
+    private int numBrickExist = 0;
+
+    private boolean[][] checkMap;
+
 
     public Map(String path, int cameraWidth, int cameraHeight) {
         this.path = path;
@@ -122,6 +141,13 @@ public class Map {
 
     public void newMap() {
         if (!transfer) {
+            update();
+            checkBonus[0] = checkTarget;
+            checkBonus[1] = checkColaBottle;
+            checkBonus[2] = checkDezeniman_san;
+            checkBonus[3] = checkFamicom;
+            checkBonus[4] = checkGoddessMask;
+            checkBonus[5] = checkNakamoto_san;
             transfer = true;
             return;
         }
@@ -129,6 +155,7 @@ public class Map {
         entities.clear();
         staticEntityList.clear();
         dynamicEntityList.clear();
+        resetBonus();
         loadFromFile(path);
     }
 
@@ -138,6 +165,12 @@ public class Map {
             gridSize = scanner.nextInt();
             mapGridWidth = scanner.nextInt();
             mapGridHeight = scanner.nextInt();
+            checkMap = new boolean[mapGridWidth][mapGridHeight];
+            for (int i = 0; i < mapGridWidth; i++) {
+                for (int j = 0; j < mapGridHeight; j++) {
+                    checkMap[i][j] = false;
+                }
+            }
             System.out.println(scanner.nextLine());
             for (int rowIndex = 0; rowIndex < mapGridHeight; ++rowIndex) {
                 staticEntityList.add(new ArrayList<>());
@@ -294,6 +327,121 @@ public class Map {
         System.out.println(dynamicEntityList.size());
     }
 
+    // Check Bonus
+    public boolean[] getCheckBonus() {
+        return checkBonus;
+    }
+
+    public void checkTarget() {
+        if (numEnemyDie == 0) {
+            checkTarget = true;
+        } else {
+            checkTarget = false;
+        }
+    }
+
+    public void checkNakamoto_san() {
+        if (numEnemyExist == 0 && numBrickDestoy == 0) {
+            checkNakamoto_san = true;
+        } else {
+            checkNakamoto_san = false;
+        }
+    }
+
+    public void checkGoddessMask() {
+        if (numEnemyExist != 0) {
+            return;
+        }
+        for (int i = 0; i < mapGridWidth; i++) {
+            for (int j = 0; j < mapGridHeight; j++) {
+                if (j == 1 && i != 0 && i != mapGridWidth - 1) {
+                    if (!checkMap[i][j]) {
+//                        System.out.println(i + ":" + j);
+                        return;
+                    }
+                }
+                if (j == mapGridHeight - 2 && i != 0 && i != mapGridWidth - 1) {
+                    if (!checkMap[i][j]) {
+//                        System.out.println(i + ":" + j);
+                        return;
+                    }
+                }
+                if (i == 1 && j != 0 && j != mapGridHeight - 1) {
+                    if (!checkMap[i][j]) {
+//                        System.out.println(i + ":" + j);
+                        return;
+                    }
+                }
+                if (i == mapGridWidth - 2 && j != 0 && j != mapGridHeight - 1) {
+                    if (!checkMap[i][j]) {
+//                        System.out.println(i + ":" + j);
+                        return;
+                    }
+                }
+//                if (checkMap[i][j] == true) {
+//                    System.out.print("T ");
+//                }
+//                else {
+//                    System.out.println("  ");
+//                }
+            }
+//            System.out.println();
+        }
+        checkGoddessMask = true;
+    }
+
+    public void checkColaBottle() {
+        checkColaBottle = Portal.checkColaBottle;
+        return;
+    }
+
+    public void checkDezeniman_san() {
+        checkDezeniman_san = true;
+        return;
+    }
+
+    public void checkFamicom() {
+        checkFamicom = true;
+        return;
+    }
+
+    public void checkBooleanMap(int x, int y) {
+        checkMap[ (x + gridSize / 2) / gridSize][ (y + gridSize / 2) / gridSize] = true;
+    }
+
+    public void resetBooleanMap() {
+        for (int i = 0; i < mapGridWidth; i++) {
+            for (int j = 0; j < mapGridHeight; j++) {
+                checkMap[i][j] = false;
+            }
+        }
+    }
+
+    public void resetBonus() {
+        numEnemyDie = 0;
+        numBrickDestoy = 0;
+        checkTarget = false;
+        checkColaBottle = false;
+        checkDezeniman_san = false;
+        checkFamicom = false;
+        checkGoddessMask = false;
+        checkNakamoto_san = false;
+    }
+
+    public void updateBonus() {
+        checkTarget();
+        checkDezeniman_san();
+        if (numEnemyExist == 0) {
+            checkBooleanMap(player.getX(), player.getY());
+            checkColaBottle();
+            checkGoddessMask();
+            checkNakamoto_san();
+            checkFamicom();
+        } else {
+            resetBooleanMap();
+        }
+    }
+
     //  POWER UP CREATOR
     public Entity createFirePowerUp(int x, int y) {
         Fire fire = new Fire(x, y, gridSize, gridSize, gridSize, this);
@@ -410,14 +558,21 @@ public class Map {
     }
 
     public void updateEntity() {
+        numBrickExist = 0;
+        numEnemyExist = 0;
+
         for (int i = 0; i < entities.size(); ) {
             Entity currentEntity = entities.get(i);
             if (!currentEntity.isExist()) {
                 if (currentEntity instanceof Enemy) {
                     player.getScore().addScore(((Enemy) currentEntity).getScore());
+                    numEnemyDie++;
                 }
                 entities.remove(i);
             } else {
+                if (currentEntity instanceof Enemy) {
+                    numEnemyExist ++;
+                }
                 currentEntity.update();
                 ++i;
             }
@@ -436,18 +591,26 @@ public class Map {
             for (int j = 0; j < staticEntityList.get(i).size(); ++j) {
                 for (int k = 0; k < staticEntityList.get(i).get(j).size();) {
                     if (!staticEntityList.get(i).get(j).get(k).isExist()) {
+                        if (staticEntityList.get(i).get(j).get(k) instanceof Brick) {
+                            numBrickDestoy ++;
+                        }
                         staticEntityList.get(i).get(j).remove(k);
                     } else {
+                        if (staticEntityList.get(i).get(j).get(k) instanceof Brick) {
+                            numBrickExist ++;
+                        }
                         ++k;
                     }
                 }
             }
         }
+//        System.out.println("NumBrickDestroy : " + numBrickDestoy);
     }
 
     public void update() {
         camera.update();
         updateEntity();
+        updateBonus();
     }
 
     /**

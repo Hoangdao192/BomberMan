@@ -23,6 +23,9 @@ public class Animation {
     private final int frameWidth;
     private final int frameHeight;
 
+    //Kiểm tra có hiển thị hình ảnh trong suốt không.
+    private boolean imageTransparent = false;
+
     private boolean playing = true;
     private boolean paused = false;
 
@@ -89,6 +92,14 @@ public class Animation {
         return numberOfFrame;
     }
 
+    public boolean isImageTransparent() {
+        return imageTransparent;
+    }
+
+    public void setImageTransparent(boolean imageTransparent) {
+        this.imageTransparent = imageTransparent;
+    }
+
     public Sprite getSprite(int spriteIndex) {
         if (spriteIndex < spriteList.size() && spriteIndex >= 0) {
             return spriteList.get(spriteIndex);
@@ -97,8 +108,11 @@ public class Animation {
     }
 
     public void render(int x, int y, GraphicsContext graphicsContext) {
-        if (spriteList.size() > 0) {
+        if (spriteList.size() > 0 && !imageTransparent) {
             spriteList.get(currentFrame).render(x, y, frameWidth, frameHeight, graphicsContext);
+        }
+        if (imageTransparent) {
+            Sprite.IMAGE_TRANSPARENT.render(x, y, frameWidth, frameHeight, graphicsContext);
         }
     }
 }

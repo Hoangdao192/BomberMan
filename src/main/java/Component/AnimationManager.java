@@ -10,6 +10,9 @@ public class AnimationManager {
     private Animation currentAnimation = null;
     private Entity entity;
 
+    //Kiểm tra có hiển thị hình ảnh trong suốt không.
+    private boolean imageTransparent = false;
+
     //  CONSTRUCTOR
     public AnimationManager(Entity entity) {
         this.entity = entity;
@@ -24,6 +27,8 @@ public class AnimationManager {
         return true;
     }
 
+
+    //GETTER
     public String getCurrentAnimationKey() {
         for (String key : animationMap.keySet()) {
             if (currentAnimation == animationMap.get(key)) {
@@ -35,6 +40,19 @@ public class AnimationManager {
 
     public Animation getCurrentAnimation() {
         return currentAnimation;
+    }
+
+    public HashMap<String, Animation> getAnimationMap() {
+        return animationMap;
+    }
+
+    public boolean isImageTransparent() {
+        return imageTransparent;
+    }
+
+    public void setImageTransparent(boolean imageTransparent) {
+        this.imageTransparent = imageTransparent;
+        currentAnimation.setImageTransparent(imageTransparent);
     }
 
     /**

@@ -15,7 +15,7 @@ public class Sprite {
 
 
     //  Ảnh trong suốt
-    public static final Sprite IMAGE_TRASPARENT = SPRITE_SHEET.getSprite(10, 10);
+    public static final Sprite IMAGE_TRANSPARENT = SPRITE_SHEET.getSprite(10, 10);
     /*
 	|--------------------------------------------------------------------------
 	| Bomber

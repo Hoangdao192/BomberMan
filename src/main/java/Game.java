@@ -262,7 +262,7 @@ public class Game {
         } else {
             headMap.setTransfer(true);
             if (!transferMap.isLoading()) {
-                transferMap.reset(headMap.getScore(), headMap.getMaxTime() - headMap.getTime());
+                transferMap.reset(map.getPlayer(), headMap.getMaxTime() - headMap.getTime(), map.getCheckBonus());
             }
             if (transferMap.getPercent() >= 100) {
                 map.newMap();

@@ -10,6 +10,10 @@ public class Time {
         timeEnd = System.currentTimeMillis();
         return (int) (timeEnd - timeStart) / 1000;
     }
+    public int countMilliSecond() {
+        timeEnd = System.currentTimeMillis();
+        return (int) (timeEnd - timeStart);
+    }
     public void reset() {
         timeStart = System.currentTimeMillis();
     }

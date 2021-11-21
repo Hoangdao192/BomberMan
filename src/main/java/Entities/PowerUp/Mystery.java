@@ -53,7 +53,7 @@ public class Mystery extends PowerUp {
             }
             bomber.setEnemyPass(true);
             bomber.setEatenEnemyPass(true);
-            this.sprite = Sprite.IMAGE_TRASPARENT;
+            this.sprite = Sprite.IMAGE_TRANSPARENT;
             return true;
         }
         return false;

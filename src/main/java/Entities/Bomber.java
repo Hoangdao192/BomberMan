@@ -9,6 +9,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Bomber extends DynamicEntity {
 
@@ -208,6 +209,26 @@ public class Bomber extends DynamicEntity {
     }
 
     /**
+     * Direction bomber.
+     */
+
+    public boolean isMoveRight() {
+        return moveRight;
+    }
+
+    public boolean isMoveLeft() {
+        return moveLeft;
+    }
+
+    public boolean isMoveUp() {
+        return moveUp;
+    }
+
+    public boolean isMoveDown() {
+        return moveDown;
+    }
+
+    /**
      * keyPressed: false: Key released
      * keyPressed: true: Key pressed
      */
@@ -277,6 +298,14 @@ public class Bomber extends DynamicEntity {
      * Cập nhập animation.
      */
     private void updateAnimation() {
+        if (newDied) {
+            int checkTime = map.getTime().countMilliSecond() - timedied * 1000;
+            if ((checkTime / 200) % 2 == 1) {
+                animationManager.setImageTransparent(true);
+            } else {
+                animationManager.setImageTransparent(false);
+            }
+        }
         if (!alive) {
             animationManager.play("DEAD");
             if (animationManager.getCurrentAnimation().getCurrentFrame()
@@ -389,6 +418,11 @@ public class Bomber extends DynamicEntity {
                     enemyPass = false;
                 }
                 newDied = false;
+                HashMap<String, Animation> animationHashMap = animationManager.getAnimationMap();
+                animationHashMap.get("WALK_UP").setImageTransparent(false);
+                animationHashMap.get("WALK_DOWN").setImageTransparent(false);
+                animationHashMap.get("WALK_LEFT").setImageTransparent(false);
+                animationHashMap.get("WALK_RIGHT").setImageTransparent(false);
             }
         }
         movement.update(movement.getDirection().x, movement.getDirection().y);
