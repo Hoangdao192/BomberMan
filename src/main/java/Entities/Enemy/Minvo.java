@@ -14,6 +14,7 @@ import javafx.scene.canvas.GraphicsContext;
  */
 public class Minvo extends Enemy {
     private final int DEFAULT_SPEED = 5;
+    private final int SCORE = 800;
     private AnimationManager animationManager;
     private Vector2i currentDirection;
     //  Phạm vi lớn nhất để xác định Player
@@ -22,9 +23,11 @@ public class Minvo extends Enemy {
 
     public Minvo(int x, int y, int width, int height, Map map) {
         super(x, y, width, height, null, map);
+        collision = true;
         createAnimation();
         createHitBox();
         createMovement();
+        setScore(800);
     }
 
     private void createHitBox() {

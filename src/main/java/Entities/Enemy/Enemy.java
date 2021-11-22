@@ -5,9 +5,12 @@ import Entities.*;
 import Map.Map;
 
 public abstract class Enemy extends DynamicEntity {
+    protected int score;
+
     public Enemy(int x, int y, int width, int height, Sprite sprite, Map map) {
         super(x, y, width, height, map.getGridSize(), sprite, map);
         collision = true;
+        score = 0;
     }
 
     @Override
@@ -28,5 +31,13 @@ public abstract class Enemy extends DynamicEntity {
             ((Bomber) other).die();
         }
         return true;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public int getScore() {
+        return score;
     }
 }

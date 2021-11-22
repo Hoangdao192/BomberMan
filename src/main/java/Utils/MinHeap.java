@@ -23,6 +23,10 @@ public class MinHeap<T extends Object & Comparable<T>> {
         }
     }
 
+    public int size() {
+        return heap.size();
+    }
+
     public T getRoot() {
         if (heap.size() == 0) {
             return null;

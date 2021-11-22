@@ -1,6 +1,8 @@
 import Entities.Bomber;
 import Map.Map;
 import Map.Camera;
+import SupportMap.HeadMap;
+import SupportMap.TransferMap;
 import Utils.RandomInt;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
@@ -13,11 +15,14 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -41,6 +46,17 @@ public class Game {
     private Canvas mainCanvas;
     private GraphicsContext graphicsContext;
 
+    // Support Map
+    // Heap map
+    private HeadMap headMap;
+    private Canvas HpCavas;
+    private Canvas MiniMapCavas;
+    private GraphicsContext graphicsComponent;
+    //Transfer Map
+    private TransferMap transferMap;
+    //Front
+    private Font font;
+
     //  UI
     private SubScene subScene;
     private Label timeCounter;
@@ -63,9 +79,40 @@ public class Game {
         graphicsContext.setImageSmoothing(false);
 
         mainContainer = new Group();
-        mainContainer.getChildren().add(mainCanvas);
 
-        mainScene = new Scene(mainContainer, screenWidth, screenHeight);
+        GridPane mainPain = new GridPane();
+        {
+            mainPain.setHgap(3);
+            mainPain.setVgap(1);
+
+
+            Pane headPane = new Pane();
+            HpCavas = new Canvas(screenWidth, screenHeight / 10);
+            graphicsComponent = HpCavas.getGraphicsContext2D();
+            headPane.getChildren().add(HpCavas);
+
+            graphicsComponent.setFill(Color.BLACK);
+            graphicsComponent.fillRect(0, 0, screenWidth, screenHeight / 10);
+
+            Font font = Font.font("Segoe UI Black", FontWeight.BOLD, 25);
+
+            graphicsComponent.setFill(Color.RED);
+            graphicsComponent.setFont(font);
+            graphicsComponent.fillText("Time: ",30, 30);
+
+            graphicsComponent.setFill(Color.RED);
+            graphicsComponent.setFont(font);
+            graphicsComponent.fillText("Score: ",screenWidth / 3, 30);
+
+            mainPain.add(headPane, 0, 0);
+            mainPain.add(mainCanvas, 0, 1);
+
+        }
+        //mainContainer.getChildren().add(mainCanvas);
+        mainContainer.getChildren().addAll(mainPain);
+
+        //mainScene = new Scene(mainContainer, screenWidth, screenHeight);
+        mainScene = new Scene(mainContainer, screenWidth, screenHeight + 100);
         mainStage = new Stage();
         mainStage.setMinHeight(DEFAULT_HEIGHT + 30);
         mainStage.setMinWidth(DEFAULT_WIDTH);
@@ -78,12 +125,20 @@ public class Game {
         setFPS(30);
         createMap();
         createPlayer();
+        createHeadMap();
+        createTransferMap();
         map.setPlayer(bomber);
         initEventHandler();
         createResizeEventHandle();
 
-        //createGameTime();
-        //createUI();
+    }
+
+    private void createHeadMap() {
+        headMap = new HeadMap(bomber, map, (int) screenWidth, (int) screenHeight / 10);
+    }
+
+    private void createTransferMap() {
+        transferMap = new TransferMap((int) screenWidth, (int) screenHeight, map.getGridSize());
     }
 
     private void createGameTime() {
@@ -195,12 +250,38 @@ public class Game {
         if (!bomber.isExist()) {
             running = false;
         }
+
+        if (!map.isTransfer()) {
+            if (!bomber.isExist()) {
+                running = false;
+            }
+            bomber.update();
+            //map.getCamera().move(bomber.getMovement().getVelocity());
+            map.getCamera().setCenter(bomber.getX(), bomber.getY());
+            map.update();
+            headMap.update();
+        } else {
+            headMap.setTransfer(true);
+            if (!transferMap.isLoading()) {
+                transferMap.reset(map.getPlayer(), headMap.getMaxTime() - headMap.getTime(), map.getCheckBonus());
+            }
+            if (transferMap.getPercent() >= 100) {
+                map.newMap();
+                map.setTransfer(false);
+                transferMap.setLoading(false);
+                headMap.setTransfer(false);
+            }
+            transferMap.update();
+        }
+
+        /*
         bomber.update();
         //map.getCamera().move(bomber.getMovement().getVelocity());
         map.getCamera().setCenter(bomber.getX(), bomber.getY());
         map.update();
         //updateGameTime();
         //updateUI();
+        */
     }
 
     private void updateGameTime() {
@@ -212,12 +293,26 @@ public class Game {
     }
 
     public void render() {
-        graphicsContext.clearRect(0, 0, screenWidth, screenHeight);
+        /*graphicsContext.clearRect(0, 0, screenWidth, screenHeight);
         graphicsContext.setFill(Paint.valueOf("Blue"));
         graphicsContext.fillRect(0, 0, screenWidth, screenHeight);
         Camera camera = map.getCamera();
         graphicsContext.strokeRect(0, 0, camera.getSize().x, camera.getSize().y);
         map.render(graphicsContext);
-        bomber.render(graphicsContext);
+        bomber.render(graphicsContext);*/
+
+        if (!map.isTransfer()) {
+            graphicsContext.clearRect(0, 0, screenWidth, screenHeight);
+            graphicsContext.setFill(Paint.valueOf("Green"));
+            graphicsContext.fillRect(0, 0, screenWidth, screenHeight);
+            Camera camera = map.getCamera();
+            graphicsContext.strokeRect(0, 0, camera.getSize().x, camera.getSize().y);
+            map.render(graphicsContext);
+            bomber.render(graphicsContext);
+            headMap.render(graphicsComponent);
+        } else {
+            headMap.render(graphicsComponent);
+            transferMap.render(graphicsContext);
+        }
     }
 }

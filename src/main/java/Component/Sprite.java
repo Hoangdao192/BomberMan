@@ -13,6 +13,8 @@ public class Sprite {
     public static final int SPRITE_SIZE = 16;
     public static final SpriteSheet SPRITE_SHEET = new SpriteSheet(SPRITE_SHEET_IMAGE, SPRITE_SIZE, SPRITE_SIZE);
 
+    public static final Sprite SPRITE_TRANSPARENT = SPRITE_SHEET.getSprite(10, 10);
+
     /*
 	|--------------------------------------------------------------------------
 	| Bomber
@@ -168,6 +170,32 @@ public class Sprite {
     public static final Sprite OVAPI_MOVE_RIGHT_3 = SPRITE_SHEET.getSprite(7, 7);
     //  Die
     public static final Sprite OVAPI_DIE = SPRITE_SHEET.getSprite(6, 8);
+    /**
+     *  Pontan
+     */
+    //  Move left
+    public static final Sprite PONTAN_MOVE_LEFT_1 = SPRITE_SHEET.getSprite(12, 5);
+    public static final Sprite PONTAN_MOVE_LEFT_2 = SPRITE_SHEET.getSprite(12, 6);
+    public static final Sprite PONTAN_MOVE_LEFT_3 = SPRITE_SHEET.getSprite(12, 7);
+    //  Move right
+    public static final Sprite PONTAN_MOVE_RIGHT_1 = SPRITE_SHEET.getSprite(13, 5);
+    public static final Sprite PONTAN_MOVE_RIGHT_2 = SPRITE_SHEET.getSprite(13, 6);
+    public static final Sprite PONTAN_MOVE_RIGHT_3 = SPRITE_SHEET.getSprite(13, 7);
+    //  Die
+    public static final Sprite PONTAN_DIE = SPRITE_SHEET.getSprite(12, 8);
+    /**
+     * Kondoria
+     */
+    //  Move left
+    public static final Sprite KONDORIA_MOVE_LEFT_1 = SPRITE_SHEET.getSprite(10, 5);
+    public static final Sprite KONDORIA_MOVE_LEFT_2 = SPRITE_SHEET.getSprite(10, 6);
+    public static final Sprite KONDORIA_MOVE_LEFT_3 = SPRITE_SHEET.getSprite(10, 7);
+    //  Move right
+    public static final Sprite KONDORIA_MOVE_RIGHT_1 = SPRITE_SHEET.getSprite(11, 5);
+    public static final Sprite KONDORIA_MOVE_RIGHT_2 = SPRITE_SHEET.getSprite(11, 6);
+    public static final Sprite KONDORIA_MOVE_RIGHT_3 = SPRITE_SHEET.getSprite(11, 7);
+    //  Die
+    public static final Sprite KONDORIA_DIE = SPRITE_SHEET.getSprite(10, 8);
 
     /*
 	|--------------------------------------------------------------------------
@@ -180,6 +208,34 @@ public class Sprite {
     public static final Sprite BOMB_UP = SPRITE_SHEET.getSprite(0, 10);
     // Speed up - tăng tốc độ
     public static final Sprite SPEED_UP = SPRITE_SHEET.getSprite(2, 10);
+    // BombPass - Xuyên Bom
+    public static final Sprite BOMB_PASS = SPRITE_SHEET.getSprite(5, 10);
+    // FlamePass - Không bị bom nổ ảnh hưởng
+    public static final Sprite FLAME_PASS = SPRITE_SHEET.getSprite(6, 10);
+    // WallPass - Xuyên tường
+    public static final Sprite WALL_PASS = SPRITE_SHEET.getSprite(3, 10);
+    //Detonator - Kip nổ boom
+    public static final Sprite DETONATOR = SPRITE_SHEET.getSprite(4, 10);
+    //Mystery - Vô hiệu hóa mọi ảnh hưởng xấu trong 10s
+    public static final Sprite MYSTERY = SPRITE_SHEET.getSprite(7, 10);
+
+    /*
+	|--------------------------------------------------------------------------
+	| Bonus Iteam
+	|--------------------------------------------------------------------------
+	 */
+    // Bonus Target - Tìm lối ra mà không giết một boss nào
+    public static final Sprite BONUS_TARGET = SPRITE_SHEET.getSprite(0, 11);
+    // Goddess Mask - giết hết boss đi 1 vòng sân khấu
+    public static final Sprite GODDESS_MASK = SPRITE_SHEET.getSprite(1, 11);
+    // Cola Bottle - trước khi giết tất cả kẻ thù, xuất hiện trước lối ra và đi quanh 1 vòng
+    public static final Sprite COLA_BOTTLE = SPRITE_SHEET.getSprite(4, 11);
+    // Famicom - sau khi tiêu diệt mọi kẻ thù nổ 248 trái bom bằng phản ứng liên hoàn
+    public static final Sprite FAMICOM = SPRITE_SHEET.getSprite(3, 11);
+    // Nakamoto-san - giết tất cả kẻ thù mà không phá hủy một bức tường nào
+    public static final Sprite NAKAMOTO_SAN = SPRITE_SHEET.getSprite(2, 11);
+    // Dezeniman-san - ko giết kẻ thù nào, hãy phá hủy mọi bức tường trên map và kích nổ bom trên lối ra 3 lần
+    public static final Sprite DEZENIMAN_SAN = SPRITE_SHEET.getSprite(5, 11);
 
     /**
      * Portal

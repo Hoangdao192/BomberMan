@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 public class Balloon extends Enemy {
     private final int DEFAULT_SPEED = 2;
+    private final int SCORE = 100;
     AnimationManager animationManager;
     RandomMove randomMove;
 
@@ -22,6 +23,7 @@ public class Balloon extends Enemy {
         collision = true;
         createHitBox();
         createMovement();
+        setScore(SCORE);
     }
 
     private void createAnimation() {

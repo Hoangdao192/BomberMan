@@ -8,8 +8,9 @@ import Component.Sprite;
 import Map.Map;
 import javafx.scene.canvas.GraphicsContext;
 
-public class Doll extends Enemy{
+public class Doll extends Enemy {
     private final int DEFAULT_SPEED = 4;
+    private final int SCORE = 400;
     AnimationManager animationManager;
     RandomMove randomMove;
 
@@ -19,6 +20,7 @@ public class Doll extends Enemy{
         collision = true;
         createHitBox();
         createMovement();
+        setScore(SCORE);
     }
 
     private void createAnimation() {

@@ -25,12 +25,12 @@ public class ChasingPlayer extends RandomMove{
     }
 
     //  Kiểm tra các Entity có thể cản trở di chuyển
-    private boolean ifEntityIs(Entity entity) {
+    /*private boolean canCollideWithStaticEntity(Entity entity) {
         if (entity instanceof Brick || entity instanceof Stone || entity instanceof Bomb) {
             return true;
         }
         return false;
-    }
+    }*/
 
     private int detectPlayer() {
         if (bomber == null) {
@@ -43,8 +43,8 @@ public class ChasingPlayer extends RandomMove{
         if (bomber.getGridY() == gridY && bomber.getGridX() - gridX <= 5
                 && bomber.getGridX() - gridX > 0) {
             for (int i = 0; i < staticEntityList.get(gridY).get(gridX + 1).size(); ++i) {
-                Entity entity = staticEntityList.get(gridY).get(gridX + 1).get(i);
-                if (ifEntityIs(entity)) {
+                Entity currentEntity = staticEntityList.get(gridY).get(gridX + 1).get(i);
+                if (entity.canCollideWithStaticEntity(currentEntity)) {
                     return DETECT_FAILED;
                 }
             }
@@ -53,8 +53,8 @@ public class ChasingPlayer extends RandomMove{
         if (bomber.getGridY() == gridY && gridX - bomber.getGridX() <= 5
                 && gridX - bomber.getGridX() > 0) {
             for (int i = 0; i < staticEntityList.get(gridY).get(gridX - 1).size(); ++i) {
-                Entity entity = staticEntityList.get(gridY).get(gridX - 1).get(i);
-                if (ifEntityIs(entity)) {
+                Entity currentEntity = staticEntityList.get(gridY).get(gridX - 1).get(i);
+                if (entity.canCollideWithStaticEntity(currentEntity)) {
                     return DETECT_FAILED;
                 }
             }
@@ -63,8 +63,8 @@ public class ChasingPlayer extends RandomMove{
         if (bomber.getGridX() == gridX && gridY - bomber.getGridY() <= 5
                 && gridY - bomber.getGridY() > 0) {
             for (int i = 0; i < staticEntityList.get(gridY - 1).get(gridX).size(); ++i) {
-                Entity entity = staticEntityList.get(gridY - 1).get(gridX).get(i);
-                if (ifEntityIs(entity)) {
+                Entity currentEntity = staticEntityList.get(gridY - 1).get(gridX).get(i);
+                if (entity.canCollideWithStaticEntity(currentEntity)) {
                     return DETECT_FAILED;
                 }
             }
@@ -73,8 +73,8 @@ public class ChasingPlayer extends RandomMove{
         if (bomber.getGridX() == gridX && bomber.getGridY() - gridY <= 5
                 && bomber.getGridY() - gridY > 0) {
             for (int i = 0; i < staticEntityList.get(gridY + 1).get(gridX).size(); ++i) {
-                Entity entity = staticEntityList.get(gridY + 1).get(gridX).get(i);
-                if (ifEntityIs(entity)) {
+                Entity currentEntity = staticEntityList.get(gridY + 1).get(gridX).get(i);
+                if (entity.canCollideWithStaticEntity(currentEntity)) {
                     return DETECT_FAILED;
                 }
             }
@@ -89,7 +89,7 @@ public class ChasingPlayer extends RandomMove{
         for (int i = entity.getGridX() + 1; i <= bomber.getGridX(); ++i) {
             for (int j = 0; j < staticEntityList.get(entity.getGridY()).get(i).size(); ++j) {
                 Entity currentEntity = staticEntityList.get(entity.getGridY()).get(i).get(j);
-                if (ifEntityIs(currentEntity)) {
+                if (entity.canCollideWithStaticEntity(currentEntity)) {
                     return false;
                 }
             }
@@ -103,7 +103,7 @@ public class ChasingPlayer extends RandomMove{
         for (int i = entity.getGridX() - 1; i >= bomber.getGridX(); --i) {
             for (int j = 0; j < staticEntityList.get(entity.getGridY()).get(i).size(); ++j) {
                 Entity currentEntity = staticEntityList.get(entity.getGridY()).get(i).get(j);
-                if (ifEntityIs(currentEntity)) {
+                if (entity.canCollideWithStaticEntity(currentEntity)) {
                     return false;
                 }
             }
@@ -117,7 +117,7 @@ public class ChasingPlayer extends RandomMove{
         for (int i = entity.getGridY() - 1; i >= bomber.getGridY(); --i) {
             for (int j = 0; j < staticEntityList.get(i).get(entity.getGridX()).size(); ++j) {
                 Entity currentEntity = staticEntityList.get(i).get(entity.getGridX()).get(j);
-                if (ifEntityIs(currentEntity)) {
+                if (entity.canCollideWithStaticEntity(currentEntity)) {
                     return false;
                 }
             }
@@ -131,7 +131,7 @@ public class ChasingPlayer extends RandomMove{
         for (int i = entity.getGridY() + 1; i <= bomber.getGridY(); ++i) {
             for (int j = 0; j < staticEntityList.get(i).get(entity.getGridX()).size(); ++j) {
                 Entity currentEntity = staticEntityList.get(i).get(entity.getGridX()).get(j);
-                if (ifEntityIs(currentEntity)) {
+                if (entity.canCollideWithStaticEntity(currentEntity)) {
                     return false;
                 }
             }

@@ -7,6 +7,8 @@ public class Stone extends StaticEntity{
     public Stone(int x, int y, int width, int height, int gridSize) {
         super(x, y, width, height, gridSize, null);
         sprite = Sprite.WALL;
+        collision = true;
+        createHitBox(0, 0, width, height);
     }
 
     @Override

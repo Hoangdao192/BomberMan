@@ -15,6 +15,7 @@ public class RandomMove {
     protected Movement movement;
     protected Vector2i currentDirection;
     protected Map map;
+    ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList;
 
     public RandomMove(DynamicEntity entity, Map map) {
         this.map = map;
@@ -23,45 +24,65 @@ public class RandomMove {
         currentDirection = new Vector2i(1, 0);
     }
 
-    private void changeMoveDirection() {
+    private boolean canMoveLeft() {
         int gridX = entity.getGridX();
         int gridY = entity.getGridY();
-        int tempX = 1;
-        int tempY = 0;
-        ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList = map.getStaticEntityList();
-        //  Kiểm tra các hướng có thể di chuyển
-        boolean canMoveRight = true;
-        for (int i = 0; i < staticEntityList.get(gridY).get(gridX + 1).size(); ++i) {
-            Entity currentEntity = staticEntityList.get(gridY).get(gridX + 1).get(i);
-            if (entity.canCollideWithStaticEntity(currentEntity)) {
-                canMoveRight = false;
-                break;
-            }
-        }
-        boolean canMoveLeft = true;
         for (int i = 0; i < staticEntityList.get(gridY).get(gridX - 1).size(); ++i) {
             Entity currentEntity = staticEntityList.get(gridY).get(gridX - 1).get(i);
             if (entity.canCollideWithStaticEntity(currentEntity)) {
-                canMoveLeft = false;
-                break;
+                return false;
             }
         }
-        boolean canMoveUp = true;
+        return true;
+    }
+
+    private boolean canMoveRight() {
+        int gridX = entity.getGridX();
+        int gridY = entity.getGridY();
+        //  Kiểm tra các hướng có thể di chuyển
+        for (int i = 0; i < staticEntityList.get(gridY).get(gridX + 1).size(); ++i) {
+            Entity currentEntity = staticEntityList.get(gridY).get(gridX + 1).get(i);
+            if (entity.canCollideWithStaticEntity(currentEntity)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean canMoveUp() {
+        int gridX = entity.getGridX();
+        int gridY = entity.getGridY();
         for (int i = 0; i < staticEntityList.get(gridY - 1).get(gridX).size(); ++i) {
             Entity currentEntity = staticEntityList.get(gridY - 1).get(gridX).get(i);
             if (entity.canCollideWithStaticEntity(currentEntity)) {
-                canMoveUp = false;
-                break;
+                return false;
             }
         }
+        return true;
+    }
+
+    private boolean canMoveDown() {
+        int gridX = entity.getGridX();
+        int gridY = entity.getGridY();
         boolean canMoveDown = true;
         for (int i = 0; i < staticEntityList.get(gridY + 1).get(gridX).size(); ++i) {
             Entity currentEntity = staticEntityList.get(gridY + 1).get(gridX).get(i);
             if (entity.canCollideWithStaticEntity(currentEntity)) {
-                canMoveDown = false;
-                break;
+                return false;
             }
         }
+        return true;
+    }
+
+    private void changeMoveDirection() {
+        staticEntityList = map.getStaticEntityList();
+        int tempX = 1;
+        int tempY = 0;
+        //  Kiểm tra các hướng có thể di chuyển
+        boolean canMoveRight = canMoveRight();
+        boolean canMoveLeft = canMoveLeft();
+        boolean canMoveUp = canMoveUp();
+        boolean canMoveDown = canMoveDown();
 
         //  Chọn 1 hướng có thể di chuyển để đi theo hướng đó
         boolean canMove = false;
@@ -104,7 +125,7 @@ public class RandomMove {
             int gridX = entity.getGridX();
             int gridY = entity.getGridY();
             int gridSize = map.getGridSize();
-            if (hitBox.getLeft() == gridX * gridSize && hitBox.getTop() == gridY * gridSize) {
+            if (RandomInt.random(0, 5) == 0 && hitBox.getLeft() == gridX * gridSize && hitBox.getTop() == gridY * gridSize) {
                 changeMoveDirection();
             }
         }
@@ -113,5 +134,10 @@ public class RandomMove {
     public void update() {
         entity.getMovement().update(currentDirection.x, currentDirection.y);
         calculatePath();
+    }
+
+    public void setCurrentDirection(int x, int y) {
+        currentDirection.x = x;
+        currentDirection.y = y;
     }
 }

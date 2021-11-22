@@ -3,10 +3,11 @@ package Entities.PowerUp;
 import Component.Sprite;
 import Entities.Bomber;
 import Entities.Entity;
+import Map.Map;
 
 public class BombUp extends PowerUp{
-    public BombUp(int x, int y, int width, int height, int gridSize) {
-        super(x, y, width, height, gridSize, Sprite.BOMB_UP);
+    public BombUp(int x, int y, int width, int height, int gridSize, Map map) {
+        super(x, y, width, height, gridSize, Sprite.BOMB_UP, map);
         collision = true;
     }
 
@@ -17,7 +18,7 @@ public class BombUp extends PowerUp{
 
     @Override
     public boolean ifCollideDo(Entity other) {
-        if (isBrickExist()) {
+        if (hasBrick()) {
             return false;
         }
         if (collision(other) && other instanceof Bomber) {

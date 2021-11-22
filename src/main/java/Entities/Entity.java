@@ -2,6 +2,7 @@ package Entities;
 
 import Component.HitBox;
 import Component.Sprite;
+import Utils.Vector2i;
 import javafx.scene.canvas.GraphicsContext;
 
 public abstract class Entity {
@@ -98,6 +99,18 @@ public abstract class Entity {
         return gridSize;
     }
 
+    public int getGridX() {
+        return gridX;
+    }
+
+    public int getGridY() {
+        return gridY;
+    }
+
+    public Vector2i getGridPosition() {
+        return new Vector2i(gridX, gridY);
+    }
+
     //  FUNCTIONS
     public void die() {
         exist = false;
@@ -113,14 +126,6 @@ public abstract class Entity {
             this.gridX = (hitBox.getLeft() + hitBox.getWidth() / 2) / this.gridSize;
             this.gridY = (hitBox.getTop() + hitBox.getHeight() / 2) / this.gridSize;
         }
-    }
-
-    public int getGridX() {
-        return gridX;
-    }
-
-    public int getGridY() {
-        return gridY;
     }
 
     public void createHitBox(int offsetX, int offsetY, int width, int height) {

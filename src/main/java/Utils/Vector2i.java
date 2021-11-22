@@ -26,4 +26,8 @@ public class Vector2i {
     public Vector2i clone() {
         return new Vector2i(this);
     }
+
+    public boolean equals(Vector2i other) {
+        return (this.x == other.x && this.y == other.y);
+    }
 }
