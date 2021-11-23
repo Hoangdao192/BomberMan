@@ -30,6 +30,7 @@ import java.util.Scanner;
  * 5: Ovapi (Speed: slow, Smart: normal, Special: wall pass)
  * 6: Pontan (Speed: fast, Smart: high, Special: wall pass)
  * 7: Kondoria (Speed: slowest, Smart: high, Special: wall pass)
+ * 8: Pass (Speed: fast, Smart: high)
  * Items:
  * f: PowerUp Fire
  * b: PowerUp BombUp
@@ -253,6 +254,11 @@ public class Map {
             }
             case '7': {
                 addEntity(entityCreator.createKondoriaEnemy(
+                        gridX * gridSize, gridY * gridSize, gridSize - 2, gridSize - 2));
+                break;
+            }
+            case '8': {
+                addEntity(entityCreator.createPassEnemy(
                         gridX * gridSize, gridY * gridSize, gridSize - 2, gridSize - 2));
                 break;
             }

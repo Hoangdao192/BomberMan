@@ -90,6 +90,11 @@ public class EntityCreator {
         return kondoria;
     }
 
+    public Entity createPassEnemy(int x, int y, int width, int height) {
+        Pass pass = new Pass(x, y, width, height, map);
+        return pass;
+    }
+
     // OTHER ENTITY CREATOR
     public Entity createBrickEntity(int x, int y, int width, int height) {
         Brick brick = new Brick(x, y, width, height, map.getGridSize());

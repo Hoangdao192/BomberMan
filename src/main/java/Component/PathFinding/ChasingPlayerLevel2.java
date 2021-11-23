@@ -98,25 +98,17 @@ public class ChasingPlayerLevel2 extends RandomMove {
     }
 
     @Override
-    public void calculatePath() {
-        entity.getMovement().update(currentDirection.x, currentDirection.y);
-        //if (!bomberOldGridPosition.equals(bomber.getGridPosition()) || !followingPath) {
-            generatePath();
-        //}
+    protected void calculatePath() {
+        Vector2i oldDirection = entity.getMovement().getDirection().clone();
+        generatePath();
 
-        if (path != null && path.size() != 0) {
+        if (path != null && path.size() != 0 && !entity.collisionWithMap()) {
             pathFollow();
             followingPath = true;
         } else {
-            followingPath = false;
+            entity.getMovement().update(oldDirection.x, oldDirection.y);
             super.calculatePath();
         }
-
-        if (entity.collisionWithMap()) {
-            System.out.println("collide map");
-            followingPath = false;
-            super.calculatePath();
-        };
     }
 
     @Override
@@ -124,6 +116,7 @@ public class ChasingPlayerLevel2 extends RandomMove {
         if (bomber == null) {
             bomber = map.getPlayer();
         }
+        entity.getMovement().update(currentDirection.x, currentDirection.y);
         calculatePath();
     }
 }

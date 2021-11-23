@@ -33,6 +33,14 @@ public class RandomMove {
                 return false;
             }
         }
+        Vector2i oldDirection = entity.getMovement().getDirection().clone();
+        entity.getMovement().update(-1, 0);
+        if (entity.collisionWithMap()) {
+            entity.getMovement().update(oldDirection.x, oldDirection.y);
+            return false;
+        }
+        entity.getMovement().update(oldDirection.x, oldDirection.y);
+
         return true;
     }
 
@@ -46,6 +54,14 @@ public class RandomMove {
                 return false;
             }
         }
+
+        Vector2i oldDirection = entity.getMovement().getDirection().clone();
+        entity.getMovement().update(1, 0);
+        if (entity.collisionWithMap()) {
+            entity.getMovement().update(oldDirection.x, oldDirection.y);
+            return false;
+        }
+        entity.getMovement().update(oldDirection.x, oldDirection.y);
         return true;
     }
 
@@ -58,6 +74,14 @@ public class RandomMove {
                 return false;
             }
         }
+
+        Vector2i oldDirection = entity.getMovement().getDirection().clone();
+        entity.getMovement().update(0, -1);
+        if (entity.collisionWithMap()) {
+            entity.getMovement().update(oldDirection.x, oldDirection.y);
+            return false;
+        }
+        entity.getMovement().update(oldDirection.x, oldDirection.y);
         return true;
     }
 
@@ -71,6 +95,14 @@ public class RandomMove {
                 return false;
             }
         }
+
+        Vector2i oldDirection = entity.getMovement().getDirection().clone();
+        entity.getMovement().update(0, 1);
+        if (entity.collisionWithMap()) {
+            entity.getMovement().update(oldDirection.x, oldDirection.y);
+            return false;
+        }
+        entity.getMovement().update(oldDirection.x, oldDirection.y);
         return true;
     }
 

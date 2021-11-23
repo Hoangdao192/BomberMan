@@ -196,6 +196,19 @@ public class Sprite {
     public static final Sprite KONDORIA_MOVE_RIGHT_3 = SPRITE_SHEET.getSprite(11, 7);
     //  Die
     public static final Sprite KONDORIA_DIE = SPRITE_SHEET.getSprite(10, 8);
+    /**
+     * Pass
+     */
+    //  Move left
+    public static final Sprite PASS_MOVE_LEFT_1 = SPRITE_SHEET.getSprite(4, 5);
+    public static final Sprite PASS_MOVE_LEFT_2 = SPRITE_SHEET.getSprite(4, 6);
+    public static final Sprite PASS_MOVE_LEFT_3 = SPRITE_SHEET.getSprite(4, 7);
+    //  Move right
+    public static final Sprite PASS_MOVE_RIGHT_1 = SPRITE_SHEET.getSprite(5, 5);
+    public static final Sprite PASS_MOVE_RIGHT_2 = SPRITE_SHEET.getSprite(5, 6);
+    public static final Sprite PASS_MOVE_RIGHT_3 = SPRITE_SHEET.getSprite(5, 7);
+    //  Die
+    public static final Sprite PASS_DIE = SPRITE_SHEET.getSprite(4, 8);
 
     /*
 	|--------------------------------------------------------------------------

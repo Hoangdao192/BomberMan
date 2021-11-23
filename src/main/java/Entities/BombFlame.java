@@ -49,7 +49,6 @@ public class BombFlame extends StaticEntity {
     }
 
     private void createAnimation(int flameType) {
-        System.out.println(flameType);
         switch (flameType) {
             //  Center
             case 0: {
