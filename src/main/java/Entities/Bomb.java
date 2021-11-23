@@ -89,6 +89,9 @@ public class Bomb extends StaticEntity {
             if (entity instanceof Brick) {
                 entity.die();
             }
+            else if (entity instanceof Bomb) {
+                ((Bomb) entity).setWaitTime(0);
+            }
             return true;
         }
         return false;
