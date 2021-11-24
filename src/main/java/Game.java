@@ -3,7 +3,11 @@ import Map.Map;
 import Map.Camera;
 import SupportMap.HeadMap;
 import SupportMap.TransferMap;
+import UI.GameOverPane;
+import UI.HeadPane;
+import UI.Panel;
 import Utils.RandomInt;
+import Utils.Vector2i;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -13,6 +17,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
@@ -49,21 +54,21 @@ public class Game {
     // Support Map
     // Heap map
     private HeadMap headMap;
-    private Canvas HpCavas;
+    //private Canvas HpCavas;
     private Canvas MiniMapCavas;
-    private GraphicsContext graphicsComponent;
+    //private GraphicsContext graphicsComponent;
     //Transfer Map
     private TransferMap transferMap;
     //Front
-    private Font font;
+    //private Font font;
 
     //  UI
     private SubScene subScene;
     private Label timeCounter;
-
-    private long startTime;
-    private long countTime;
-    private long maxTime;
+    private HeadPane headPane;
+    private final int HEADPANE_DEFAULT_HEIGHT = 60;
+    private Vector2i headPanePosition = new Vector2i(0, 0);
+    private Vector2i mainCanvasPosition = new Vector2i(0 , 0);
 
     Bomber bomber;
     Map map;
@@ -77,42 +82,13 @@ public class Game {
         mainCanvas = new Canvas(screenWidth, screenHeight);
         graphicsContext = mainCanvas.getGraphicsContext2D();
         graphicsContext.setImageSmoothing(false);
+        mainCanvasPosition.x = 0;
+        mainCanvasPosition.y = HEADPANE_DEFAULT_HEIGHT + 1;
 
         mainContainer = new Group();
 
-        GridPane mainPain = new GridPane();
-        {
-            mainPain.setHgap(3);
-            mainPain.setVgap(1);
-
-
-            Pane headPane = new Pane();
-            HpCavas = new Canvas(screenWidth, screenHeight / 10);
-            graphicsComponent = HpCavas.getGraphicsContext2D();
-            headPane.getChildren().add(HpCavas);
-
-            graphicsComponent.setFill(Color.BLACK);
-            graphicsComponent.fillRect(0, 0, screenWidth, screenHeight / 10);
-
-            Font font = Font.font("Segoe UI Black", FontWeight.BOLD, 25);
-
-            graphicsComponent.setFill(Color.RED);
-            graphicsComponent.setFont(font);
-            graphicsComponent.fillText("Time: ",30, 30);
-
-            graphicsComponent.setFill(Color.RED);
-            graphicsComponent.setFont(font);
-            graphicsComponent.fillText("Score: ",screenWidth / 3, 30);
-
-            mainPain.add(headPane, 0, 0);
-            mainPain.add(mainCanvas, 0, 1);
-
-        }
-        //mainContainer.getChildren().add(mainCanvas);
-        mainContainer.getChildren().addAll(mainPain);
-
         //mainScene = new Scene(mainContainer, screenWidth, screenHeight);
-        mainScene = new Scene(mainContainer, screenWidth, screenHeight + 100);
+        mainScene = new Scene(mainContainer, screenWidth, screenHeight + 60);
         mainStage = new Stage();
         mainStage.setMinHeight(DEFAULT_HEIGHT + 30);
         mainStage.setMinWidth(DEFAULT_WIDTH);
@@ -120,8 +96,8 @@ public class Game {
 
         mainCanvas.setScaleX(1);
         mainCanvas.setScaleY(1);
-        mainCanvas.setLayoutX(0);
-        mainCanvas.setLayoutY(0);
+        mainCanvas.setLayoutX(mainCanvasPosition.x);
+        mainCanvas.setLayoutY(mainCanvasPosition.y);
         setFPS(30);
         createMap();
         createPlayer();
@@ -131,6 +107,16 @@ public class Game {
         initEventHandler();
         createResizeEventHandle();
 
+        createHeadPane();
+        mainContainer.getChildren().add(headPane);
+        mainContainer.getChildren().add(mainCanvas);
+
+       // GameOverPane gameOverPane = new GameOverPane(50, 50, 300, 300);
+        //mainContainer.getChildren().add(gameOverPane);
+    }
+
+    private void createHeadPane() {
+        headPane = new HeadPane(map, (int) screenWidth, HEADPANE_DEFAULT_HEIGHT);
     }
 
     private void createHeadMap() {
@@ -141,57 +127,51 @@ public class Game {
         transferMap = new TransferMap((int) screenWidth, (int) screenHeight, map.getGridSize());
     }
 
-    private void createGameTime() {
-        maxTime = 200000000000L;
-        startTime = System.nanoTime();
-        countTime = maxTime;
-    }
-
     private void createUI() {
-        AnchorPane anchorPane = new AnchorPane();
-        subScene = new SubScene(anchorPane, DEFAULT_WIDTH, 100);
-
-        timeCounter = new Label(String.format("%d", countTime  / 1000000000));
-        try {
-            timeCounter.setFont(Font.loadFont(new FileInputStream("src/main/resources/Font/kenvector_future.ttf"), 50));
-        } catch (Exception e) {
-            System.out.println("cannot");
-        }
-        timeCounter.setTextFill(Color.WHITE);
-        timeCounter.setLayoutX(100);
-        timeCounter.setLayoutY(0);
-
-        Shape shape = new Rectangle(0, 0, 800, 100);
-        anchorPane.getChildren().add(shape);
-        anchorPane.getChildren().add(timeCounter);
-
-        subScene.setLayoutX(0);
-        subScene.setLayoutY(500);
-        mainContainer.getChildren().add(subScene);
     }
 
+    //  RESIZE EVENT HANDLE
     private void createResizeEventHandle() {
         mainScene.widthProperty().addListener((obs, oldVal, newVal) -> {
-            double scaleRatio = (double) newVal / (double) oldVal;
-            mainCanvas.setScaleX(mainScene.getWidth() / mainCanvas.getWidth());
-            mainCanvas.setScaleY(mainScene.getWidth() / mainCanvas.getWidth());
-            mainCanvas.setLayoutX((mainCanvas.getWidth() * (mainCanvas.getScaleX() - 1))/2);
-            mainCanvas.setLayoutY((mainCanvas.getHeight() * (mainCanvas.getScaleY() - 1))/2);
-
-            int deltaHeight = (int) (mainCanvas.getHeight() * mainCanvas.getScaleY() - mainCanvas.getHeight());
-            map.getCamera().setSize(
-                    map.getCamera().getSize().x,
-                    (int) (mainCanvas.getHeight() - deltaHeight / 1.5)
-                    );
-            map.getCamera().setCenter(bomber.getX(), bomber.getY());
+            resizeCanvas();
+            resizeUI();
+            resizeCamera();
         });
-        /*mainScene.heightProperty().addListener((obs, oldVal, newVal) -> {
-            double scaleRatio = (double) newVal / (double) oldVal;
-            mainCanvas.setScaleX(mainScene.getHeight() / mainCanvas.getHeight());
-            mainCanvas.setScaleY(mainScene.getHeight() / mainCanvas.getHeight());
-            mainCanvas.setLayoutX((mainCanvas.getWidth() * (mainCanvas.getScaleX() - 1))/2);
-            mainCanvas.setLayoutY((mainCanvas.getHeight() * (mainCanvas.getScaleY() - 1))/2);
-        });*/
+        mainScene.setOnZoom(new EventHandler<ZoomEvent>() {
+            @Override
+            public void handle(ZoomEvent zoomEvent) {
+                resizeCanvas();
+                resizeUI();
+                resizeCamera();
+            }
+        });
+    }
+
+    private void resizeUI() {
+        headPane.resize((int) mainScene.getWidth(), (int) headPane.getHeight());
+    }
+
+    private void resizeCanvas() {
+        if (mainScene.getWidth() <= map.getSize().x) {
+            mainCanvas.setWidth(mainScene.getWidth());
+            return;
+        }
+        if (mainScene.getWidth() > map.getSize().x) {
+            mainCanvas.setWidth(map.getSize().x);
+        }
+        mainCanvas.setScaleX(mainScene.getWidth() / mainCanvas.getWidth());
+        mainCanvas.setScaleY(mainScene.getWidth() / mainCanvas.getWidth());
+        mainCanvas.setLayoutX(mainCanvasPosition.x + (mainCanvas.getWidth() * (mainCanvas.getScaleX() - 1))/2);
+        mainCanvas.setLayoutY(mainCanvasPosition.y + (mainCanvas.getHeight() * (mainCanvas.getScaleY() - 1))/2);
+    }
+
+    private void resizeCamera() {
+        if (mainScene.getWidth() <= map.getSize().x) {
+            map.getCamera().setSize((int)mainScene.getWidth(), map.getCamera().getSize().y);
+        }
+        else if (mainScene.getWidth() > map.getSize().x) {
+            map.getCamera().setSize(map.getSize().x, map.getCamera().getSize().y);
+        }
     }
 
     public void setFPS(int fps) {
@@ -273,23 +253,11 @@ public class Game {
             }
             transferMap.update();
         }
-
-        /*
-        bomber.update();
-        //map.getCamera().move(bomber.getMovement().getVelocity());
-        map.getCamera().setCenter(bomber.getX(), bomber.getY());
-        map.update();
-        //updateGameTime();
-        //updateUI();
-        */
-    }
-
-    private void updateGameTime() {
-        countTime = maxTime - (System.nanoTime() - startTime);
+        updateUI();
     }
 
     private void updateUI() {
-        timeCounter.setText(String.format("%d", countTime / 1000000000));
+        headPane.update();
     }
 
     public void render() {
@@ -309,9 +277,9 @@ public class Game {
             graphicsContext.strokeRect(0, 0, camera.getSize().x, camera.getSize().y);
             map.render(graphicsContext);
             bomber.render(graphicsContext);
-            headMap.render(graphicsComponent);
+            //headMap.render(graphicsComponent);
         } else {
-            headMap.render(graphicsComponent);
+            //headMap.render(graphicsComponent);
             transferMap.render(graphicsContext);
         }
     }

@@ -55,6 +55,7 @@ public class Camera {
     public void setSize(int width, int height) {
         this.width = width;
         this.height = height;
+        update();
     }
 
     //  GETTERS

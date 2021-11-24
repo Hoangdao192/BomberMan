@@ -6,6 +6,7 @@ import Entities.Enemy.*;
 import Entities.PowerUp.*;
 import Utils.Vector2i;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Paint;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -48,6 +49,7 @@ public class Map {
     private int gridSize;
     private Camera camera;
     private EntityCreator entityCreator;
+    private int maxTime = 200;
 
     //  Danh sách các Entity có trong map.
     private ArrayList<Entity> entities;
@@ -102,6 +104,10 @@ public class Map {
     }
 
     //  GETTER
+    public int getMaxTime() {
+        return maxTime;
+    }
+
     public Vector2i getSize() {
         return new Vector2i(mapGridWidth * gridSize, mapGridHeight * gridSize);
     }
@@ -202,6 +208,8 @@ public class Map {
         } catch (FileNotFoundException e) {
             System.out.println("Không tìm thấy file cấu hình: " + path);
         }
+
+        System.out.println(staticEntityList.get(11).get(14).size());
     }
 
     private void createEntity(char type, int gridX, int gridY) {
@@ -552,6 +560,8 @@ public class Map {
             );
         }*/
 
+        graphicsContext.setFill(Paint.valueOf("Green"));
+        graphicsContext.fillRect(0, 0, camera.getSize().x, camera.getSize().y);
         for (int i = 0; i < staticEntityList.size(); ++i) {
             for (int j = 0; j < staticEntityList.get(i).size(); ++j) {
                 for (int k = 0; k < staticEntityList.get(i).get(j).size(); ++k) {

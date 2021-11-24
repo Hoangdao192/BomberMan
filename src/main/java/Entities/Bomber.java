@@ -393,6 +393,7 @@ public class Bomber extends DynamicEntity {
 
     @Override
     public void die() {
+        System.out.println("Die");
         if (newDied) {
             return;
         }

@@ -3,13 +3,15 @@ package Component;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
+import java.io.File;
+
 public class Sprite {
 
     /**
      * Sprite sheet
      */
-    public static final String SPRITE_SHEET_PATH = "Graphic/sprite_sheet.png";
-    public static final Image SPRITE_SHEET_IMAGE = new Image(SPRITE_SHEET_PATH);
+    public static final String SPRITE_SHEET_PATH = "src/main/resources/Graphic/sprite_sheet.png";
+    public static final Image SPRITE_SHEET_IMAGE = new Image(new File(SPRITE_SHEET_PATH).toURI().toString());
     public static final int SPRITE_SIZE = 16;
     public static final SpriteSheet SPRITE_SHEET = new SpriteSheet(SPRITE_SHEET_IMAGE, SPRITE_SIZE, SPRITE_SIZE);
 
