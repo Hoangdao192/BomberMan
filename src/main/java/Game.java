@@ -63,8 +63,6 @@ public class Game {
     //private Font font;
 
     //  UI
-    private SubScene subScene;
-    private Label timeCounter;
     private HeadPane headPane;
     private final int HEADPANE_DEFAULT_HEIGHT = 60;
     private Vector2i headPanePosition = new Vector2i(0, 0);
@@ -111,8 +109,8 @@ public class Game {
         mainContainer.getChildren().add(headPane);
         mainContainer.getChildren().add(mainCanvas);
 
-       // GameOverPane gameOverPane = new GameOverPane(50, 50, 300, 300);
-        //mainContainer.getChildren().add(gameOverPane);
+        GameOverPane gameOverPane = new GameOverPane(50, 50, 265, 230, 1000);
+        mainContainer.getChildren().add(gameOverPane);
     }
 
     private void createHeadPane() {
@@ -184,7 +182,7 @@ public class Game {
     }
 
     private void createMap() {
-         map = new Map("src/main/resources/Map/Map_lv1.txt", (int) screenWidth, (int) screenHeight);
+         map = new Map("src/main/resources/Map/Map_lv2.txt", (int) screenWidth, (int) screenHeight);
     }
 
     private void createPlayer() {
