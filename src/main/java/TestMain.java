@@ -1,38 +1,33 @@
 import Utils.MinHeap;
+import javafx.application.Application;
+import javafx.beans.property.DoubleProperty;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Font;
+import javafx.stage.Stage;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-class Test implements Comparable<Test>{
-    public Test(int data) {
-        this.data = data;
+public class TestMain extends Application {
+    public static void main(String[] args) {
+        launch(args);
     }
-    public int data;
 
     @Override
-    public int compareTo(Test other) {
-        if (other == null) return 1;
-        if (data < other.data) return -1;
-        if (data > other.data) return 1;
-        return 0;
-    }
-}
-
-public class TestMain {
-    public static void main(String[] args) {
-        try {
-            Scanner scanner = new Scanner(new FileReader("src/main/resources/Map/map1.txt"));
-            int gridSize = scanner.nextInt();
-            int mapGridWidth = scanner.nextInt();
-            int mapGridHeight = scanner.nextInt();
-            System.out.println(scanner.nextLine());
-            for (int i = 0; i < mapGridHeight; ++i) {
-                System.out.println(scanner.nextLine());
-            }
-        } catch (FileNotFoundException e) {
-
-        }
+    public void start(Stage stage) throws Exception {
+        AnchorPane root = new AnchorPane();
+        root.setPrefWidth(10);
+        Scene scene = new Scene(root, 400,400);
+        Label label = new Label("X");
+        label.setFont(Font.font("Arial", 23));
+        root.getChildren().add(label);
+        DoubleProperty doubleProperty = root.prefWidthProperty();
+        label.layoutXProperty().bind(doubleProperty);
+        stage.setScene(scene);
+        stage.show();
     }
 }
