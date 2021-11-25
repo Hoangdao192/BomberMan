@@ -1,6 +1,8 @@
 package UI;
 
 import Entities.Bomber;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -23,14 +25,17 @@ public class GameOverPane extends AnchorPane {
     private Font headerFont;
     private Font contentFont;
 
-    private Button acceptButton;
+    private UIButton acceptButton;
 
     private int width;
     private int height;
 
     private int playerScore;
 
-    public GameOverPane(int x, int y, int width, int height, int playerScore) {
+    private boolean acceptPressed = false;
+    private String playerName = "";
+
+    public GameOverPane(int x, int y, int width, int height) {
         setLayoutX(x);
         setLayoutY(y);
         this.width = width;
@@ -50,7 +55,6 @@ public class GameOverPane extends AnchorPane {
         mainPanel = new Panel(width, height - (int) header.getHeight());
         mainPanel.setLayoutY(40);
         getChildren().add(mainPanel);
-        createScoreView();
         createNameInput();
         createButton();
     }
@@ -108,7 +112,29 @@ public class GameOverPane extends AnchorPane {
     }
 
     private void createButton() {
-        acceptButton = new UIButton(200);
+        acceptButton = new UIButton(190, 49, "ACCEPT");
+        acceptButton.setStyle(UIButton.BLUE_1);
+        acceptButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                acceptPressed = true;
+            }
+        });
+        mainPanel.setLeftAnchor(acceptButton, (mainPanel.getWidth() - 190) / 2);
+        mainPanel.setBottomAnchor(acceptButton, 20.0);
         mainPanel.getChildren().add(acceptButton);
+    }
+
+    public void setPlayerScore(int playerScore) {
+        this.playerScore = playerScore;
+        createScoreView();
+    }
+
+    public String getPlayerName() {
+        return enterName.getText();
+    }
+
+    public boolean isAcceptPressed() {
+        return acceptPressed;
     }
 }

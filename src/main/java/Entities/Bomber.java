@@ -44,7 +44,7 @@ public class Bomber extends DynamicEntity {
 
     //  Các chỉ số
     private Score score;
-    private int HP = 3;
+    private int HP = 1;
 
     private boolean newDied = false;
     private int timedied = 0; // thời gian bị mất mạng gần nhất

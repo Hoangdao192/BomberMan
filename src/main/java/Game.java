@@ -47,7 +47,7 @@ public class Game {
 
     private Stage mainStage;
     private Scene mainScene;
-    private Group mainContainer;
+    private AnchorPane mainContainer;
     private Canvas mainCanvas;
     private GraphicsContext graphicsContext;
 
@@ -67,6 +67,7 @@ public class Game {
     private final int HEADPANE_DEFAULT_HEIGHT = 60;
     private Vector2i headPanePosition = new Vector2i(0, 0);
     private Vector2i mainCanvasPosition = new Vector2i(0 , 0);
+    private GameOverPane gameOverPane;
 
     Bomber bomber;
     Map map;
@@ -83,7 +84,7 @@ public class Game {
         mainCanvasPosition.x = 0;
         mainCanvasPosition.y = HEADPANE_DEFAULT_HEIGHT + 1;
 
-        mainContainer = new Group();
+        mainContainer = new AnchorPane();
 
         //mainScene = new Scene(mainContainer, screenWidth, screenHeight);
         mainScene = new Scene(mainContainer, screenWidth, screenHeight + 60);
@@ -105,16 +106,12 @@ public class Game {
         initEventHandler();
         createResizeEventHandle();
 
-        createHeadPane();
-        mainContainer.getChildren().add(headPane);
+        createUI();
         mainContainer.getChildren().add(mainCanvas);
-
-        GameOverPane gameOverPane = new GameOverPane(50, 50, 265, 230, 1000);
-        mainContainer.getChildren().add(gameOverPane);
     }
 
     private void createHeadPane() {
-        headPane = new HeadPane(map, (int) screenWidth, HEADPANE_DEFAULT_HEIGHT);
+
     }
 
     private void createHeadMap() {
@@ -126,6 +123,14 @@ public class Game {
     }
 
     private void createUI() {
+        gameOverPane = new GameOverPane(50, 50, 265, 230);
+        gameOverPane.setVisible(false);
+        mainContainer.getChildren().add(gameOverPane);
+
+        headPane = new HeadPane(map, (int) screenWidth, HEADPANE_DEFAULT_HEIGHT);
+        mainContainer.setLeftAnchor(headPane, 0.0);
+        mainContainer.setRightAnchor(headPane, 1.0);
+        mainContainer.getChildren().add(headPane);
     }
 
     //  RESIZE EVENT HANDLE
@@ -135,18 +140,10 @@ public class Game {
             resizeUI();
             resizeCamera();
         });
-        mainScene.setOnZoom(new EventHandler<ZoomEvent>() {
-            @Override
-            public void handle(ZoomEvent zoomEvent) {
-                resizeCanvas();
-                resizeUI();
-                resizeCamera();
-            }
-        });
     }
 
     private void resizeUI() {
-        headPane.resize((int) mainScene.getWidth(), (int) headPane.getHeight());
+        //headPane.resize((int) mainScene.getWidth(), (int) headPane.getHeight());
     }
 
     private void resizeCanvas() {
@@ -182,7 +179,7 @@ public class Game {
     }
 
     private void createMap() {
-         map = new Map("src/main/resources/Map/Map_lv2.txt", (int) screenWidth, (int) screenHeight);
+         map = new Map("src/main/resources/Map/map.txt", (int) screenWidth, (int) screenHeight);
     }
 
     private void createPlayer() {
@@ -215,7 +212,13 @@ public class Game {
                         update();
                         render();
                     } else {
-                        System.out.println("Game over");
+                        gameOverPane.setVisible(true);
+                        gameOverPane.setPlayerScore(bomber.getScore().getScore());
+                        gameOverPane.toFront();
+                        if (gameOverPane.isAcceptPressed()) {
+                            System.out.println(gameOverPane.getPlayerName());
+                            stop();
+                        }
                     }
                     lastUpdate = now;
                 }
