@@ -184,7 +184,7 @@ public class Game {
     }
 
     private void createMap() {
-         map = new Map("src/main/resources/Map/Map_lv1.txt", (int) screenWidth, (int) screenHeight);
+         map = new Map("src/main/resources/Map/Map_lv10.txt", (int) screenWidth, (int) screenHeight);
     }
 
     private void createPlayer() {
