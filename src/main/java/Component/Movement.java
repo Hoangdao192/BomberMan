@@ -54,12 +54,12 @@ public class Movement {
     }
 
     public void stopX() {
-        direction.x = 0;
+        //direction.x = 0;
         velocity.x = 0;
     }
 
     public void stopY() {
-        direction.y = 0;
+        //direction.y = 0;
         velocity.y = 0;
     }
 

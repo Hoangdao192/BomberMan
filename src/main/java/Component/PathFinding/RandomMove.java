@@ -147,6 +147,7 @@ public class RandomMove {
         }
         currentDirection.x = tempX;
         currentDirection.y = tempY;
+        entity.collisionWithMap();
     }
 
     protected void calculatePath() {

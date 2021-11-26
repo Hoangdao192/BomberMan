@@ -75,4 +75,8 @@ public abstract class DynamicEntity extends Entity {
     }
 
     protected abstract void updateMovement();
+
+    public Map getMap() {
+        return map;
+    }
 }
