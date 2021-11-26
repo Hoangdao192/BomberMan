@@ -452,9 +452,9 @@ public class Bomber extends DynamicEntity {
                 this.x - map.getCamera().getStart().x,
                 this.y - map.getCamera().getStart().y);
 
-            hitBox.render(hitBox.getLeft() - map.getCamera().getStart().x,
+          /*  hitBox.render(hitBox.getLeft() - map.getCamera().getStart().x,
                 hitBox.getTop() - map.getCamera().getStart().y,
-                graphicsContext);
+                graphicsContext);*/
 
     }
 }
