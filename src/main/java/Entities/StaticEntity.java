@@ -88,7 +88,7 @@ public abstract class StaticEntity extends Entity {
         return true;
     }
 
-    public boolean collideWithBomber(Entity other) {gi
+    public boolean collideWithBomber(Entity other) {
         //  Hitbox của other ở vị trí tiếp theo khi di chuyển.
         HitBox nextEntityPositionHitbox =
                 other.getHitBox().getNextPosition(((DynamicEntity) other).getMovement());
