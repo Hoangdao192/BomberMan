@@ -69,9 +69,10 @@ public class ChasingPlayerLevel2 extends RandomMove {
     }
 
     private void pathFollow() {
-        for (int i = 0; i < path.size();) {
+        for (int i = 0; i < path.size(); ++i) {
             if (entity.getGridPosition().equals(path.get(i).getPosition())) {
-                path.remove(i);
+                //path.remove(i);
+                continue;
             } else {
                 Node currentNode = path.get(i);
                 if (currentNode.getY() == entity.getGridY()) {
@@ -102,13 +103,14 @@ public class ChasingPlayerLevel2 extends RandomMove {
         Vector2i oldDirection = entity.getMovement().getDirection().clone();
         generatePath();
 
-        if (path != null && path.size() != 0 && !entity.collisionWithMap()) {
+        if (path != null && path.size() != 0) {
             pathFollow();
             followingPath = true;
         } else {
             entity.getMovement().update(oldDirection.x, oldDirection.y);
             super.calculatePath();
         }
+         entity.collisionWithMap();
     }
 
     @Override

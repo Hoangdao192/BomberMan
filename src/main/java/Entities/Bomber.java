@@ -4,6 +4,7 @@ import Component.*;
 import Entities.Enemy.Enemy;
 import Entities.PowerUp.PowerUp;
 import Map.Map;
+import Utils.Vector2i;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -38,7 +39,7 @@ public class Bomber extends DynamicEntity {
     private boolean flamePass = false;
     private boolean eatenFlamePass = false;
     //  Miễn ảnh hưởng khi va chạm với Enemy
-    private boolean enemyPass = false;
+    private boolean enemyPass = true;
     private boolean eatenEnemyPass = false;
 
 
@@ -56,9 +57,19 @@ public class Bomber extends DynamicEntity {
 
     //  CONSTRUCTOR
     public Bomber(int x, int y, Map map) {
-        super(x, y, 28, 28, map.getGridSize(), null, map);
+        super(x, y, map.getGridSize(), map.getGridSize(), map.getGridSize(), null, map);
         createAnimation();
         setMap(map);
+        movement = new Movement(this, speed * BASE_SPEED) {
+            @Override
+            public void stopX() {
+                setVelocityX(0);
+            }
+
+            public void stopY() {
+                setVelocityY(0);
+            }
+        };
         movement.setSpeed(speed * BASE_SPEED);
         createHitBox();
         alive = true;
@@ -70,7 +81,7 @@ public class Bomber extends DynamicEntity {
     }
 
     private void createHitBox() {
-        createHitBox(2, 0, (SPRITE_WIDTH - 6)  * 2, 28);
+        createHitBox( 0, 0, (SPRITE_WIDTH - 6)  * 2, height);
     }
 
     private void createAnimation() {

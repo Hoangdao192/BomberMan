@@ -188,6 +188,7 @@ public class Game {
     }
 
     public void initEventHandler() {
+
         mainScene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {

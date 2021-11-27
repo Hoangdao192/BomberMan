@@ -232,27 +232,27 @@ public class Map {
             //  ENEMIES
             case '1': {
                 addEntity(entityCreator.createBalloonEnemy(
-                        gridX * gridSize, gridY * gridSize, gridSize, gridSize));
+                        gridX * gridSize, gridY * gridSize, gridSize - 2, gridSize - 2));
                 break;
             }
             case '2': {
                 addEntity(entityCreator.createOnealEnemy(
-                        gridX * gridSize, gridY * gridSize, gridSize, gridSize));
+                        gridX * gridSize, gridY * gridSize, gridSize - 2, gridSize - 2));
                 break;
             }
             case '3': {
                 addEntity(entityCreator.createDollEnemy(
-                        gridX * gridSize, gridY * gridSize, gridSize, gridSize));
+                        gridX * gridSize, gridY * gridSize, gridSize - 2, gridSize - 2));
                 break;
             }
             case '4': {
                 addEntity(entityCreator.createMinvoEnemy(
-                        gridX * gridSize, gridY * gridSize, gridSize, gridSize));
+                        gridX * gridSize, gridY * gridSize, gridSize - 2, gridSize - 2));
                 break;
             }
             case '5': {
                 addEntity(entityCreator.createOvapiEnemy(
-                        gridX * gridSize, gridY * gridSize, gridSize, gridSize));
+                        gridX * gridSize, gridY * gridSize, gridSize - 2, gridSize - 2));
                 break;
             }
             case '6': {

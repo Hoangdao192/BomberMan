@@ -54,12 +54,12 @@ public class Movement {
     }
 
     public void stopX() {
-        //direction.x = 0;
+        direction.x = 0;
         velocity.x = 0;
     }
 
     public void stopY() {
-        //direction.y = 0;
+        direction.y = 0;
         velocity.y = 0;
     }
 
@@ -72,5 +72,13 @@ public class Movement {
         if (entity.getY() < 0) {
             entity.setY(0);
         }
+    }
+
+    public void setVelocityX(int x) {
+        velocity.x = x;
+    }
+
+    public void setVelocityY(int y) {
+        velocity.y = y;
     }
 }

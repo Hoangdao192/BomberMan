@@ -12,13 +12,15 @@ public abstract class StaticEntity extends Entity {
         super(x, y, width, height, gridSize, sprite);
     }
 
-    /*
     @Override
     public boolean ifCollideDo(Entity other) {
         if (!(other instanceof DynamicEntity)) {
             return false;
         }
 
+        if (other instanceof Bomber) {
+            return collideWithBomber(other);
+        }
         //  Hitbox của other ở vị trí tiếp theo khi di chuyển.
         HitBox nextEntityPositionHitbox =
                 other.getHitBox().getNextPosition(((DynamicEntity) other).getMovement());
@@ -30,11 +32,11 @@ public abstract class StaticEntity extends Entity {
                 && other.getHitBox().getTop() < hitBox.getTop()) {
             other.setHitBoxPositionY(hitBox.getTop() - other.getHitBox().getHeight());
             ((DynamicEntity) other).getMovement().stopY();
-            if (other.getHitBox().getRight() - this.hitBox.getLeft() <= gridSize / 3) {
+            if (other.getHitBox().getRight() - this.hitBox.getLeft() <= gridSize / 2) {
                 //  Lượng trùng nhau xét theo trục x
                 int deltaX = 1; //1; //other.getHitBox().getRight() - this.hitBox.getLeft() - 1;
                 other.setHitBoxPositionX(other.getHitBox().getLeft() - deltaX);
-            } else if (this.hitBox.getRight() - other.getHitBox().getLeft() <= gridSize / 3) {
+            } else if (this.hitBox.getRight() - other.getHitBox().getLeft() <= gridSize / 2) {
                 //  Lượng trùng nhau xét theo trục x
                 int deltaX = 1; //this.hitBox.getRight() - other.getHitBox().getLeft() + 1;
                 other.setHitBoxPositionX(other.getHitBox().getLeft() + deltaX);
@@ -45,10 +47,10 @@ public abstract class StaticEntity extends Entity {
                 && other.getHitBox().getTop() >= hitBox.getBottom()) {
             other.setHitBoxPositionY(hitBox.getBottom() + 1);
             ((DynamicEntity) other).getMovement().stopY();
-            if (other.getHitBox().getRight() - this.hitBox.getLeft() <= gridSize / 3) {
+            if (other.getHitBox().getRight() - this.hitBox.getLeft() <= gridSize / 2) {
                 int deltaX = 1; //other.getHitBox().getRight() - this.hitBox.getLeft() - 1;
                 other.setHitBoxPositionX(other.getHitBox().getLeft() - deltaX);
-            } else if (this.hitBox.getRight() - other.getHitBox().getLeft() <= gridSize / 3) {
+            } else if (this.hitBox.getRight() - other.getHitBox().getLeft() <= gridSize / 2) {
                 int deltaX = 1; //this.hitBox.getRight() - other.getHitBox().getLeft() + 1;
                 other.setHitBoxPositionX(other.getHitBox().getLeft() + deltaX);
             }
@@ -58,11 +60,11 @@ public abstract class StaticEntity extends Entity {
                 && other.getHitBox().getRight() > hitBox.getRight()) {
             other.setHitBoxPositionX(hitBox.getRight() + 1);
             ((DynamicEntity) other).getMovement().stopX();
-            if (other.getHitBox().getBottom() - this.hitBox.getTop() <= gridSize / 3) {
+            if (other.getHitBox().getBottom() - this.hitBox.getTop() <= gridSize / 2) {
                 //  Lượng trùng nhau theo trục y
                 int deltaY = 1; //other.getHitBox().getBottom() - this.hitBox.getTop() - 1;
                 other.setHitBoxPositionY(other.getHitBox().getTop() - deltaY);
-            } else if (this.hitBox.getBottom() - other.getHitBox().getTop() <= gridSize / 3) {
+            } else if (this.hitBox.getBottom() - other.getHitBox().getTop() <= gridSize / 2) {
                 //  Lượng trùng nhau theo trục y
                 int deltaY = 1; //this.hitBox.getBottom() - other.getHitBox().getTop() + 1;
                 other.setHitBoxPositionY(other.getHitBox().getTop() + deltaY);
@@ -73,24 +75,20 @@ public abstract class StaticEntity extends Entity {
                 && other.getHitBox().getLeft() < hitBox.getLeft()) {
             other.setHitBoxPositionX(hitBox.getLeft() - other.getHitBox().getWidth());
             ((DynamicEntity) other).getMovement().stopX();
-            if (other.getHitBox().getBottom() - this.hitBox.getTop() <= gridSize / 3) {
+            if (other.getHitBox().getBottom() - this.hitBox.getTop() <= gridSize / 2) {
                 //  Lượng trùng nhau theo trục y
                 int deltaY = 1; //other.getHitBox().getBottom() - this.hitBox.getTop() - 1;
                 other.setHitBoxPositionY(other.getHitBox().getTop() - deltaY);
-            } else if (this.hitBox.getBottom() - other.getHitBox().getTop() <= gridSize / 3) {
+            } else if (this.hitBox.getBottom() - other.getHitBox().getTop() <= gridSize / 2) {
                 //  Lượng trùng nhau theo trục y
                 int deltaY = 1; //this.hitBox.getBottom() - other.getHitBox().getTop() + 1;
                 other.setHitBoxPositionY(other.getHitBox().getTop() + deltaY);
             }
         }
         return true;
-    }*/
+    }
 
-    public boolean ifCollideDo(Entity other) {
-        if (!(other instanceof DynamicEntity)) {
-            return false;
-        }
-
+    public boolean collideWithBomber(Entity other) {gi
         //  Hitbox của other ở vị trí tiếp theo khi di chuyển.
         HitBox nextEntityPositionHitbox =
                 other.getHitBox().getNextPosition(((DynamicEntity) other).getMovement());
