@@ -130,6 +130,11 @@ public class BombFlame extends StaticEntity {
             if (other instanceof Bomber) {
                 System.out.println("Bomber");
             }
+            if (other instanceof Portal) {
+                System.out.println("Portal Flame");
+                int x = ((Portal) other).getHasBomExplosion();
+                ((Portal) other).setHasBomExplosion(++x);
+            }
             other.die();
             return true;
         }
@@ -138,6 +143,9 @@ public class BombFlame extends StaticEntity {
 
     @Override
     public void update() {
+        if (Stop) {
+            return;
+        }
         if (animation.getCurrentFrame() == animation.getNumberOfFrame() - 1) {
             destroy();
         }

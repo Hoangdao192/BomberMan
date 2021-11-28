@@ -42,6 +42,8 @@ public class Bomber extends DynamicEntity {
     private boolean eatenEnemyPass = false;
 
 
+
+
     //  Các chỉ số
     private Score score;
     private int HP = 3;
@@ -51,8 +53,8 @@ public class Bomber extends DynamicEntity {
 
     // Tọa độ ban đầu của bomber;
     int count_feed = 0;
-    private int beforeX = 0;
-    private int beforeY = 0;
+//    private int beforeX = 0;
+//    private int beforeY = 0;
 
     //  CONSTRUCTOR
     public Bomber(int x, int y, Map map) {
@@ -65,8 +67,6 @@ public class Bomber extends DynamicEntity {
         bombManager = new BombManager(this, map, 1, 1);
         score = new Score();
         bombManager.disableDetonator();
-        beforeX = x;
-        beforeY = y;
     }
 
     private void createHitBox() {
@@ -332,12 +332,22 @@ public class Bomber extends DynamicEntity {
     }
 
     //  GETTER
+
+
+    public BombManager getBombManager() {
+        return bombManager;
+    }
+
     public Score getScore() {
         return score;
     }
 
     public int getHP() {
         return HP;
+    }
+
+    public void addHP() {
+        HP++;
     }
 
     public boolean isMoveRight() {
@@ -360,16 +370,6 @@ public class Bomber extends DynamicEntity {
         return alive;
     }
 
-    /**
-     * Set beforeX, beforeY
-     */
-    public int getCount_feed() {
-        return count_feed;
-    }
-
-    public void setCount_feed(int count_feed) {
-        this.count_feed = count_feed;
-    }
 
     /**
      * Set Item.
@@ -403,10 +403,7 @@ public class Bomber extends DynamicEntity {
             movement.setSpeed(0);
         } else {
             HP--;
-            if (HP != 0) {
-                x = beforeX;
-                y = beforeY;
-            }
+
             timedied = map.getTime().countSecond();
             newDied = true;
             count_feed = 0;
@@ -415,6 +412,9 @@ public class Bomber extends DynamicEntity {
 
     @Override
     public void update() {
+        if (Stop) {
+            return;
+        }
         if (HP <= 0) {
             newDied = false;
             alive = false;

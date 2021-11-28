@@ -10,6 +10,7 @@ import javafx.scene.image.Image;
 import java.util.ArrayList;
 
 public abstract class DynamicEntity extends Entity {
+
     protected Map map;
     protected Movement movement;
 
@@ -72,6 +73,14 @@ public abstract class DynamicEntity extends Entity {
 
     public Movement getMovement() {
         return movement;
+    }
+
+    public boolean isStop() {
+        return Stop;
+    }
+
+    public void setStop(boolean stop) {
+        Stop = stop;
     }
 
     protected abstract void updateMovement();

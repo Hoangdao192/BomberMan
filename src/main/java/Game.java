@@ -1,12 +1,12 @@
 import Entities.Bomber;
+import Entities.Entity;
 import Map.Map;
 import Map.Camera;
 import SupportMap.HeadMap;
 import SupportMap.TransferMap;
+import UI.BottomPane;
 import UI.GameOverPane;
 import UI.HeadPane;
-import UI.Panel;
-import Utils.RandomInt;
 import Utils.Vector2i;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
@@ -17,27 +17,16 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ZoomEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-
-import javax.annotation.processing.Messager;
-import java.io.FileInputStream;
 
 public class Game {
     //  Kích thước cửa sổ mặc định
     private final int DEFAULT_WIDTH = 800;
-    private final int DEFAULT_HEIGHT = 416;
+    private final int DEFAULT_HEIGHT = 416;  // 416
     //  Kích thước cửa sổ
     private double screenWidth;
     private double screenHeight;
@@ -50,6 +39,9 @@ public class Game {
     private Group mainContainer;
     private Canvas mainCanvas;
     private GraphicsContext graphicsContext;
+
+    //Level
+    private int Level = 3;
 
     // Support Map
     // Heap map
@@ -66,9 +58,19 @@ public class Game {
     private SubScene subScene;
     private Label timeCounter;
     private HeadPane headPane;
-    private final int HEADPANE_DEFAULT_HEIGHT = 60;
+    private final int HEAD_PANE_DEFAULT_HEIGHT = 60;
     private Vector2i headPanePosition = new Vector2i(0, 0);
     private Vector2i mainCanvasPosition = new Vector2i(0 , 0);
+
+    //  Bottom Pane
+    private BottomPane bottomPane;
+    private final int BOTTOM_PANE_DEFAULT_HEIGHT = 180;
+
+    //  Game Over Pane
+    private GameOverPane gameOverPane;
+    private boolean createGameOver = false;
+
+
 
     Bomber bomber;
     Map map;
@@ -83,40 +85,65 @@ public class Game {
         graphicsContext = mainCanvas.getGraphicsContext2D();
         graphicsContext.setImageSmoothing(false);
         mainCanvasPosition.x = 0;
-        mainCanvasPosition.y = HEADPANE_DEFAULT_HEIGHT + 1;
+        mainCanvasPosition.y = HEAD_PANE_DEFAULT_HEIGHT + 1;
 
         mainContainer = new Group();
 
         //mainScene = new Scene(mainContainer, screenWidth, screenHeight);
-        mainScene = new Scene(mainContainer, screenWidth, screenHeight + 60);
+        mainScene = new Scene(mainContainer, screenWidth, screenHeight + 60 + 130);
         mainStage = new Stage();
         mainStage.setMinHeight(DEFAULT_HEIGHT + 30);
         mainStage.setMinWidth(DEFAULT_WIDTH);
+        mainStage.setMaxWidth(DEFAULT_WIDTH * 1.5);
         mainStage.setScene(mainScene);
 
         mainCanvas.setScaleX(1);
         mainCanvas.setScaleY(1);
         mainCanvas.setLayoutX(mainCanvasPosition.x);
         mainCanvas.setLayoutY(mainCanvasPosition.y);
+
         setFPS(30);
         createMap();
         createPlayer();
         createHeadMap();
         createTransferMap();
         map.setPlayer(bomber);
-        initEventHandler();
+//        initEventHandler();
         createResizeEventHandle();
 
         createHeadPane();
+        createBottomPane();
+
+        bottomPane.setScaleX(1);
+        bottomPane.setLayoutY(1);
+        bottomPane.setLayoutX(mainCanvasPosition.x);
+        bottomPane.setLayoutY(mainCanvasPosition.y + screenHeight);
+
         mainContainer.getChildren().add(headPane);
         mainContainer.getChildren().add(mainCanvas);
+        mainContainer.getChildren().add(bottomPane);
+
+
+        initEventHandler();
+
+
 
        // GameOverPane gameOverPane = new GameOverPane(50, 50, 300, 300);
         //mainContainer.getChildren().add(gameOverPane);
     }
 
     private void createHeadPane() {
-        headPane = new HeadPane(map, (int) screenWidth, HEADPANE_DEFAULT_HEIGHT);
+        headPane = new HeadPane(map, (int) screenWidth, HEAD_PANE_DEFAULT_HEIGHT);
+    }
+
+    private void createBottomPane() {
+        bottomPane = new BottomPane(map, (int) mainScene.getWidth(), BOTTOM_PANE_DEFAULT_HEIGHT);
+    }
+
+    private void createGameOverPane() {
+        gameOverPane = new GameOverPane((int) mainStage.getWidth() / 4, (int) mainStage.getHeight() / 4,
+                (int) mainStage.getWidth() / 2, (int) mainStage.getHeight() / 2, transferMap);
+        createGameOver = true;
     }
 
     private void createHeadMap() {
@@ -149,6 +176,8 @@ public class Game {
 
     private void resizeUI() {
         headPane.resize((int) mainScene.getWidth(), (int) headPane.getHeight());
+        bottomPane.resize((int) mainScene.getWidth(), (int) bottomPane.getHeight());
+        bottomPane.setLayoutY(mainCanvasPosition.y + mainCanvas.getHeight() * mainCanvas.getScaleY());
     }
 
     private void resizeCanvas() {
@@ -184,7 +213,11 @@ public class Game {
     }
 
     private void createMap() {
-         map = new Map("src/main/resources/Map/Map_lv1.txt", (int) screenWidth, (int) screenHeight);
+        String[] path = new String[Level];
+        path[0] = "src/main/resources/Map/Map_lv1.txt";
+        path[1] = "src/main/resources/Map/Map_lv2.txt";
+        path[2] = "src/main/resources/Map/Map_lv3.txt";
+         map = new Map(path, (int) screenWidth, (int) screenHeight);
     }
 
     private void createPlayer() {
@@ -199,10 +232,25 @@ public class Game {
                 bomber.updateInput(keyEvent, true);
             }
         });
+
         mainScene.setOnKeyReleased(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
                 bomber.updateInput(keyEvent, false);
+            }
+        });
+
+        bottomPane.getHomeButton().setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                bottomPane.clickHomeButton();
+            }
+        });
+
+        bottomPane.getStopButton().setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                bottomPane.clickStopButton();
             }
         });
     }
@@ -218,6 +266,8 @@ public class Game {
                         render();
                     } else {
                         System.out.println("Game over");
+                        update();
+                        render();
                     }
                     lastUpdate = now;
                 }
@@ -231,7 +281,25 @@ public class Game {
             running = false;
         }
 
+        if (!running) {
+            if (!createGameOver) {
+                map.newMap();
+                Entity.Stop = true;
+                transferMap.reset(map.getPlayer(), headMap.getMaxTime() - headMap.getTime(), map.getCheckBonus());
+                map.setTransfer(false);
+                transferMap.setLoading(false);
+                createGameOverPane();
+                mainContainer.getChildren().add(gameOverPane);
+            } else {
+                gameOverPane.update();
+            }
+            return;
+        }
+
         if (!map.isTransfer()) {
+            if (map.getMaxTime() - map.getTime().countSecond() <= 0) {
+                bomber.setExist(false);
+            }
             if (!bomber.isExist()) {
                 running = false;
             }
@@ -251,6 +319,7 @@ public class Game {
                 transferMap.setLoading(false);
                 headMap.setTransfer(false);
             }
+            bottomPane.newMiniMap();
             transferMap.update();
         }
         updateUI();
@@ -258,6 +327,7 @@ public class Game {
 
     private void updateUI() {
         headPane.update();
+        bottomPane.update();
     }
 
     public void render() {

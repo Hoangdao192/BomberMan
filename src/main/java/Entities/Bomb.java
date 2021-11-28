@@ -25,6 +25,7 @@ public class Bomb extends StaticEntity {
     //  Đếm thời gian từ khi bom được đặt
     private long countTime;
 
+
     //  CONSTRUCTOR
     public Bomb(int explodeRadius, int x, int y, int width, int height, Map map) {
         super(x, y, width, height, map.getGridSize(), null);
@@ -68,6 +69,9 @@ public class Bomb extends StaticEntity {
     //  FUNCTIONS
     @Override
     public void update() {
+        if (Stop) {
+            return;
+        }
         animation.update();
         countTime = System.nanoTime() - startTime;
         if (countTime >= waitToExplode) {
@@ -76,9 +80,10 @@ public class Bomb extends StaticEntity {
         }
     }
 
-    private void explode() {
+    private boolean explode() {
         calculateExplodeRadius();
         createBombExplode();
+        return true;
     }
 
     /**
@@ -93,6 +98,8 @@ public class Bomb extends StaticEntity {
                 ((Bomb) entity).setWaitTime(0);
             }
             return true;
+        } else if (entity instanceof Portal) {
+            entity.die();
         }
         return false;
     }

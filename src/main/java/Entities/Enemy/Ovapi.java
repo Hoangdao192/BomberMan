@@ -101,6 +101,9 @@ public class Ovapi extends Enemy {
 
     @Override
     public void update() {
+        if (Stop) {
+            return;
+        }
         updateMovement();
         hitBox.update();
         updateGridPosition();

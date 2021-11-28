@@ -12,18 +12,39 @@ import Map.Map;
 public class BombManager {
     private Bomber bomber;
     private int maxBomb;
+    private int numBomb;
     private int bombExplodeRadius;
     private Map map;
     private ArrayList<Bomb> bombList;
     private long WAIT_TO_EXPLODE_TIME = 2000000000L;
     private boolean detonatorEnable = false;
 
-    public BombManager(Bomber bomber, Map map, int maxBomb, int bombExplodeRadius) {
+    public BombManager(Bomber bomber, Map map, int numBomb, int bombExplodeRadius) {
         bombList = new ArrayList<>();
         this.map = map;
-        this.maxBomb = maxBomb;
+        this.maxBomb = numBomb;
+        this.numBomb = numBomb;
         this.bombExplodeRadius = bombExplodeRadius;
         this.bomber = bomber;
+    }
+
+    //SETTER, GETTER
+
+
+    public int getMaxBomb() {
+        return maxBomb;
+    }
+
+    public void setMaxBomb(int maxBomb) {
+        this.maxBomb = maxBomb;
+    }
+
+    public int getNumBomb() {
+        return numBomb;
+    }
+
+    public void setNumBomb(int numBomb) {
+        this.numBomb = numBomb;
     }
 
     private boolean ifEntityIs(Entity entity) {
@@ -57,7 +78,8 @@ public class BombManager {
     }
 
     public void increaseNumberOfBomb() {
-        ++maxBomb;
+        ++numBomb;
+        maxBomb = numBomb;
     }
 
     public void increaseBombRadius() {
@@ -81,9 +103,21 @@ public class BombManager {
         for (int i = 0; i < bombList.size();) {
             if (!bombList.get(i).isExist()) {
                 bombList.remove(i);
+                map.setHasBombExplosionBefore(true);
+                map.setTimeBombExplosion(map.getTime().countMilliSecond());
+                map.setNumBombExplosion(map.getNumBombExplosion() + 1);
             } else {
                 ++i;
             }
+        }
+        if (map.isHasBombExplosionBefore()) {
+            if (map.getTime().countMilliSecond() - map.getTimeBombExplosion() > 50) {
+                map.setHasBombExplosionBefore(false);
+                map.setNumBombExplosion(0);
+            }
+        }
+        if(map.getNumBombExplosion() > 0) {
+            System.out.println("BombExplosion" + map.getNumBombExplosion());
         }
     }
 

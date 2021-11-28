@@ -40,4 +40,6 @@ public abstract class Enemy extends DynamicEntity {
     public int getScore() {
         return score;
     }
+
+
 }

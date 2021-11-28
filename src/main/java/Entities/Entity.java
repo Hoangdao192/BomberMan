@@ -6,6 +6,10 @@ import Utils.Vector2i;
 import javafx.scene.canvas.GraphicsContext;
 
 public abstract class Entity {
+
+    // xem màn chơi có tạm dừng hay không
+    public static boolean Stop = false;
+
     //  Tọa độ theo map.
     protected int x;
     protected int y;
@@ -46,6 +50,7 @@ public abstract class Entity {
     }
 
     //  SETTER
+
     public void setSprite(Sprite sprite) {
         this.sprite = sprite;
     }
@@ -73,6 +78,7 @@ public abstract class Entity {
     }
 
     //  GETTER
+
     public boolean isExist() {
         return exist;
     }

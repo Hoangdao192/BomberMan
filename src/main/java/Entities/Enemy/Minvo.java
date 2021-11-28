@@ -94,6 +94,9 @@ public class Minvo extends Enemy {
 
     @Override
     public void update() {
+        if (Stop) {
+            return;
+        }
         updateMovement();
         hitBox.update();
         updateGridPosition();

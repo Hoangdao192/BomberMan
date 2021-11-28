@@ -97,6 +97,9 @@ public class Oneal extends Enemy {
 
     @Override
     public void update() {
+        if (Stop) {
+            return;
+        }
         updateMovement();
         hitBox.update();
         updateGridPosition();

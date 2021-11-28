@@ -25,6 +25,7 @@ public class TransferMap {
     private Bomber bomber = null;
     int scorePlayer = 0;
     int timeMap = 0;
+    int totalTime = 0;
 
     //Bonus
     private int numBonus = 0;
@@ -46,6 +47,42 @@ public class TransferMap {
 
     private boolean loading = false;
 
+    public int getNumBonus() {
+        return numBonus;
+    }
+
+    public int getNumTarget() {
+        return numTarget;
+    }
+
+    public int getNumColaBottle() {
+        return numColaBottle;
+    }
+
+    public int getNumDezeniman_san() {
+        return numDezeniman_san;
+    }
+
+    public int getNumFamicom() {
+        return numFamicom;
+    }
+
+    public int getNumGoddessMask() {
+        return numGoddessMask;
+    }
+
+    public int getNumNakamoto_san() {
+        return numNakamoto_san;
+    }
+
+    public int getScorePlayer() {
+        return scorePlayer;
+    }
+
+    public int getTotalTime() {
+        return totalTime;
+    }
+
     public TransferMap(int width, int height, int size) {
         time = new Time();
         sizeImage = size;
@@ -55,6 +92,8 @@ public class TransferMap {
         sprites[1] = Sprite.BOMBER_WALK_RIGHT_2;
         sprites[2] = Sprite.BOMBER_WALK_RIGHT_3;
     }
+
+
 
     public int getPercent() {
         return percent;
@@ -71,22 +110,34 @@ public class TransferMap {
     public void addBonus() {
         numBonus = 0;
         if (checkTarget) {
+            System.out.println("checkTarget");
             numBonus++;
+            numTarget++;
         }
         if (checkColaBottle) {
+            System.out.println("checkColaBottle");
             numBonus++;
+            numColaBottle++;
         }
         if (checkDezeniman_san) {
+            System.out.println("checkDezeniman_san");
             numBonus++;
+            numDezeniman_san++;
         }
         if (checkFamicom) {
+            System.out.println("checkFamicom");
             numBonus++;
+            numFamicom++;
         }
         if (checkGoddessMask) {
+            System.out.println("checkGoddessMask");
             numBonus++;
+            numGoddessMask++;
         }
         if (checkNakamoto_san) {
+             System.out.println("checkNakamoto_san");
             numBonus++;
+            numNakamoto_san++;
         }
 
 //        checkTarget = true;
@@ -153,6 +204,7 @@ public class TransferMap {
         checkNakamoto_san = checkBonus[5];
         addBonus();
         this.scorePlayer = bomber.getScore().getScore();
+        this.totalTime += timeMap;
     }
 
     public void update() {
