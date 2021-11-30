@@ -47,8 +47,6 @@ public class Game {
     private MapManager mapManager;
 
     // Support Map
-    // Heap map
-    private HeadMap headMap;
     //private Canvas HpCavas;
     private Canvas MiniMapCavas;
     //private GraphicsContext graphicsComponent;
@@ -110,7 +108,6 @@ public class Game {
         setFPS(30);
         createMap();
         createPlayer();
-        createHeadMap();
         createTransferMap();
         map.setPlayer(bomber);
         createResizeEventHandle();
@@ -124,10 +121,6 @@ public class Game {
         settingPane.toFront();*/
 
         playBackgroundMusic();
-    }
-
-    private void createHeadMap() {
-        headMap = new HeadMap(bomber, map, (int) screenWidth, (int) screenHeight / 10);
     }
 
     private void createTransferMap() {
@@ -313,7 +306,6 @@ public class Game {
                         gameOverPane.setVisible(true);
                         /*mapManager.nextLevel();
                         map = mapManager.loadCurrentLevel();
-                        createHeadMap();
                         createTransferMap();
                         bomber.setMap(map);
                         map.setPlayer(bomber);
@@ -345,17 +337,14 @@ public class Game {
             map.getCamera().setCenter(bomber.getX(), bomber.getY());
             //map.getCamera().setPosition(0, 0);
             map.update();
-            headMap.update();
         } else {
-            headMap.setTransfer(true);
             if (!transferMap.isLoading()) {
-                transferMap.reset(map.getPlayer(), headMap.getMaxTime() - headMap.getTime(), map.getCheckBonus());
+                transferMap.reset(map.getPlayer(), map.getTime().countSecond(), map.getBonusArrayList());
             }
             if (transferMap.getPercent() >= 100) {
                 map.newMap();
                 map.setTransfer(false);
                 transferMap.setLoading(false);
-                headMap.setTransfer(false);
             }
             bottomPane.newMiniMap();
             transferMap.update();
@@ -367,7 +356,7 @@ public class Game {
         if (!createGameOver) {
             map.newMap();
             //Entity.Stop = true;
-            transferMap.reset(map.getPlayer(), headMap.getMaxTime() - headMap.getTime(), map.getCheckBonus());
+            transferMap.reset(map.getPlayer(), map.getTime().countSecond(), map.getBonusArrayList());
             map.setTransfer(false);
             transferMap.setLoading(false);
             createGameOverPane();
@@ -377,6 +366,10 @@ public class Game {
     }
 
     private void updateUI() {
+        if (headPane.isTransfer() != map.isTransfer()) {
+            headPane.setTransfer(map.isTransfer());
+            headPane.reset();
+        }
         headPane.update();
         bottomPane.update();
     }
@@ -391,9 +384,7 @@ public class Game {
             graphicsContext.strokeRect(0, 0, camera.getSize().x, camera.getSize().y);*/
             map.render(graphicsContext);
             bomber.render(graphicsContext);
-            //headMap.render(graphicsComponent);
         } else {
-            //headMap.render(graphicsComponent);
             transferMap.render(graphicsContext);
         }
     }

@@ -4,18 +4,19 @@ import Entities.*;
 import Entities.Enemy.Enemy;
 import Map.Map;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
 import java.io.FileInputStream;
@@ -106,6 +107,7 @@ public class BottomPane extends AnchorPane {
         createImage();
 
         background = new Rectangle(0, 0, width, height);
+//        background.setFill(Color.TRANSPARENT);
         background.setFill(Color.CHOCOLATE);
 
         miniMapRectangle = new Rectangle(0, 0, this.widthMiniMap, this.heightMiniMap);
@@ -164,16 +166,18 @@ public class BottomPane extends AnchorPane {
         //Entity.Stop = true;
 
         AnchorPane anchorPane = new AnchorPane();
-        Rectangle box = new Rectangle(widthBox, heightBox);
-        box.setFill(Color.BLUE);
+        BackgroundFill backgroundFill = new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY);
+        Background box = new Background(backgroundFill);
 
         System.out.println(newMapButton.getLayoutX() + " " + newMapButton.getLayoutY());
 
-        anchorPane.getChildren().addAll(box, soundButton, newMapButton);
+        anchorPane.setBackground(box);
+        anchorPane.getChildren().addAll(soundButton, newMapButton);
 
-        Scene scene = new Scene(anchorPane, widthBox, heightBox);
+        Scene scene = new Scene(anchorPane, widthBox, heightBox, Color.TRANSPARENT);
         Stage newStage = new Stage();
         newStage.setScene(scene);
+        newStage.initStyle(StageStyle.TRANSPARENT);
         newStage.initModality(Modality.APPLICATION_MODAL);
         newStage.setMaxWidth(widthBox);
         newStage.setMaxHeight(heightBox);

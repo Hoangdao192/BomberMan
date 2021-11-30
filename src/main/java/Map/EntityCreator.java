@@ -1,5 +1,6 @@
 package Map;
 
+import Entities.BonusIteam.*;
 import Entities.Brick;
 import Entities.Enemy.*;
 import Entities.Entity;
@@ -110,5 +111,35 @@ public class EntityCreator {
     public Entity createStoneEntity(int x, int y, int width, int height) {
         Stone stone = new Stone(x, y, width, height, map.getGridSize());
         return stone;
+    }
+
+    public Entity createBonusTarget(int x, int y, int width, int height) {
+        BonusTarget bonusTarget = new BonusTarget(x, y, width, height, map.getGridSize(), map);
+        return bonusTarget;
+    }
+
+    public Entity createColaBottle(int x, int y, int width, int height) {
+        ColaBottle colaBottle = new ColaBottle(x, y, width, height, map.getGridSize(), map);
+        return colaBottle;
+    }
+
+    public Entity createDezeniman_san(int x, int y, int width, int height) {
+        Dezeniman_san dezeniman_san = new Dezeniman_san(x, y, width, height, map.getGridSize(), map);
+        return dezeniman_san;
+    }
+
+    public Entity createFamicom(int x, int y, int width, int height) {
+        Famicom famicom = new Famicom(x, y, width, height, map.getGridSize(), map);
+        return famicom;
+    }
+
+    public Entity createGoddessMask(int x, int y, int width, int height) {
+        GoddessMask goddessMask = new GoddessMask(x, y, width, height, map.getGridSize(), map);
+        return goddessMask;
+    }
+
+    public Entity createNakamoto_san(int x, int y, int width, int height) {
+        Nakamoto_san nakamoto_san = new Nakamoto_san(x, y, width, height, map.getGridSize(), map);
+        return nakamoto_san;
     }
 }

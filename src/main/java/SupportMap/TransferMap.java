@@ -9,6 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class TransferMap {
 
     //Bonus
     private int numBonus = 0;
-    List<Bonus> bonuses = new LinkedList<>();
+    ArrayList<Bonus> bonusArrayList = new ArrayList<>();
 
     private boolean checkTarget = false;
     private boolean checkColaBottle = false;
@@ -107,102 +108,14 @@ public class TransferMap {
         this.loading = loading;
     }
 
-    public void addBonus() {
-        numBonus = 0;
-        if (checkTarget) {
-            System.out.println("checkTarget");
-            numBonus++;
-            numTarget++;
-        }
-        if (checkColaBottle) {
-            System.out.println("checkColaBottle");
-            numBonus++;
-            numColaBottle++;
-        }
-        if (checkDezeniman_san) {
-            System.out.println("checkDezeniman_san");
-            numBonus++;
-            numDezeniman_san++;
-        }
-        if (checkFamicom) {
-            System.out.println("checkFamicom");
-            numBonus++;
-            numFamicom++;
-        }
-        if (checkGoddessMask) {
-            System.out.println("checkGoddessMask");
-            numBonus++;
-            numGoddessMask++;
-        }
-        if (checkNakamoto_san) {
-            System.out.println("checkNakamoto_san");
-            numBonus++;
-            numNakamoto_san++;
-        }
-
-//        checkTarget = true;
-//        checkColaBottle = true;
-//        checkDezeniman_san = true;
-//        checkFamicom = true;
-//        checkGoddessMask = true;
-//        checkNakamoto_san = true;
-//        numBonus = 6;
-
-        int other = 0;
-        int width = Width / 3;
-        if (checkTarget) {
-            BonusTarget bonusTarget = new BonusTarget(width, Height / 20 * (2 * other + 1), sizeImage, sizeImage);
-            bonuses.add(bonusTarget);
-            bomber.getScore().addScore(bonusTarget.getScore());
-            other++;
-        }
-        if (checkColaBottle) {
-            ColaBottle colaBottle = new ColaBottle(width, Height / 20 * (2 * other + 1), sizeImage, sizeImage);
-            bonuses.add(colaBottle);
-            bomber.getScore().addScore(colaBottle.getScore());
-            other++;
-        }
-        if (checkDezeniman_san) {
-            Dezeniman_san dezeniman_san = new Dezeniman_san(width, Height / 20 * (2 * other + 1), sizeImage, sizeImage);
-            bonuses.add(dezeniman_san);
-            bomber.getScore().addScore(dezeniman_san.getScore());
-            other++;
-        }
-        if (checkFamicom) {
-            Famicom famicom = new Famicom(width, Height / 20 * (2 * other + 1), sizeImage, sizeImage);
-            bonuses.add(famicom);
-            bomber.getScore().addScore(famicom.getScore());
-            other++;
-        }
-        if (checkGoddessMask) {
-            GoddessMask goddessMask = new GoddessMask(width, Height / 20 * (2 * other + 1), sizeImage, sizeImage);
-            bonuses.add(goddessMask);
-            bomber.getScore().addScore(goddessMask.getScore());
-            other++;
-        }
-        if (checkNakamoto_san) {
-            Nakamoto_san nakamoto_san = new Nakamoto_san(width, Height / 20 * (2 * other + 1), sizeImage, sizeImage);
-            bonuses.add(nakamoto_san);
-            bomber.getScore().addScore(nakamoto_san.getScore());
-            other++;
-        }
-    }
-
-    public void reset(Bomber bomber, int timeMap, boolean[] checkBonus) {
+    public void reset(Bomber bomber, int timeMap, ArrayList<Bonus> bonusArrayList) {
         display = 0;
         percent = 0;
         time.reset();
         loading = true;
         this.timeMap = timeMap;
         this.bomber = bomber;
-        bonuses.clear();
-        checkTarget = checkBonus[0];
-        checkColaBottle = checkBonus[1];
-        checkDezeniman_san = checkBonus[2];
-        checkFamicom = checkBonus[3];
-        checkGoddessMask = checkBonus[4];
-        checkNakamoto_san = checkBonus[5];
-        addBonus();
+        this.bonusArrayList = bonusArrayList;
         this.scorePlayer = bomber.getScore().getScore();
         this.totalTime += timeMap;
     }
@@ -231,11 +144,14 @@ public class TransferMap {
         gc.fillText("Time: " + timeMap, Width / 10 * 4, Height / 10 * 8);
 
         int other = 0;
-        for (Bonus bonus : bonuses) {
-            bonus.render(gc);
-            gc.setFill(Color.YELLOW);
-            gc.fillText("x 1 : " + bonus.getScore(), Width / 3 + 2 * sizeImage, Height / 20 * (2 * other + 2));
-            other++;
+        int width = Width / 3;
+        for (Bonus bonus : bonusArrayList) {
+            if (bonus.isCheckBonus()) {
+                bonus.render(width, Height / 20 * (2 * other + 1), gc);
+                gc.setFill(Color.YELLOW);
+                gc.fillText("x 1 : " + bonus.getScore(), Width / 3 + 2 * sizeImage, Height / 20 * (2 * other + 2));
+                other++;
+            }
         }
     }
 }

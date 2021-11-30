@@ -15,6 +15,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+import Component.Time;
+
 import java.awt.*;
 
 public class HeadPane extends AnchorPane {
@@ -25,14 +27,19 @@ public class HeadPane extends AnchorPane {
     private Map map;
     private int width;
     private int height;
+    private Time myTime;
     private Label time;
     private Label score;
     private Label hp;
+    private Label alert;
+
+    private boolean transfer = false;
 
     public HeadPane(Map map, int width, int height) {
         this.map = map;
         this.height = height;
         this.width = width;
+        this.myTime = new Time();
 
         setPrefHeight(height);
 
@@ -64,6 +71,12 @@ public class HeadPane extends AnchorPane {
         hp.setLayoutY(height / 4);
         hp.setTextFill(Color.RED);
 
+        alert = new Label("Congratulation");
+        alert.setFont(Font.font("Segoe UI Black", FontWeight.BOLD, DEFAULT_FONT_SIZE));
+        alert.setLayoutX(width / 10 * 4);
+        alert.setLayoutY(height / 4);
+        alert.setTextFill(Color.RED);
+
         getChildren().addAll(time, score, hp);
     }
 
@@ -87,9 +100,38 @@ public class HeadPane extends AnchorPane {
         hp.setLayoutY(height / 4);
     }
 
-    public void update() {
-        time.setText("Time: " + (map.getMaxTime() - map.getTime().countSecond()));
-        score.setText("Score: " + map.getPlayer().getScore().getScore());
-        hp.setText("HP: " + map.getPlayer().getHP());
+    public boolean isTransfer() {
+        return transfer;
     }
+
+    public void setTransfer(boolean transfer) {
+        this.transfer = transfer;
+    }
+
+    public void reset() {
+        if (!transfer) {
+            getChildren().remove(alert);
+            getChildren().addAll(score, time, hp);
+        } else {
+            myTime.reset();
+            getChildren().removeAll(score, time, hp);
+            getChildren().add(alert);
+        }
+    }
+
+    public void update() {
+        if (!transfer) {
+            time.setText("Time: " + (map.getMaxTime() - map.getTime().countSecond()));
+            score.setText("Score: " + map.getPlayer().getScore().getScore());
+            hp.setText("HP: " + map.getPlayer().getHP());
+        } else {
+            alert.setText("Congratulation");
+            if (myTime.countSecond() >= 5) {
+                alert.setText("Next level");
+            }
+        }
+    }
+
+    //  GETTER, SETTER
+
 }

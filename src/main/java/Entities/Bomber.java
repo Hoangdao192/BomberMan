@@ -57,6 +57,9 @@ public class Bomber extends DynamicEntity {
     // Tọa độ ban đầu của bomber;
     int count_feed = 0;
 
+    // Kiểm tra bomber có đi qua portal ?
+    private boolean passOverPortal = false;
+
     private MediaPlayer mediaPlayer;
 
     //  CONSTRUCTOR
@@ -371,6 +374,10 @@ public class Bomber extends DynamicEntity {
         this.eatenEnemyPass = eatenEnemyPass;
     }
 
+    public void setPassOverPortal(boolean passOverPortal) {
+        this.passOverPortal = passOverPortal;
+    }
+
     //  GETTER
     public BombManager getBombManager() {
         return bombManager;
@@ -402,6 +409,10 @@ public class Bomber extends DynamicEntity {
 
     public boolean isAlive() {
         return alive;
+    }
+
+    public boolean isPassOverPortal() {
+        return passOverPortal;
     }
 
     /**
