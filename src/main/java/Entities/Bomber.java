@@ -4,11 +4,15 @@ import Component.*;
 import Entities.Enemy.Enemy;
 import Entities.PowerUp.PowerUp;
 import Map.Map;
+import Setting.Setting;
 import Utils.Vector2i;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class Bomber extends DynamicEntity {
@@ -39,21 +43,21 @@ public class Bomber extends DynamicEntity {
     private boolean flamePass = false;
     private boolean eatenFlamePass = false;
     //  Miễn ảnh hưởng khi va chạm với Enemy
-    private boolean enemyPass = true;
+    private boolean enemyPass = false;
     private boolean eatenEnemyPass = false;
 
 
     //  Các chỉ số
     private Score score;
-    private int HP = 3;
+    private int HP = 1;
 
     private boolean newDied = false;
     private int timedied = 0; // thời gian bị mất mạng gần nhất
 
     // Tọa độ ban đầu của bomber;
     int count_feed = 0;
-    private int beforeX = 0;
-    private int beforeY = 0;
+
+    private MediaPlayer mediaPlayer;
 
     //  CONSTRUCTOR
     public Bomber(int x, int y, Map map) {
@@ -76,8 +80,14 @@ public class Bomber extends DynamicEntity {
         bombManager = new BombManager(this, map, 1, 1);
         score = new Score();
         bombManager.disableDetonator();
-        beforeX = x;
-        beforeY = y;
+
+        createSound();
+    }
+
+    private void createSound() {
+        Media moveSound = new Media(new File("src/main/resources/Sound/move_sound.mp3").toURI().toString());
+        mediaPlayer = new MediaPlayer(moveSound);
+        mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
     }
 
     private void createHitBox() {
@@ -164,6 +174,10 @@ public class Bomber extends DynamicEntity {
         bombManager.increaseBombRadius();
     }
 
+    public void increaseHP() {
+        ++HP;
+    }
+
     public void increaseSpeed() {
         ++speed;
         movement.setSpeed(speed * BASE_SPEED);
@@ -219,6 +233,13 @@ public class Bomber extends DynamicEntity {
      * Cập nhập vị trí mới.
      */
     protected void updateMovement() {
+        if (Setting.isSoundOn()) {
+            if (moveLeft || moveRight || moveUp || moveDown) {
+                mediaPlayer.play();
+            } else {
+                mediaPlayer.stop();
+            }
+        }
         movement.move();
         //map.moveCamera(movement.getVelocity());
     }
@@ -310,6 +331,14 @@ public class Bomber extends DynamicEntity {
     }
 
     //  SETTER
+    public void setAlive(boolean alive) {
+        this.alive = alive;
+    }
+
+    public void setHP(int HP) {
+        this.HP = HP;
+    }
+
     public void setFlamePass(boolean flamePass) {
         this.flamePass = flamePass;
     }
@@ -343,6 +372,10 @@ public class Bomber extends DynamicEntity {
     }
 
     //  GETTER
+    public BombManager getBombManager() {
+        return bombManager;
+    }
+
     public Score getScore() {
         return score;
     }
@@ -372,17 +405,6 @@ public class Bomber extends DynamicEntity {
     }
 
     /**
-     * Set beforeX, beforeY
-     */
-    public int getCount_feed() {
-        return count_feed;
-    }
-
-    public void setCount_feed(int count_feed) {
-        this.count_feed = count_feed;
-    }
-
-    /**
      * Set Item.
      */
     public boolean isEatenFlamePass() {
@@ -401,6 +423,15 @@ public class Bomber extends DynamicEntity {
         return flamePass;
     }
 
+    public void reback() {
+        HP = 1;
+        movement.setSpeed(BASE_SPEED * speed);
+        alive = true;
+        exist = true;
+        animationManager.play("WALK_RIGHT");
+        bombManager.getBombList().clear();
+        bombManager = new BombManager(this, map, 1, 1);
+    }
 
     @Override
     public void die() {
@@ -414,10 +445,6 @@ public class Bomber extends DynamicEntity {
             movement.setSpeed(0);
         } else {
             HP--;
-            if (HP != 0) {
-                x = beforeX;
-                y = beforeY;
-            }
             timedied = map.getTime().countSecond();
             newDied = true;
             count_feed = 0;

@@ -2,8 +2,13 @@ package Entities;
 
 import Component.*;
 import Map.Map;
+import Setting.Setting;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class Bomb extends StaticEntity {
@@ -24,6 +29,9 @@ public class Bomb extends StaticEntity {
     private long startTime;
     //  Đếm thời gian từ khi bom được đặt
     private long countTime;
+
+    private static String musicFile = "src/main/resources/Sound/sound_bomb.mp3";
+    private static MediaPlayer mediaPlayer = new MediaPlayer(new Media(new File(musicFile).toURI().toString()));
 
     //  CONSTRUCTOR
     public Bomb(int explodeRadius, int x, int y, int width, int height, Map map) {
@@ -77,6 +85,10 @@ public class Bomb extends StaticEntity {
     }
 
     private void explode() {
+        if (Setting.isSoundOn()) {
+            mediaPlayer.seek(Duration.ZERO);
+            mediaPlayer.play();
+        }
         calculateExplodeRadius();
         createBombExplode();
     }
@@ -93,6 +105,8 @@ public class Bomb extends StaticEntity {
                 ((Bomb) entity).setWaitTime(0);
             }
             return true;
+        } else if (entity instanceof Portal) {
+            entity.die();
         }
         return false;
     }
@@ -103,6 +117,11 @@ public class Bomb extends StaticEntity {
      */
     private void calculateExplodeRadius() {
         ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList = map.getStaticEntityList();
+
+        for (int i = 0; i < staticEntityList.get(gridY).get(gridX).size(); ++i) {
+            entityCanBlockBomb(staticEntityList.get(gridY).get(gridX).get(i));
+        }
+
         //  Duyệt bên phải
         for (int col = gridX + 1; col <= gridX + explodeRadius; ++col) {
             if (col >= staticEntityList.get(gridY).size()) {

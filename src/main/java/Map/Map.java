@@ -44,6 +44,8 @@ import java.util.Scanner;
  */
 public class Map {
     private String path = "";
+    int level = 0;
+
     private int mapGridWidth;
     private int mapGridHeight;
     private int gridSize;
@@ -58,6 +60,8 @@ public class Map {
 
     private Vector2i playerStartPosition = new Vector2i(100, 100);
     private Bomber player;
+
+    private Portal portal;
 
     //Check transfer
     private boolean transfer = false;
@@ -81,6 +85,11 @@ public class Map {
 
     private boolean[][] checkMap;
 
+    //Đếm số bomb nổ sau khi giết hết boss
+    private int numBombExplosion = 0;
+    private int timeBombExplosion = 0;
+    private boolean hasBombExplosionBefore = false;
+
     public Map(String path, int cameraWidth, int cameraHeight) {
         this.path = path;
         entities = new ArrayList<>();
@@ -93,10 +102,23 @@ public class Map {
         time = new Time();
     }
 
+    //  SETTER
     public void setPlayer(Bomber player) {
         this.player = player;
         player.setX(playerStartPosition.x);
         player.setY(playerStartPosition.y);
+    }
+
+    public void setNumBombExplosion(int numBombExplosion) {
+        this.numBombExplosion = numBombExplosion;
+    }
+
+    public void setTimeBombExplosion(int timeBombExplosion) {
+        this.timeBombExplosion = timeBombExplosion;
+    }
+
+    public void setHasBombExplosionBefore(boolean hasBombExplosionBefore) {
+        this.hasBombExplosionBefore = hasBombExplosionBefore;
     }
 
     public Bomber getPlayer() {
@@ -104,6 +126,18 @@ public class Map {
     }
 
     //  GETTER
+    public int getNumBombExplosion() {
+        return numBombExplosion;
+    }
+
+    public int getTimeBombExplosion() {
+        return timeBombExplosion;
+    }
+
+    public boolean isHasBombExplosionBefore() {
+        return hasBombExplosionBefore;
+    }
+
     public int getMaxTime() {
         return maxTime;
     }
@@ -166,6 +200,7 @@ public class Map {
         //  Tính toán bonus trước khi chuyển map
         if (!transfer) {
             update();
+            time.stop();
             checkBonus[0] = checkTarget;
             checkBonus[1] = checkColaBottle;
             checkBonus[2] = checkDezeniman_san;
@@ -180,13 +215,16 @@ public class Map {
         entities.clear();
         staticEntityList.clear();
         dynamicEntityList.clear();
-        //resetBonus();
+        resetBonus();
         loadFromFile(path);
+        this.setPlayer(player);
+        player.increaseHP();
     }
 
     public void loadFromFile(String path) {
         try {
             Scanner scanner = new Scanner(new FileReader(path));
+
             gridSize = scanner.nextInt();
             mapGridWidth = scanner.nextInt();
             mapGridHeight = scanner.nextInt();
@@ -212,7 +250,7 @@ public class Map {
         System.out.println(staticEntityList.get(11).get(14).size());
     }
 
-    private void createEntity(char type, int gridX, int gridY) {
+    public void createEntity(char type, int gridX, int gridY) {
         switch (type) {
             case '$': {
                 playerStartPosition.x = gridX * gridSize;
@@ -293,10 +331,11 @@ public class Map {
                 break;
             }
             case 'p': {
-                addEntity(entityCreator.createPortalEntity(
-                        gridX * gridSize, gridY * gridSize, gridSize, gridSize));
+                portal = (Portal) entityCreator.createPortalEntity(
+                        gridX * gridSize, gridY * gridSize, gridSize, gridSize);
+                addEntity(portal);
                 addEntity(entityCreator.createBrickEntity(
-                        gridX * gridSize, gridY * gridSize, gridSize, gridSize));
+                            gridX * gridSize, gridY * gridSize, gridSize, gridSize));
                 break;
             }
             case 'B': {
@@ -440,13 +479,22 @@ public class Map {
     }
 
     public void checkDezeniman_san() {
-        checkDezeniman_san = true;
-        return;
+        if (portal.getNumBomExplosion() >= 3 && numEnemyDie == 0 && numBrickExist == 0) {
+            checkDezeniman_san = true;
+        } else {
+            checkDezeniman_san = false;
+        }
     }
 
     public void checkFamicom() {
-        checkFamicom = true;
-        return;
+        if (numEnemyExist == 0 && numBombExplosion >= 100) {
+            checkFamicom = true;
+            System.out.println("Famico");
+        } else {
+            if (!checkFamicom) {
+                checkFamicom = false;
+            }
+        }
     }
 
     public void checkBooleanMap(int x, int y) {
@@ -475,9 +523,9 @@ public class Map {
     public void updateBonus() {
         checkTarget();
         checkDezeniman_san();
+        checkColaBottle();
         if (numEnemyExist == 0) {
             checkBooleanMap(player.getX(), player.getY());
-            checkColaBottle();
             checkGoddessMask();
             checkNakamoto_san();
             checkFamicom();
@@ -505,11 +553,11 @@ public class Map {
         //  Dynamic entity
         for (int i = 0; i < dynamicEntityList.size();) {
             if (!dynamicEntityList.get(i).isExist()) {
+                dynamicEntityList.remove(i);
+            } else {
                 if (dynamicEntityList.get(i) instanceof Enemy) {
                     numEnemyExist ++;
                 }
-                dynamicEntityList.remove(i);
-            } else {
                 ++i;
             }
         }
@@ -530,6 +578,14 @@ public class Map {
                     }
                 }
             }
+        }
+
+        if (numEnemyExist == 0 && player.getBombManager().getMaxBomb() < 100) {
+            player.getBombManager().setMaxBomb(100);
+        }
+        if (numEnemyExist > 0 && player.getBombManager().getMaxBomb() >= 100) {
+            int x = player.getBombManager().getNumBomb();
+            player.getBombManager().setMaxBomb(x);
         }
     }
 

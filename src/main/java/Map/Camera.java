@@ -1,6 +1,7 @@
 package Map;
 
 import Utils.Vector2i;
+import javafx.scene.canvas.GraphicsContext;
 
 public class Camera {
     private Vector2i start;
@@ -11,6 +12,9 @@ public class Camera {
     private int maxY;
     private int width;
     private int height;
+
+    public double scaleX = 1.0;
+    public double scaleY = 1.0;
 
     //  CONSTRUCTORS
     /**
@@ -116,5 +120,9 @@ public class Camera {
     @Override
     public Camera clone() {
         return new Camera(this);
+    }
+
+    public void render(int x, int y, GraphicsContext graphicsContext) {
+        graphicsContext.fillRect(x, y, width, height);
     }
 }

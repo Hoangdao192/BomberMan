@@ -25,25 +25,25 @@ public class BombFlame extends StaticEntity {
     private void createHitBox(int flameType) {
         switch (flameType) {
             case FLAME_CENTER:
-                createHitBox(4, 4, 24, 24);
+                createHitBox(0, 0, width, height);
                 break;
             case FLAME_HORIZON:
-                createHitBox(0, 10, 32, 16);
+                createHitBox(0, width / 4, width, height / 2);
                 break;
             case FLAME_RIGHT:
-                createHitBox(4, 10, 24, 16);
+                createHitBox(0, width / 4, 22 * width / 32, height / 2);
                 break;
             case FLAME_LEFT:
-                createHitBox(4, 10, 24, 16);
+                createHitBox(10 * width / 32, width / 4, 22 * width / 32, height / 2);
                 break;
             case FLAME_VERTICAL:
-                createHitBox(8, 0, 16, 32);
+                createHitBox(width / 4, 0, width / 2, height);
                 break;
             case FLAME_UP:
-                createHitBox(8, 4, 16, 24);
+                createHitBox(width / 4, 10 * width / 32, width / 2, 22 * width / 32);
                 break;
             case FLAME_DOWN:
-                createHitBox(8, 4, 16, 24);
+                createHitBox(width / 4, 0, width / 2, 22 * width / 32);
                 break;
         }
     }
@@ -130,6 +130,13 @@ public class BombFlame extends StaticEntity {
             if (other instanceof Bomber) {
                 System.out.println("Bomber");
             }
+
+            if (other instanceof Portal) {
+                System.out.println("Portal Flame");
+                int x = ((Portal) other).getHasBomExplosion();
+                ((Portal) other).setHasBomExplosion(++x);
+            }
+
             other.die();
             return true;
         }
