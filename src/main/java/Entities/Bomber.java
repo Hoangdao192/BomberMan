@@ -1,11 +1,9 @@
 package Entities;
 
 import Component.*;
-import Entities.Enemy.Enemy;
 import Entities.PowerUp.PowerUp;
 import Map.Map;
 import Setting.Setting;
-import Utils.Vector2i;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -25,13 +23,8 @@ public class Bomber extends DynamicEntity {
 
     BombManager bombManager;
 
-    private static final int SPRITE_WIDTH = 16;
-    private static final int SPRITE_HEIGHT = 16;
-
-    private boolean alive;
-
     //Speed up.
-    private int BASE_SPEED = 2;
+    private final int BASE_SPEED = 2;
     private int speed = 2;
 
     //  Chức năng
@@ -41,21 +34,20 @@ public class Bomber extends DynamicEntity {
     private boolean bombPass = false;
     //  Miễn nhiễm với bom nổ
     private boolean flamePass = false;
-    private boolean eatenFlamePass = false;
     //  Miễn ảnh hưởng khi va chạm với Enemy
-    private boolean enemyPass = true;
-    private boolean eatenEnemyPass = false;
+    private boolean enemyPass = false;
+    //  Trạng thái bất diệt miễn nhiễm với mọi sát thương
+    private boolean immortal = false;
+    private final int MAX_IMMORTAL_TIME = 10;
+    //  Đếm thời gian immortal
+    private int immortalTimeCount = 0;
 
+    private final int DEFAULT_SPRITE_SIZE = 16;
 
     //  Các chỉ số
     private Score score;
-    private int HP = 1;
-
-    private boolean newDied = false;
-    private int timedied = 0; // thời gian bị mất mạng gần nhất
-
-    // Tọa độ ban đầu của bomber;
-    int count_feed = 0;
+    private int HP;
+    private boolean alive;
 
     // Kiểm tra bomber có đi qua portal ?
     private boolean passOverPortal = false;
@@ -65,38 +57,19 @@ public class Bomber extends DynamicEntity {
     //  CONSTRUCTOR
     public Bomber(int x, int y, Map map) {
         super(x, y, map.getGridSize(), map.getGridSize(), map.getGridSize(), null, map);
-        createAnimation();
         setMap(map);
-        movement = new Movement(this, speed * BASE_SPEED) {
-            @Override
-            public void stopX() {
-                setVelocityX(0);
-            }
-
-            public void stopY() {
-                setVelocityY(0);
-            }
-        };
-        movement.setSpeed(speed * BASE_SPEED);
+        createAnimation();
+        createMovement();
         createHitBox();
-        alive = true;
-        bombManager = new BombManager(this, map, 1, 1);
-        score = new Score();
-        bombManager.disableDetonator();
+        createBombManager();
 
+        alive = true;
+        score = new Score();
+        HP = 3;
         createSound();
     }
 
-    private void createSound() {
-        Media moveSound = new Media(new File("src/main/resources/Sound/move_sound.mp3").toURI().toString());
-        mediaPlayer = new MediaPlayer(moveSound);
-        mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-    }
-
-    private void createHitBox() {
-        createHitBox( 0, 0, (SPRITE_WIDTH - 6)  * 2, height);
-    }
-
+    //  INITIALIZER
     private void createAnimation() {
         animationManager = new AnimationManager(this);
 
@@ -165,10 +138,40 @@ public class Bomber extends DynamicEntity {
         animationManager.play("WALK_DOWN");
     }
 
+    private void createMovement() {
+        movement = new Movement(this, speed * BASE_SPEED) {
+            @Override
+            public void stopX() {
+                setVelocityX(0);
+            }
+
+            public void stopY() {
+                setVelocityY(0);
+            }
+        };
+        movement.setSpeed(speed * BASE_SPEED);
+    }
+
+    private void createHitBox() {
+        createHitBox( 0, 0, (DEFAULT_SPRITE_SIZE - 6)  * 2, height);
+    }
+
+    private void createBombManager() {
+        bombManager = new BombManager(this, map, 1, 1);
+        bombManager.disableDetonator();
+    }
+
+    private void createSound() {
+        Media moveSound = new Media(new File("src/main/resources/Sound/move_sound.mp3").toURI().toString());
+        mediaPlayer = new MediaPlayer(moveSound);
+        mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+    }
+
     private void createBomb() {
         bombManager.createBomb();
     }
 
+    //  INCREASE ATTRIBUTE
     public void increaseNumberOfBomb() {
         bombManager.increaseNumberOfBomb();
     }
@@ -187,116 +190,6 @@ public class Bomber extends DynamicEntity {
     }
 
     /**
-     * keyPressed: false: Key released
-     * keyPressed: true: Key pressed
-     */
-    public void updateInput(KeyEvent keyEvent, boolean isKeyPressed) {
-        if (keyEvent.getCode() == KeyCode.A && isKeyPressed) {
-            createBomb();
-        }
-        if (keyEvent.getCode() == KeyCode.S && isKeyPressed) {
-            bombManager.explodeLatestBomb();
-        }
-        if (keyEvent.getCode() == KeyCode.RIGHT) {
-            moveRight = isKeyPressed;
-        }
-        if (keyEvent.getCode() == KeyCode.LEFT) {
-            moveLeft = isKeyPressed;
-        }
-        if (keyEvent.getCode() == KeyCode.UP) {
-            moveUp = isKeyPressed;
-        }
-        if (keyEvent.getCode() == KeyCode.DOWN) {
-            moveDown = isKeyPressed;
-        }
-        int directionX = movement.getDirection().x;
-        int directionY = movement.getDirection().y;
-        if (moveRight) {
-            directionX = 1;
-        }
-        else if (moveLeft) {
-            directionX = -1;
-        }
-        else {
-            directionX = 0;
-        }
-        if (moveDown) {
-            directionY = 1;
-        }
-        else if (moveUp) {
-            directionY = -1;
-        }
-        else {
-            directionY = 0;
-        }
-        movement.update(directionX, directionY);
-    }
-
-    /**
-     * Cập nhập vị trí mới.
-     */
-    protected void updateMovement() {
-        if (Setting.isSoundOn()) {
-            if (moveLeft || moveRight || moveUp || moveDown) {
-                mediaPlayer.play();
-            } else {
-                mediaPlayer.stop();
-            }
-        }
-        movement.move();
-        //map.moveCamera(movement.getVelocity());
-    }
-
-    /**
-     * Cập nhập vị trí Hit box.
-     */
-    private void updateHitBox() {
-        hitBox.update();
-    }
-
-    /**
-     * Cập nhập animation.
-     */
-    private void updateAnimation() {
-        if (!alive) {
-            animationManager.play("DEAD");
-            if (animationManager.getCurrentAnimation().getCurrentFrame()
-                    == animationManager.getCurrentAnimation().getNumberOfFrame() - 1) {
-                exist = false;
-            }
-        }
-        else if (newDied) {
-            if (newDied) {
-                int checkTime = map.getTime().countMilliSecond() - timedied * 1000;
-                if ((checkTime / 200) % 2 == 1) {
-                    if (moveUp) {
-                        animationManager.play("WALK_UP_FLICKER");
-                    } else if (moveDown) {
-                        animationManager.play("WALK_DOWN_FLICKER");
-                    } else if (moveLeft) {
-                        animationManager.play("WALK_LEFT_FLICKER");
-                    } else if (moveRight) {
-                        animationManager.play("WALK_RIGHT_FLICKER");
-                    }
-                }
-            }
-        } else if (moveUp) {
-            animationManager.play("WALK_UP");
-        } else if (moveDown) {
-            animationManager.play("WALK_DOWN");
-        } else if (moveLeft) {
-            animationManager.play("WALK_LEFT");
-        } else if (moveRight) {
-            animationManager.play("WALK_RIGHT");
-        }
-        else {
-            animationManager.reset();
-            animationManager.getCurrentAnimation().stop();
-        }
-        animationManager.update();
-    }
-
-    /**
      * Kiểm tra entity truyền vào có thể va chạm với this hay không
      */
     @Override
@@ -304,7 +197,7 @@ public class Bomber extends DynamicEntity {
         if (entity instanceof Stone
             || (entity instanceof Brick && !wallPass)
             || (entity instanceof Bomb && !bombPass)
-            || (entity instanceof BombFlame && !flamePass)
+            || (entity instanceof BombFlame && !flamePass && !immortal)
             || entity instanceof PowerUp) {
             return true;
         }
@@ -318,7 +211,7 @@ public class Bomber extends DynamicEntity {
         //  Va chạm với vật thể tĩnh
         boolean collide = collisionWithMap();
         //  Va chạm với vật thể động
-        if (!enemyPass) {
+        if (!enemyPass && !immortal) {
             ArrayList<Entity> dynamicEntityList = map.getDynamicEntityList();
             for (int i = 0; i < dynamicEntityList.size(); ++i) {
                 Entity entity = dynamicEntityList.get(i);
@@ -366,12 +259,11 @@ public class Bomber extends DynamicEntity {
         this.bombPass = bombPass;
     }
 
-    public void setEatenFlamePass(boolean eatenFlamePass) {
-        this.eatenFlamePass = eatenFlamePass;
-    }
-
-    public void setEatenEnemyPass(boolean eatenEnemyPass) {
-        this.eatenEnemyPass = eatenEnemyPass;
+    public void setImmortal(boolean immortal) {
+        this.immortal = immortal;
+        if (immortal) {
+            immortalTimeCount = map.getTime().countSecond();
+        }
     }
 
     public void setPassOverPortal(boolean passOverPortal) {
@@ -415,17 +307,6 @@ public class Bomber extends DynamicEntity {
         return passOverPortal;
     }
 
-    /**
-     * Set Item.
-     */
-    public boolean isEatenFlamePass() {
-        return eatenFlamePass;
-    }
-
-    public boolean isEatenEnemyPass() {
-        return eatenEnemyPass;
-    }
-
     public boolean isEnemyPass() {
         return enemyPass;
     }
@@ -434,57 +315,31 @@ public class Bomber extends DynamicEntity {
         return flamePass;
     }
 
-    public void reback() {
-        HP = 1;
-        movement.setSpeed(BASE_SPEED * speed);
-        alive = true;
-        exist = true;
-        animationManager.play("WALK_RIGHT");
-        bombManager.getBombList().clear();
-        bombManager = new BombManager(this, map, 1, 1);
-    }
-
     @Override
     public void die() {
-        System.out.println("Die");
-        if (newDied) {
+        if (immortal) {
             return;
         }
+        HP--;
         if (HP <= 0) {
-            newDied = false;
+            HP = 0;
             alive = false;
             movement.setSpeed(0);
         } else {
-            HP--;
-            timedied = map.getTime().countSecond();
-            newDied = true;
-            count_feed = 0;
+            immortalTimeCount = map.getTime().countSecond();
+            immortal = true;
         }
     }
 
     @Override
     public void update() {
-        if (HP <= 0) {
-            newDied = false;
-            alive = false;
-        }
-        if (newDied) {
-            if (map.getTime().countSecond() - timedied <= 10) {
-                enemyPass = true;
-                flamePass = true;
-            } else {
-                if (!eatenFlamePass) {
-                    flamePass = false;
-                }
-                if (!eatenEnemyPass) {
-                    enemyPass = false;
-                }
-                newDied = false;
+        if (immortal) {
+            if (map.getTime().countSecond() - immortalTimeCount > MAX_IMMORTAL_TIME) {
+                immortal = false;
             }
         }
 
-        movement.update(movement.getDirection().x, movement.getDirection().y);
-        collisionWithMapEntities();
+
         updateMovement();
         updateHitBox();
         updateAnimation();
@@ -493,17 +348,121 @@ public class Bomber extends DynamicEntity {
         bombManager.update();
     }
 
+    /**
+     * keyPressed: false: Key released
+     * keyPressed: true: Key pressed
+     */
+    public void updateInput(KeyEvent keyEvent, boolean isKeyPressed) {
+        if (keyEvent.getCode() == KeyCode.A && isKeyPressed) {
+            createBomb();
+        }
+        if (keyEvent.getCode() == KeyCode.S && isKeyPressed) {
+            bombManager.explodeLatestBomb();
+        }
+        if (keyEvent.getCode() == KeyCode.RIGHT) {
+            moveRight = isKeyPressed;
+        }
+        if (keyEvent.getCode() == KeyCode.LEFT) {
+            moveLeft = isKeyPressed;
+        }
+        if (keyEvent.getCode() == KeyCode.UP) {
+            moveUp = isKeyPressed;
+        }
+        if (keyEvent.getCode() == KeyCode.DOWN) {
+            moveDown = isKeyPressed;
+        }
+        int directionX;
+        int directionY;
+        if (moveRight) {
+            directionX = 1;
+        }
+        else if (moveLeft) {
+            directionX = -1;
+        }
+        else {
+            directionX = 0;
+        }
+        if (moveDown) {
+            directionY = 1;
+        }
+        else if (moveUp) {
+            directionY = -1;
+        }
+        else {
+            directionY = 0;
+        }
+        movement.update(directionX, directionY);
+    }
+
+    /**
+     * Cập nhập vị trí mới.
+     */
+    protected void updateMovement() {
+        if (Setting.isSoundOn()) {
+            if (moveLeft || moveRight || moveUp || moveDown) {
+                mediaPlayer.play();
+            } else {
+                mediaPlayer.stop();
+            }
+        }
+
+        movement.update(movement.getDirection().x, movement.getDirection().y);
+        collisionWithMapEntities();
+        movement.move();
+    }
+
+    /**
+     * Cập nhập vị trí Hit box.
+     */
+    private void updateHitBox() {
+        hitBox.update();
+    }
+
+    /**
+     * Cập nhập animation.
+     */
+    private void updateAnimation() {
+        if (!alive) {
+            animationManager.play("DEAD");
+            if (animationManager.getCurrentAnimation().getCurrentFrame()
+                    == animationManager.getCurrentAnimation().getNumberOfFrame() - 1) {
+                exist = false;
+            }
+        }
+        else if (immortal) {
+            if (moveUp) {
+                animationManager.play("WALK_UP_FLICKER");
+            } else if (moveDown) {
+                animationManager.play("WALK_DOWN_FLICKER");
+            } else if (moveLeft) {
+                animationManager.play("WALK_LEFT_FLICKER");
+            } else if (moveRight) {
+                animationManager.play("WALK_RIGHT_FLICKER");
+            }
+        } else if (moveUp) {
+            animationManager.play("WALK_UP");
+        } else if (moveDown) {
+            animationManager.play("WALK_DOWN");
+        } else if (moveLeft) {
+            animationManager.play("WALK_LEFT");
+        } else if (moveRight) {
+            animationManager.play("WALK_RIGHT");
+        }
+        else {
+            animationManager.reset();
+            animationManager.getCurrentAnimation().stop();
+        }
+        animationManager.update();
+    }
+
     public void render(GraphicsContext graphicsContext) {
-        /*if (!exist) {
-            return;
-        }*/
         animationManager.render(graphicsContext,
                 this.x - map.getCamera().getStart().x,
                 this.y - map.getCamera().getStart().y);
-
-          /*  hitBox.render(hitBox.getLeft() - map.getCamera().getStart().x,
-                hitBox.getTop() - map.getCamera().getStart().y,
-                graphicsContext);*/
-
+        /*
+        hitBox.render(hitBox.getLeft() - map.getCamera().getStart().x,
+        hitBox.getTop() - map.getCamera().getStart().y,
+        graphicsContext);
+        */
     }
 }

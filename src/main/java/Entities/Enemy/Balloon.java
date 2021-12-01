@@ -105,7 +105,7 @@ public class Balloon extends Enemy {
 
     @Override
     public void render(int x, int y, GraphicsContext graphicsContext) {
-        // hitBox.render(x + hitBox.getOffsetX(), y + hitBox.getOffsetY(), graphicsContext);
+        //hitBox.render(x + hitBox.getOffsetX(), y + hitBox.getOffsetY(), graphicsContext);
         if (exist) {
             animationManager.render(graphicsContext, x, y);
         }

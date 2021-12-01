@@ -13,7 +13,6 @@ public class Fire extends PowerUp{
 
     @Override
     public void update() {
-
     }
 
     @Override

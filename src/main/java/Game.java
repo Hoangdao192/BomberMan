@@ -194,6 +194,12 @@ public class Game {
             resizeUI();
             resizeCamera();
         });
+
+        mainScene.heightProperty().addListener((obs, oldVal, newVal) -> {
+            resizeCanvas();
+            resizeUI();
+            resizeCamera();
+        });
         /*mainScene.heightProperty().addListener((obs, oldVal, newVal) -> {
             resizeHeight();
         });*/
@@ -212,12 +218,42 @@ public class Game {
 
     private void resizeUI() {
         headPane.resize((int) mainScene.getWidth(), (int) headPane.getHeight());
-        //bottomPane.resize((int) mainScene.getWidth(), (int) bottomPane.getHeight());
-        //bottomPane.setLayoutY(mainCanvasPosition.y + mainCanvas.getHeight() * mainCanvas.getScaleY());
     }
 
     private void resizeCanvas() {
-        if (mainScene.getWidth() <= map.getSize().x) {
+        double mapRenderWidth = mainCanvas.getScaleX() * map.getSize().x;
+        double mapRenderHeight = mainCanvas.getScaleY() * map.getSize().y;
+
+        double scaleRatio = mainCanvas.getScaleX();
+
+        double scaleRatioX = mainScene.getWidth() / mainCanvas.getWidth();
+        double scaleRatioY = (mainScene.getHeight() - HEADPANE_DEFAULT_HEIGHT)/ mainCanvas.getHeight();
+        if (mainCanvas.getWidth() * scaleRatioX <= map.getSize().x) {
+            scaleRatioX = 1;
+            mainCanvas.setWidth(mainScene.getWidth());
+        } else {
+            mainCanvas.setWidth(map.getSize().x);
+        }
+
+        if (mainCanvas.getHeight() * scaleRatioY <= map.getSize().y) {
+            scaleRatioY = 1;
+            mainCanvas.setHeight(mainScene.getHeight() - HEADPANE_DEFAULT_HEIGHT);
+        } else {
+            mainCanvas.setHeight(map.getSize().y);
+        }
+
+        if (scaleRatioX > scaleRatioY) {
+            scaleRatio = scaleRatioX;
+        } else {
+            scaleRatio = scaleRatioY;
+        }
+
+        mainCanvas.setScaleX(scaleRatio);
+        mainCanvas.setScaleY(scaleRatio);
+        mainCanvas.setLayoutX(mainCanvasPosition.x + (mainCanvas.getWidth() * (mainCanvas.getScaleX() - 1))/2);
+        mainCanvas.setLayoutY(mainCanvasPosition.y + (mainCanvas.getHeight() * (mainCanvas.getScaleY() - 1))/2);
+
+        /*if (mainScene.getWidth() <= map.getSize().x) {
             mainCanvas.setWidth(mainScene.getWidth());
         }
         else if (mainScene.getWidth() > map.getSize().x) {
@@ -226,24 +262,34 @@ public class Game {
         mainCanvas.setScaleX(mainScene.getWidth() / mainCanvas.getWidth());
         mainCanvas.setScaleY(mainScene.getWidth() / mainCanvas.getWidth());
         mainCanvas.setLayoutX(mainCanvasPosition.x + (mainCanvas.getWidth() * (mainCanvas.getScaleX() - 1))/2);
-        mainCanvas.setLayoutY(mainCanvasPosition.y + (mainCanvas.getHeight() * (mainCanvas.getScaleY() - 1))/2);
+        mainCanvas.setLayoutY(mainCanvasPosition.y + (mainCanvas.getHeight() * (mainCanvas.getScaleY() - 1))/2);*/
     }
 
     private void resizeCamera() {
+        //  Sai số
+        final int ERROR = 1;
+
+        //  Kích thước của map khi in ra màn hình
+        double mapRenderWidth = mainCanvas.getScaleX() * map.getSize().x;
+        double mapRenderHeight = mainCanvas.getScaleY() * map.getSize().y;
+
+        //  Tỉ lệ giữa kích của phần màn hình để hiển thị game và kích thước của map khi vẽ ra màn hình
+        double widthRatio = mainScene.getWidth() / mapRenderWidth;
+        double heightRatio = (mainScene.getHeight() - HEADPANE_DEFAULT_HEIGHT) / mapRenderHeight;
+
         //  RESIZE WIDTH
-        System.out.println("Before: " + map.getCamera().getSize().y);
-        if (mainScene.getWidth() <= map.getSize().x) {
-            map.getCamera().setSize((int)mainScene.getWidth(), map.getCamera().getSize().y);
+        int newCameraWidth = (int) (map.getSize().x * widthRatio + ERROR);
+        if (newCameraWidth > map.getSize().x) {
+            newCameraWidth = map.getSize().x;
         }
-        else if (mainScene.getWidth() > map.getSize().x) {
-            map.getCamera().setSize(map.getSize().x, map.getCamera().getSize().y);
+        //  RESIZE HEIGHT
+        int newCameraHeight = (int) (map.getSize().y * heightRatio + ERROR);
+        if (newCameraHeight > map.getSize().y) {
+            newCameraHeight = map.getSize().y;
         }
 
-        if (mainCanvas.getScaleY() > 1.0) {
-            map.getCamera().setSize(map.getCamera().getSize().x,
-                    (int) (mainCanvas.getHeight() * Math.pow(2.0 - mainCanvas.getScaleY(), 1.0/3.0)));
-        }
-        System.out.println("Last: " + map.getCamera().getSize().y);
+        map.getCamera().setSize(newCameraWidth, newCameraHeight);
+        System.out.println(map.getCamera().getSize().y);
     }
 
     private void resizeHeight() {
@@ -401,7 +447,6 @@ public class Game {
         mainContainer.getChildren().clear();
         createMap();
         createPlayer();
-        //createHeadMap();
         createTransferMap();
         map.setPlayer(bomber);
         createUI();
@@ -412,7 +457,6 @@ public class Game {
     private void updateGameOverPane() {
         if (!createGameOver) {
             map.newMap();
-            //Entity.Stop = true;
             transferMap.reset(map.getPlayer(), map.getTime().countSecond(), map.getBonusArrayList());
             map.setTransfer(false);
             transferMap.setLoading(false);
