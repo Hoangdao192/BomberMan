@@ -4,18 +4,19 @@ import Entities.*;
 import Entities.Enemy.Enemy;
 import Map.Map;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
 import java.io.FileInputStream;
@@ -90,6 +91,7 @@ public class MiniMap extends AnchorPane {
         createImage();
 
         background = new Rectangle(0, 0, width, height);
+//        background.setFill(Color.TRANSPARENT);
         background.setFill(Color.CHOCOLATE);
 
         miniMapRectangle = new Rectangle(0, 0, this.widthMiniMap, this.heightMiniMap);
@@ -110,6 +112,44 @@ public class MiniMap extends AnchorPane {
         }
 
         getChildren().add(imageViewBomber);
+    }
+
+    public void clickHomeButton() {
+        System.out.println("Home Button");
+    }
+
+    public void clickStopButton() {
+
+        System.out.println("Stop Button");
+
+        map.getTime().stop();
+        //Entity.Stop = true;
+
+        AnchorPane anchorPane = new AnchorPane();
+        BackgroundFill backgroundFill = new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY);
+        Background box = new Background(backgroundFill);
+
+        anchorPane.setBackground(box);
+
+        Scene scene = new Scene(anchorPane, widthBox, heightBox, Color.TRANSPARENT);
+        Stage newStage = new Stage();
+        newStage.setScene(scene);
+        newStage.initStyle(StageStyle.TRANSPARENT);
+        newStage.initModality(Modality.APPLICATION_MODAL);
+        newStage.setMaxWidth(widthBox);
+        newStage.setMaxHeight(heightBox);
+        newStage.setMinWidth(widthBox);
+        newStage.setMinHeight(heightBox);
+//        newStage.initOwner(); - thiết lập cửa sổ cha
+        newStage.show();
+
+        newStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent windowEvent) {
+                map.getTime().present();
+                //Entity.Stop = false;
+            }
+        });
     }
 
     public void createImage() {

@@ -70,13 +70,11 @@ public class Portal extends PowerUp {
         if (hasBrick()) {
             return false;
         }
+
         if (other instanceof Bomber) {
             if (collision(other)) {
-                if (map.getDynamicEntityList().size() != 0) {
-                    return false;
-                }
-
                 bomber = map.getPlayer();
+                bomber.setPassOverPortal(true);
                 if (!checkHitBox) {
                     checkHitBox = true;
                     time.reset();
@@ -85,11 +83,11 @@ public class Portal extends PowerUp {
                     up = false;
                     down = false;
                 }
-                if (time.countSecond() >= 3) {
+                if (time.countSecond() >= 2 && map.getNumEnemyExist() == 0) {
                     map.newMap();
                     checkHitBox = false;
                     checkColaBottle = false;
-                } else {
+                } else if (map.getNumEnemyExist() > 0) {
                     if (!checkColaBottle) {
                         if (up && down && left && right) {
                             checkColaBottle = true;

@@ -191,6 +191,5 @@ public class GameOverPane extends AnchorPane {
             int s = countScore * Score / 10;
             scoreLabel.setText("Score: " + s);
         }
-
     }
 }

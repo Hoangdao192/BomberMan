@@ -2,6 +2,7 @@ package Map;
 
 import Component.Time;
 import Entities.*;
+import Entities.BonusIteam.*;
 import Entities.Enemy.*;
 import Entities.PowerUp.*;
 import Utils.Vector2i;
@@ -41,6 +42,7 @@ import java.util.Scanner;
  * M: Mystery
  * W: WallPass
  * F: FlamePass
+ * I: Bonus Item
  */
 public class Map {
     private String path = "";
@@ -57,6 +59,7 @@ public class Map {
     private ArrayList<Entity> entities;
     private ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList;
     private ArrayList<Entity> dynamicEntityList;
+    private ArrayList<Bonus> bonusArrayList = new ArrayList<>();
 
     private Vector2i playerStartPosition = new Vector2i(100, 100);
     private Bomber player;
@@ -71,12 +74,12 @@ public class Map {
     //check Bonus
     private boolean[] checkBonus = new boolean[6];
 
-    private boolean checkTarget = false;
-    private boolean checkColaBottle = false;
-    private boolean checkDezeniman_san = false;
-    private boolean checkFamicom = false;
-    private boolean checkGoddessMask = false;
-    private boolean checkNakamoto_san = false;
+    private boolean checkTarget = true;
+    private boolean checkColaBottle = true;
+    private boolean checkDezeniman_san = true;
+    private boolean checkFamicom = true;
+    private boolean checkGoddessMask = true;
+    private boolean checkNakamoto_san = true;
 
     private int numEnemyDie = 0;
     private int numEnemyExist = 0;
@@ -126,6 +129,10 @@ public class Map {
     }
 
     //  GETTER
+    public int getNumEnemyExist() {
+        return numEnemyExist;
+    }
+
     public int getNumBombExplosion() {
         return numBombExplosion;
     }
@@ -190,6 +197,10 @@ public class Map {
         return entities;
     }
 
+    public ArrayList<Bonus> getBonusArrayList() {
+        return bonusArrayList;
+    }
+
     // Check Bonus
     public boolean[] getCheckBonus() {
         return checkBonus;
@@ -215,6 +226,8 @@ public class Map {
         entities.clear();
         staticEntityList.clear();
         dynamicEntityList.clear();
+        bonusArrayList.clear();
+        player.setPassOverPortal(false);
         resetBonus();
         loadFromFile(path);
         this.setPlayer(player);
@@ -373,6 +386,50 @@ public class Map {
                         gridX * gridSize, gridY * gridSize, gridSize, gridSize));
                 break;
             }
+            case  'I': {
+                if (bonusArrayList.size() == 0) {
+                    Entity entity = entityCreator.createBonusTarget(
+                            gridX * gridSize, gridY * gridSize, gridSize, gridSize);
+                    addEntity(entity);
+                    addBonus((Bonus) entity);
+                    break;
+                }
+                if (bonusArrayList.size() == 1) {
+                    Entity entity = entityCreator.createColaBottle(
+                            gridX * gridSize, gridY * gridSize, gridSize, gridSize);
+                    addEntity(entity);
+                    addBonus((Bonus) entity);
+                    break;
+                }
+                if (bonusArrayList.size() == 2) {
+                    Entity entity = entityCreator.createDezeniman_san(
+                            gridX * gridSize, gridY * gridSize, gridSize, gridSize);
+                    addEntity(entity);
+                    addBonus((Bonus) entity);
+                    break;
+                }
+                if (bonusArrayList.size() == 3) {
+                    Entity entity = entityCreator.createFamicom(
+                            gridX * gridSize, gridY * gridSize, gridSize, gridSize);
+                    addEntity(entity);
+                    addBonus((Bonus) entity);
+                    break;
+                }
+                if (bonusArrayList.size() == 4) {
+                    Entity entity = entityCreator.createGoddessMask(
+                            gridX * gridSize, gridY * gridSize, gridSize, gridSize);
+                    addEntity(entity);
+                    addBonus((Bonus) entity);
+                    break;
+                }
+                if (bonusArrayList.size() == 5) {
+                    Entity entity = entityCreator.createNakamoto_san(
+                            gridX * gridSize, gridY * gridSize, gridSize, gridSize);
+                    addEntity(entity);
+                    addBonus((Bonus) entity);
+                    break;
+                }
+            }
         }
     }
 
@@ -403,6 +460,13 @@ public class Map {
         }
     }
 
+    public void addBonus(Bonus bonus) {
+        if (bonus == null) {
+            return;
+        }
+        bonusArrayList.add(bonus);
+    }
+
     public void createCamera(int width, int height) {
         this.camera = new Camera(
                 0, 0, width, height,
@@ -415,85 +479,118 @@ public class Map {
         camera.move(velocity);
     }
 
+    // Kiểm tra các Bonus
     public void checkTarget() {
-        if (numEnemyDie == 0) {
-            checkTarget = true;
-        } else {
-            checkTarget = false;
+        if (checkTarget) {
+            if (numEnemyDie == 0 && player.isPassOverPortal()) {
+                for (Bonus bonus : bonusArrayList) {
+                    if (bonus instanceof BonusTarget) {
+                        bonus.setCheckBonus(true);
+                        break;
+                    }
+                }
+                checkTarget = false;
+            }
         }
     }
 
     public void checkNakamoto_san() {
-        if (numEnemyExist == 0 && numBrickDestoy == 0) {
-            checkNakamoto_san = true;
-        } else {
-            checkNakamoto_san = false;
+        System.out.println("NumEnemy : " + numEnemyExist);
+        if (checkNakamoto_san) {
+            if (numEnemyExist == 0 && numBrickDestoy == 0) {
+                for (Bonus bonus : bonusArrayList) {
+                    if (bonus instanceof Nakamoto_san) {
+                        bonus.setCheckBonus(true);
+                        break;
+                    }
+                }
+                checkNakamoto_san = false;
+            }
         }
     }
 
     public void checkGoddessMask() {
-        if (numEnemyExist != 0) {
-            return;
-        }
-        for (int i = 0; i < mapGridWidth; i++) {
-            for (int j = 0; j < mapGridHeight; j++) {
-                if (j == 1 && i != 0 && i != mapGridWidth - 1) {
-                    if (!checkMap[i][j]) {
-//                        System.out.println(i + ":" + j);
-                        return;
-                    }
-                }
-                if (j == mapGridHeight - 2 && i != 0 && i != mapGridWidth - 1) {
-                    if (!checkMap[i][j]) {
-//                        System.out.println(i + ":" + j);
-                        return;
-                    }
-                }
-                if (i == 1 && j != 0 && j != mapGridHeight - 1) {
-                    if (!checkMap[i][j]) {
-//                        System.out.println(i + ":" + j);
-                        return;
-                    }
-                }
-                if (i == mapGridWidth - 2 && j != 0 && j != mapGridHeight - 1) {
-                    if (!checkMap[i][j]) {
-//                        System.out.println(i + ":" + j);
-                        return;
-                    }
-                }
-//                if (checkMap[i][j] == true) {
-//                    System.out.print("T ");
-//                }
-//                else {
-//                    System.out.println("  ");
-//                }
+        if (checkGoddessMask) {
+            if (numEnemyExist != 0) {
+                return;
             }
-//            System.out.println();
+            for (int i = 0; i < mapGridWidth; i++) {
+                for (int j = 0; j < mapGridHeight; j++) {
+                    if (j == 1 && i != 0 && i != mapGridWidth - 1) {
+                        if (!checkMap[i][j]) {
+                            return;
+                        }
+                    }
+                    if (j == mapGridHeight - 2 && i != 0 && i != mapGridWidth - 1) {
+                        if (!checkMap[i][j]) {
+                            return;
+                        }
+                    }
+                    if (i == 1 && j != 0 && j != mapGridHeight - 1) {
+                        if (!checkMap[i][j]) {
+                            return;
+                        }
+                    }
+                    if (i == mapGridWidth - 2 && j != 0 && j != mapGridHeight - 1) {
+                        if (!checkMap[i][j]) {
+                            return;
+                        }
+                    }
+                }
+            }
+            for (Bonus bonus : bonusArrayList) {
+                if (bonus instanceof GoddessMask) {
+                    bonus.setCheckBonus(true);
+                    break;
+                }
+            }
+            checkGoddessMask = false;
         }
-        checkGoddessMask = true;
     }
 
     public void checkColaBottle() {
-        checkColaBottle = Portal.checkColaBottle;
-        return;
+        if (checkColaBottle) {
+            if(Portal.checkColaBottle) {
+                for (Bonus bonus : bonusArrayList) {
+                    if (bonus instanceof ColaBottle) {
+                        bonus.setCheckBonus(true);
+                        break;
+                    }
+                }
+                checkColaBottle = false;
+            }
+            return;
+        }
     }
 
     public void checkDezeniman_san() {
-        if (portal.getNumBomExplosion() >= 3 && numEnemyDie == 0 && numBrickExist == 0) {
-            checkDezeniman_san = true;
-        } else {
-            checkDezeniman_san = false;
+        if (checkDezeniman_san) {
+            if (portal.getNumBomExplosion() >= 3 && numEnemyDie == 0 && numBrickExist == 0) {
+                for (Bonus bonus : bonusArrayList) {
+                    if (bonus instanceof  Dezeniman_san) {
+                        bonus.setCheckBonus(true);
+                        break;
+                    }
+                }
+                checkDezeniman_san = false;
+            }
+            return;
         }
     }
 
     public void checkFamicom() {
-        if (numEnemyExist == 0 && numBombExplosion >= 100) {
-            checkFamicom = true;
-            System.out.println("Famico");
-        } else {
-            if (!checkFamicom) {
+        if (checkFamicom) {
+            if (numEnemyExist == 0 && numBombExplosion >= 100) {
+                for (Bonus bonus : bonusArrayList) {
+                    if (bonus instanceof Famicom) {
+                        bonus.setCheckBonus(true);
+                        break;
+                    }
+                }
                 checkFamicom = false;
+                System.out.println("Famico");
             }
+            return;
         }
     }
 
@@ -512,12 +609,12 @@ public class Map {
     public void resetBonus() {
         numEnemyDie = 0;
         numBrickDestoy = 0;
-        checkTarget = false;
-        checkColaBottle = false;
-        checkDezeniman_san = false;
-        checkFamicom = false;
-        checkGoddessMask = false;
-        checkNakamoto_san = false;
+        checkTarget = true;
+        checkColaBottle = true;
+        checkDezeniman_san = true;
+        checkFamicom = true;
+        checkGoddessMask = true;
+        checkNakamoto_san = true;
     }
 
     public void updateBonus() {
