@@ -22,7 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-public class BottomPane extends AnchorPane {
+public class MiniMap extends AnchorPane {
     private final int DEFAULT_FONT_SIZE = 25;
     private final int DEFAULT_WIDTH = 800;
     private final int DEFAULT_HEIGHT = 70;
@@ -32,11 +32,6 @@ public class BottomPane extends AnchorPane {
     private int width;
     private int height;
     private Rectangle background;
-
-    private Button stopButton;
-    private Button homeButton;
-    private Button soundButton;
-    private Button newMapButton;
 
     //Mini Map
     private int widthMiniMap;
@@ -57,22 +52,11 @@ public class BottomPane extends AnchorPane {
     private ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList;
     private ArrayList<Entity> dynamicEntityList;
 
-
     // Box Stop
     double widthBox = 400;
     double heightBox = 200;
 
-
-    //  GETTER, SETTER
-    public Button getStopButton() {
-        return stopButton;
-    }
-
-    public Button getHomeButton() {
-        return homeButton;
-    }
-
-    public BottomPane(Map map, int width, int height) {
+    public MiniMap(Map map, int width, int height) {
         this.map = map;
         this.bomber = map.getPlayer();
         this.height = height;
@@ -80,12 +64,12 @@ public class BottomPane extends AnchorPane {
 
         this.gridHeight = map.getMapGridHeight();
         this.gridWidth = map.getMapGridWidth();
-        this.gridSize = width / 70;
+        this.gridSize = (int) (width / gridWidth * 1.5);
         this.widthMiniMap = gridSize * gridWidth;
         this.heightMiniMap = gridSize * gridHeight;
 
         setWidth(this.width);
-        setHeight(height);
+        setHeight(heightMiniMap);
 
         // Khởi tạo cho miniMap
 
@@ -126,75 +110,6 @@ public class BottomPane extends AnchorPane {
         }
 
         getChildren().add(imageViewBomber);
-
-
-        // Khởi tạo các button
-        stopButton = new Button("Stop");
-        stopButton.setTextFill(Color.RED);
-        stopButton.setLayoutX(this.widthMiniMap + (width - this.widthMiniMap) / 4);
-        stopButton.setLayoutY(gridHeight * gridSize / 2 - stopButton.getHeight() / 2);
-        stopButton.setFocusTraversable(false);
-
-        homeButton = new Button("Home");
-        homeButton.setTextFill(Color.BLUE);
-        homeButton.setLayoutX(this.widthMiniMap + (width - this.widthMiniMap) / 4 * 3);
-        homeButton.setLayoutY(gridHeight * gridSize / 2 - homeButton.getHeight() / 2);
-        homeButton.setFocusTraversable(false);
-
-        soundButton = new Button("Sound");
-        soundButton.setTextFill(Color.BLUE);
-
-        newMapButton = new Button("New Map");
-        newMapButton.setTextFill(Color.CHOCOLATE);
-
-
-        getChildren().addAll(stopButton, homeButton);
-
-    }
-
-    public void clickHomeButton() {
-        System.out.println("Home Button");
-    }
-
-    public void clickStopButton() {
-
-        System.out.println("Stop Button");
-
-        map.getTime().stop();
-        //Entity.Stop = true;
-
-        AnchorPane anchorPane = new AnchorPane();
-        Rectangle box = new Rectangle(widthBox, heightBox);
-        box.setFill(Color.BLUE);
-
-        System.out.println(newMapButton.getLayoutX() + " " + newMapButton.getLayoutY());
-
-        anchorPane.getChildren().addAll(box, soundButton, newMapButton);
-
-        Scene scene = new Scene(anchorPane, widthBox, heightBox);
-        Stage newStage = new Stage();
-        newStage.setScene(scene);
-        newStage.initModality(Modality.APPLICATION_MODAL);
-        newStage.setMaxWidth(widthBox);
-        newStage.setMaxHeight(heightBox);
-        newStage.setMinWidth(widthBox);
-        newStage.setMinHeight(heightBox);
-//        newStage.initOwner(); - thiết lập cửa sổ cha
-        newStage.show();
-
-        soundButton.setLayoutX(widthBox / 4 - soundButton.getWidth() / 2);
-        soundButton.setLayoutY(heightBox / 2 - soundButton.getHeight() / 2);
-
-        newMapButton.setLayoutX(widthBox / 4 * 3 - newMapButton.getWidth() / 2);
-        newMapButton.setLayoutY(heightBox / 2 - newMapButton.getHeight() / 2);
-
-        newStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent windowEvent) {
-                map.getTime().present();
-                //Entity.Stop = false;
-            }
-        });
     }
 
     public void createImage() {
@@ -280,14 +195,13 @@ public class BottomPane extends AnchorPane {
             }
         }
 
-
         for (ImageView imageView : imageViewEnemy) {
             getChildren().add(imageView);
         }
 
         getChildren().add(imageViewBomber);
 
-        getChildren().addAll(stopButton, homeButton);
+        //getChildren().addAll(stopButton, homeButton);
     }
 
     public void resize(int newWidth, int newHeight) {
@@ -310,12 +224,6 @@ public class BottomPane extends AnchorPane {
         heightMiniMap = gridHeight * gridSize;
         miniMapRectangle.setWidth(widthMiniMap);
         miniMapRectangle.setHeight(heightMiniMap);
-
-        stopButton.setLayoutX(this.widthMiniMap + (width - this.widthMiniMap) / 4);
-        stopButton.setLayoutY(gridHeight * gridSize / 2 - stopButton.getHeight() / 2);
-
-        homeButton.setLayoutX(this.widthMiniMap + (width - this.widthMiniMap) / 4 * 3);
-        homeButton.setLayoutY(gridHeight * gridSize / 2 - homeButton.getHeight() / 2);
 
         imageViewBomber.setFitHeight(gridSize);
         imageViewBomber.setFitWidth(gridSize);

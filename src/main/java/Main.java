@@ -1,5 +1,8 @@
 import javafx.application.Application;
+import javafx.event.EventHandler;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class Main extends Application {
     @Override
@@ -7,8 +10,8 @@ public class Main extends Application {
         Game game = new Game();
         game.run();
         primaryStage = game.getMainStage();
-        primaryStage.show();
 
+        primaryStage.show();
     }
 
     public static void main(String[] args) {

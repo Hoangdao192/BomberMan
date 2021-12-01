@@ -3,9 +3,11 @@ package UI;
 import Map.Map;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -29,6 +31,8 @@ public class HeadPane extends AnchorPane {
     private Label score;
     private Label hp;
 
+    private UIButton pauseButton;
+
     public HeadPane(Map map, int width, int height) {
         this.map = map;
         this.height = height;
@@ -38,19 +42,16 @@ public class HeadPane extends AnchorPane {
 
         BackgroundFill backgroundFill = new BackgroundFill(Color.BLACK, null, new Insets(-1));
         setBackground(new Background(backgroundFill));
-        AnchorPane blankPane = new AnchorPane();
-        //setLeftAnchor(blankPane, 0.0);
-        //setRightAnchor(blankPane, 0.0);
-        getChildren().add(blankPane);
+        createLabel();
+        createButton();
+    }
 
+    private void createLabel() {
         time = new Label("Time: " + map.getTime().countSecond());
         time.setFont(Font.font("Segoe UI Black", FontWeight.BOLD, DEFAULT_FONT_SIZE));
         time.setTextFill(Color.RED);
         time.setLayoutX(30);
-        DoubleProperty doubleProperty = new SimpleDoubleProperty(10);
-        //time.layoutXProperty().bind(doubleProperty);
         time.setLayoutY(height / 4);
-
 
         score = new Label("Score: " + map.getPlayer().getScore().getScore());
         score.setFont(Font.font("Segoe UI Black", FontWeight.BOLD, DEFAULT_FONT_SIZE));
@@ -60,30 +61,45 @@ public class HeadPane extends AnchorPane {
 
         hp = new Label("Life: " + map.getPlayer().getHP());
         hp.setFont(Font.font("Segoe UI Black", FontWeight.BOLD, DEFAULT_FONT_SIZE));
-        hp.setLayoutX(width / 4 * 3);
+        hp.setLayoutX(width / 4 * 2.5);
         hp.setLayoutY(height / 4);
         hp.setTextFill(Color.RED);
 
         getChildren().addAll(time, score, hp);
     }
 
+    private void createButton() {
+        pauseButton = new UIButton(133, 34, "PAUSE");
+        pauseButton.setLayoutY(height / 4);
+        setRightAnchor(pauseButton, 30.0);
+        setBottomAnchor(pauseButton, 10.0);
+        getChildren().add(pauseButton);
+    }
+
+    public void disableAction() {
+        pauseButton.setDisable(true);
+    }
+
+    public void enableAction() {
+        pauseButton.setDisable(false);
+    }
+
     public void resize(int newWidth, int newHeight) {
         width = newWidth;
         height = newHeight;
 
-        //setWidth(width);
+        setWidth(width);
         setHeight(height);
 
         time.setFont(Font.font("Segoe UI Black", FontWeight.BOLD, DEFAULT_FONT_SIZE));
-        //time.setLayoutX(30);
-        //time.setLayoutY(height / 4);
+        time.setLayoutY(height / 4);
 
         score.setFont(Font.font("Segoe UI Black", FontWeight.BOLD, DEFAULT_FONT_SIZE));
-        //score.setLayoutX(width / 3);
+        score.setLayoutX(width / 3);
         score.setLayoutY(height / 4);
 
         hp.setFont(Font.font("Segoe UI Black", FontWeight.BOLD, DEFAULT_FONT_SIZE));
-        //hp.setLayoutX(width / 4 * 3);
+        hp.setLayoutX(width / 4 * 2.5);
         hp.setLayoutY(height / 4);
     }
 
@@ -91,5 +107,13 @@ public class HeadPane extends AnchorPane {
         time.setText("Time: " + (map.getMaxTime() - map.getTime().countSecond()));
         score.setText("Score: " + map.getPlayer().getScore().getScore());
         hp.setText("HP: " + map.getPlayer().getHP());
+    }
+
+    public boolean isActionEnable() {
+        return !pauseButton.isDisable();
+    }
+
+    public UIButton getPauseButton() {
+        return pauseButton;
     }
 }

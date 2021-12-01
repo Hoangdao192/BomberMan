@@ -1,16 +1,15 @@
 import Component.MapManager;
 import Entities.Bomber;
 import Map.Map;
-import Map.Camera;
 import Setting.Setting;
 import SupportMap.HeadMap;
 import SupportMap.TransferMap;
-import UI.BottomPane;
-import UI.GameOverPane;
-import UI.HeadPane;
+import UI.*;
 import Utils.Vector2i;
 import javafx.animation.AnimationTimer;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -20,8 +19,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.File;
 
@@ -58,6 +57,7 @@ public class Game {
     //private Font font;
 
     //  UI
+    private PauseMenu pauseMenu;
     private HeadPane headPane;
     private final int HEADPANE_DEFAULT_HEIGHT = 60;
     private Vector2i headPanePosition = new Vector2i(0, 0);
@@ -68,7 +68,8 @@ public class Game {
     private static boolean soundOn = false;
 
     //  Bottom Pane
-    private BottomPane bottomPane;
+    private boolean showMinimap = true;
+    private MiniMap miniMap;
     private final int BOTTOM_PANE_DEFAULT_HEIGHT = 180;
 
     //  Game Over Pane
@@ -95,7 +96,7 @@ public class Game {
 
         //mainScene = new Scene(mainContainer, screenWidth, screenHeight);
         //mainScene = new Scene(mainContainer, screenWidth, screenHeight + 60);
-        mainScene = new Scene(mainContainer, screenWidth, screenHeight + 60 + 130);
+        mainScene = new Scene(mainContainer, screenWidth, screenHeight + 60);
         mainStage = new Stage();
         mainStage.setMinHeight(DEFAULT_HEIGHT + 30);
         mainStage.setMinWidth(DEFAULT_WIDTH);
@@ -108,35 +109,27 @@ public class Game {
         /*mainContainer.setLeftAnchor(mainCanvas, 0.0);
         mainContainer.setRightAnchor(mainCanvas, 0.0);*/
         setFPS(30);
-        createMap();
-        createPlayer();
-        createHeadMap();
-        createTransferMap();
-        map.setPlayer(bomber);
+
+        createNewGame();
+
         createResizeEventHandle();
-
-        createUI();
         initEventHandler();
-        mainContainer.getChildren().add(mainCanvas);
-
-        /*SettingPane settingPane = new SettingPane(50,50, 300,250);
-        mainContainer.getChildren().add(settingPane);
-        settingPane.toFront();*/
-
         playBackgroundMusic();
     }
 
-    private void createHeadMap() {
+    /*private void createHeadMap() {
         headMap = new HeadMap(bomber, map, (int) screenWidth, (int) screenHeight / 10);
-    }
+    }*/
 
     private void createTransferMap() {
         transferMap = new TransferMap((int) screenWidth, (int) screenHeight, map.getGridSize());
     }
 
+    //  UI initializer
     private void createUI() {
         createHeadPane();
-        createBottomPane();
+        createMiniMap();
+        createPauseMenu();
         //createGameOverPane();
     }
 
@@ -145,13 +138,41 @@ public class Game {
         mainContainer.setLeftAnchor(headPane, 0.0);
         mainContainer.setRightAnchor(headPane, 1.0);
         mainContainer.getChildren().add(headPane);
+
+
+        headPane.getPauseButton().setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                pause = true;
+            }
+        });
     }
 
-    private void createBottomPane() {
-        bottomPane = new BottomPane(map, (int) mainScene.getWidth(), BOTTOM_PANE_DEFAULT_HEIGHT);
-        bottomPane.setLayoutX(mainCanvasPosition.x);
-        bottomPane.setLayoutY(mainCanvasPosition.y + screenHeight);
-        mainContainer.getChildren().add(bottomPane);
+    private void createMiniMap() {
+        miniMap = new MiniMap(map, (int) 200, 50);
+        miniMap.setLayoutY(HEADPANE_DEFAULT_HEIGHT);
+        miniMap.setOpacity(0.8);
+        mainContainer.setRightAnchor(miniMap, 0.0);
+        mainContainer.getChildren().add(miniMap);
+    }
+
+    private void createPauseMenu() {
+        pauseMenu = new PauseMenu(100, 100, 200, 230);
+        mainContainer.getChildren().add(pauseMenu);
+        pauseMenu.getContinueButton().setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                pause = false;
+            }
+        });
+
+        pauseMenu.getRestartButton().setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                createNewGame();
+                pause = false;
+            }
+        });
     }
 
     private void createGameOverPane() {
@@ -186,9 +207,9 @@ public class Game {
     }
 
     private void resizeUI() {
-        //headPane.resize((int) mainScene.getWidth(), (int) headPane.getHeight());
-        bottomPane.resize((int) mainScene.getWidth(), (int) bottomPane.getHeight());
-        bottomPane.setLayoutY(mainCanvasPosition.y + mainCanvas.getHeight() * mainCanvas.getScaleY());
+        headPane.resize((int) mainScene.getWidth(), (int) headPane.getHeight());
+        //bottomPane.resize((int) mainScene.getWidth(), (int) bottomPane.getHeight());
+        //bottomPane.setLayoutY(mainCanvasPosition.y + mainCanvas.getHeight() * mainCanvas.getScaleY());
     }
 
     private void resizeCanvas() {
@@ -277,20 +298,17 @@ public class Game {
                 bomber.updateInput(keyEvent, false);
             }
         });
+    }
 
-        bottomPane.getHomeButton().setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                bottomPane.clickHomeButton();
-            }
-        });
+    private boolean checkPlayerBehindMiniMap() {
+        int bomberScreenX = bomber.getX() - map.getCamera().getStart().x;
+        int bomberScreenY = bomber.getY() - map.getCamera().getStart().y;
+        Rectangle2D bomberRect = new Rectangle2D(bomberScreenX, bomberScreenY, bomber.getWidth(), bomber.getHeight());
+        Rectangle2D miniMapRect = new Rectangle2D(
+                miniMap.getLayoutX(), miniMap.getLayoutY(), miniMap.getWidth(), miniMap.getHeight()
+        );
 
-        bottomPane.getStopButton().setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                bottomPane.clickStopButton();
-            }
-        });
+        return (miniMapRect.contains(bomberRect) || miniMapRect.intersects(bomberRect));
     }
 
     public void run() {
@@ -300,14 +318,30 @@ public class Game {
             public void handle(long now) {
                 if (now - lastUpdate >= frameDelayTime) {
                     if (running && !pause) {
+                        mainScene.getRoot().requestFocus();
+                        if (map.getTime().isStop()) {
+                            map.getTime().present();
+                        }
+                        if (pauseMenu.isVisible()) {
+                            pauseMenu.setVisible(false);
+                            if (!headPane.isActionEnable()) {
+                                headPane.enableAction();
+                            }
+                        }
+
                         update();
                         render();
                     }
                     else if (pause) {
-
+                        if (!map.getTime().isStop()) {
+                            map.getTime().stop();
+                        }
+                        map.getTime().countSecond();
+                        pauseMenu.toFront();
+                        pauseMenu.setVisible(true);
+                        headPane.disableAction();
                     } else
                     {
-
                         updateGameOverPane();
                         gameOverPane.toFront();
                         gameOverPane.setVisible(true);
@@ -345,7 +379,7 @@ public class Game {
             map.getCamera().setCenter(bomber.getX(), bomber.getY());
             //map.getCamera().setPosition(0, 0);
             map.update();
-            headMap.update();
+            //headMap.update();
         } else {
             headMap.setTransfer(true);
             if (!transferMap.isLoading()) {
@@ -357,17 +391,29 @@ public class Game {
                 transferMap.setLoading(false);
                 headMap.setTransfer(false);
             }
-            bottomPane.newMiniMap();
+            miniMap.newMiniMap();
             transferMap.update();
         }
         updateUI();
     }
 
+    public void createNewGame() {
+        mainContainer.getChildren().clear();
+        createMap();
+        createPlayer();
+        //createHeadMap();
+        createTransferMap();
+        map.setPlayer(bomber);
+        createUI();
+        mainContainer.getChildren().add(mainCanvas);
+    }
+
+
     private void updateGameOverPane() {
         if (!createGameOver) {
             map.newMap();
             //Entity.Stop = true;
-            transferMap.reset(map.getPlayer(), headMap.getMaxTime() - headMap.getTime(), map.getCheckBonus());
+            transferMap.reset(map.getPlayer(), map.getTime().countSecond(), map.getCheckBonus());
             map.setTransfer(false);
             transferMap.setLoading(false);
             createGameOverPane();
@@ -378,12 +424,19 @@ public class Game {
 
     private void updateUI() {
         headPane.update();
-        bottomPane.update();
+        miniMap.update();
+        if (checkPlayerBehindMiniMap()) {
+            miniMap.setVisible(false);
+        } else {
+            miniMap.setVisible(showMinimap);
+        }
     }
 
     public void render() {
         mainContainer.getChildren().remove(mainCanvas);
         mainContainer.getChildren().add(mainCanvas);
+        miniMap.toFront();
+        pauseMenu.toFront();
 
         if (!map.isTransfer()) {
             graphicsContext.clearRect(0, 0, mainCanvas.getWidth(), mainCanvas.getHeight());

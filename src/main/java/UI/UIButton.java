@@ -35,14 +35,16 @@ public class UIButton extends Button {
     private BackgroundSize backgroundSize;
     private Background background;
 
-    private int width;
-    private int height;
+    private double width;
+    private double height;
 
-    public UIButton(int width, int height, String text) {
+    public UIButton(double width, double height, String text) {
         setText(text);
         setTextFill(Color.GREEN);
         try {
-            setFont(Font.loadFont(new FileInputStream("src/main/resources/Font/kenvector_future_thin.ttf"), 17));
+            setFont(Font.loadFont(
+                    new FileInputStream("src/main/resources/Font/kenvector_future_thin.ttf"),
+                    20 * height / 49));
         } catch (Exception e) {}
 
         this.width = width;
@@ -122,7 +124,7 @@ public class UIButton extends Button {
 
     private void createStyle() {
         idleImage = new Image(new File(idleImagePath).toURI().toString());
-       pressedImage = new Image(new File(pressedImagePath).toURI().toString());
+        pressedImage = new Image(new File(pressedImagePath).toURI().toString());
         backgroundSize = new BackgroundSize(1.0, 1.0, true, true, false, false);
         backgroundImageIdle = new BackgroundImage(
                 idleImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
@@ -130,6 +132,7 @@ public class UIButton extends Button {
         backgroundImagePressed = new BackgroundImage(
                 pressedImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.DEFAULT, backgroundSize);
+
         setStyleIdle();
     }
 

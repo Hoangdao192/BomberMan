@@ -37,6 +37,10 @@ public class Time {
         stop = true;
     }
 
+    public boolean isStop() {
+        return stop;
+    }
+
     public void present() {
         stop = false;
     }

@@ -36,14 +36,14 @@ public class Bomber extends DynamicEntity {
 
     //  Chức năng
     //  Có thể đi xuyên tường
-    private boolean wallPass = false;
+    private boolean wallPass = true;
     //  Có thể đi xuyên bom
     private boolean bombPass = false;
     //  Miễn nhiễm với bom nổ
     private boolean flamePass = false;
     private boolean eatenFlamePass = false;
     //  Miễn ảnh hưởng khi va chạm với Enemy
-    private boolean enemyPass = false;
+    private boolean enemyPass = true;
     private boolean eatenEnemyPass = false;
 
 
