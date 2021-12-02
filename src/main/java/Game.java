@@ -200,9 +200,6 @@ public class Game {
             resizeUI();
             resizeCamera();
         });
-        /*mainScene.heightProperty().addListener((obs, oldVal, newVal) -> {
-            resizeHeight();
-        });*/
     }
 
     private void playBackgroundMusic() {
@@ -322,7 +319,8 @@ public class Game {
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv8.txt");
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv9.txt");
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv10.txt");
-        map = mapManager.loadCurrentLevel();
+        //map = mapManager.loadCurrentLevel();
+        map = new Map("src/main/resources/Map/map.txt", DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 
     private void createPlayer() {
