@@ -181,7 +181,7 @@ public class Game {
 
     private void createGameOverPane() {
         gameOverPane = new GameOverPane((int) mainStage.getWidth() / 4, (int) mainStage.getHeight() / 4,
-                (int) mainStage.getWidth() / 2, (int) mainStage.getHeight() / 2, transferMap);
+                (int) mainStage.getWidth() / 2, (int) mainStage.getHeight() / 2, map);
         mainContainer.getChildren().add(gameOverPane);
         gameOverPane.setVisible(false);
         createGameOver = true;
@@ -415,18 +415,12 @@ public class Game {
             running = false;
         }
 
-        if (!map.isTransfer()) {
+        if (!map.isLevelPass()) {
             if (map.getMaxTime() - map.getTime().countSecond() <= 0) {
                 bomber.setExist(false);
             }
-
-            if (!bomber.isExist()) {
-                running = false;
-            }
             bomber.update();
-            //map.getCamera().move(bomber.getMovement().getVelocity());
             map.getCamera().setCenter(bomber.getX(), bomber.getY());
-            //map.getCamera().setPosition(0, 0);
             map.update();
         } else {
             if (!transferMap.isLoading()) {
@@ -452,7 +446,6 @@ public class Game {
         createUI();
         mainContainer.getChildren().add(mainCanvas);
     }
-
 
     private void updateGameOverPane() {
         if (!createGameOver) {

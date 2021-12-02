@@ -1,26 +1,23 @@
-package SupportMap;
+package UI;
 
 import Component.Sprite;
 import Component.Time;
 import Entities.Bomber;
-import Entities.BonusIteam.*;
+import Entities.BonusIteam.Bonus;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
-public class TransferMap {
-    int Width = 0;
-    int Height = 0;
+public class TransferMap extends AnchorPane {
+    int width = 0;
+    int height = 0;
     int sizeImage;
     Time time;
-    int percent = 0;
     int display = 0;
-    Sprite[] sprites = new Sprite[3];
 
     // Thông tin màn trước
     private Bomber bomber = null;
@@ -87,7 +84,7 @@ public class TransferMap {
     public TransferMap(int width, int height, int size) {
         time = new Time();
         sizeImage = size;
-        Width = width;
+        width = width;
         Height = height;
         sprites[0] = Sprite.BOMBER_WALK_RIGHT_1;
         sprites[1] = Sprite.BOMBER_WALK_RIGHT_2;
@@ -120,36 +117,23 @@ public class TransferMap {
 
     public void update() {
         display++;
-        percent = time.countSecond() * 10;
     }
 
     public void render(GraphicsContext gc) {
-        gc.clearRect(0, 0, Width, Height);
+        gc.clearRect(0, 0, width, Height);
         gc.setFill(Color.GREEN);
-        gc.fillRect(0, 0, Width, Height);
+        gc.fillRect(0, 0, width, Height);
         gc.setFill(Color.BLUE);
-        gc.fillRect(Width / 12, Height * 9 / 10, Width / 12 * percent / 10, Height / 10);
-        sprites[display / 3 % 3].render(Width / 12 * percent / 10, Height * 9 / 10 - sizeImage, sizeImage, sizeImage, gc);
+        gc.fillRect(width / 12, Height * 9 / 10, width / 12 * percent / 10, Height / 10);
         Font font = Font.font("Segoe UI Black", FontWeight.BOLD, 25);
         gc.setFill(Color.WHITE);
         gc.setFont(font);
-        gc.fillText("Loading ... " + percent + " %", Width / 10 * 4, Height / 100 * 100);
 
         gc.setFill(Color.YELLOW);
-        gc.fillText("Score: " + scorePlayer, Width / 10 * 4, Height / 10 * 7);
+        gc.fillText("Score: " + scorePlayer, width / 10 * 4, Height / 10 * 7);
 
         gc.setFill(Color.YELLOW);
-        gc.fillText("Time: " + timeMap, Width / 10 * 4, Height / 10 * 8);
+        gc.fillText("Time: " + timeMap, width / 10 * 4, Height / 10 * 8);
 
-        int other = 0;
-        int width = Width / 3;
-        for (Bonus bonus : bonusArrayList) {
-            if (bonus.isCheckBonus()) {
-                bonus.render(width, Height / 20 * (2 * other + 1), gc);
-                gc.setFill(Color.YELLOW);
-                gc.fillText("x 1 : " + bonus.getScore(), Width / 3 + 2 * sizeImage, Height / 20 * (2 * other + 2));
-                other++;
-            }
-        }
     }
 }

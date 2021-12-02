@@ -16,6 +16,11 @@ import java.util.ArrayList;
 public class Bomber extends DynamicEntity {
 
     AnimationManager animationManager;
+    int previousDirection = 1;
+    private final int DIRECTION_RIGHT = 1;
+    private final int DIRECTION_LEFT = 2;
+    private final int DIRECTION_DOWN = 3;
+    private final int DIRECTION_UP = 4;
     boolean moveRight = false;
     boolean moveLeft = false;
     boolean moveUp = false;
@@ -65,7 +70,7 @@ public class Bomber extends DynamicEntity {
 
         alive = true;
         score = new Score();
-        HP = 3;
+        HP = 1;
         createSound();
     }
 
@@ -125,6 +130,35 @@ public class Bomber extends DynamicEntity {
                 Sprite.BOMBER_WALK_RIGHT_3, Sprite.SPRITE_TRANSPARENT
         );
 
+        Animation standDownAnimationFlicker = new Animation(
+                this, this.width, this.height, 2,
+                Sprite.BOMBER_WALK_DOWN_1, Sprite.SPRITE_TRANSPARENT,
+                Sprite.BOMBER_WALK_DOWN_1, Sprite.SPRITE_TRANSPARENT,
+                Sprite.BOMBER_WALK_DOWN_1, Sprite.SPRITE_TRANSPARENT
+        );
+
+        Animation standUpAnimationFlicker = new Animation(
+                this, this.width, this.height, 2,
+                Sprite.BOMBER_WALK_UP_1, Sprite.SPRITE_TRANSPARENT,
+                Sprite.BOMBER_WALK_UP_1, Sprite.SPRITE_TRANSPARENT,
+                Sprite.BOMBER_WALK_UP_1, Sprite.SPRITE_TRANSPARENT
+        );
+
+        Animation standLeftAnimationFlicker = new Animation(
+                this, this.width, this.height, 2,
+                Sprite.BOMBER_WALK_LEFT_1, Sprite.SPRITE_TRANSPARENT,
+                Sprite.BOMBER_WALK_LEFT_1, Sprite.SPRITE_TRANSPARENT,
+                Sprite.BOMBER_WALK_LEFT_1, Sprite.SPRITE_TRANSPARENT
+        );
+
+        Animation standRightAnimationFlicker = new Animation(
+                this, this.width, this.height, 2,
+                Sprite.BOMBER_WALK_RIGHT_1, Sprite.SPRITE_TRANSPARENT,
+                Sprite.BOMBER_WALK_RIGHT_1, Sprite.SPRITE_TRANSPARENT,
+                Sprite.BOMBER_WALK_RIGHT_1, Sprite.SPRITE_TRANSPARENT
+        );
+
+
         animationManager.addAnimation("WALK_UP", walkUpAnimation);
         animationManager.addAnimation("WALK_DOWN", walkDownAnimation);
         animationManager.addAnimation("WALK_LEFT", walkLeftAnimation);
@@ -133,6 +167,10 @@ public class Bomber extends DynamicEntity {
         animationManager.addAnimation("WALK_DOWN_FLICKER", walkDownAnimationFlicker);
         animationManager.addAnimation("WALK_LEFT_FLICKER", walkLeftAnimationFlicker);
         animationManager.addAnimation("WALK_RIGHT_FLICKER", walkRightAnimationFlicker);
+        animationManager.addAnimation("STAND_UP_FLICKER", standUpAnimationFlicker);
+        animationManager.addAnimation("STAND_DOWN_FLICKER", standDownAnimationFlicker);
+        animationManager.addAnimation("STAND_LEFT_FLICKER", standLeftAnimationFlicker);
+        animationManager.addAnimation("STAND_RIGHT_FLICKER", standRightAnimationFlicker);
         animationManager.addAnimation("DEAD", deadAnimation);
         //  Default animation
         animationManager.play("WALK_DOWN");
@@ -339,7 +377,6 @@ public class Bomber extends DynamicEntity {
             }
         }
 
-
         updateMovement();
         updateHitBox();
         updateAnimation();
@@ -375,17 +412,21 @@ public class Bomber extends DynamicEntity {
         int directionY;
         if (moveRight) {
             directionX = 1;
+            previousDirection = DIRECTION_RIGHT;
         }
         else if (moveLeft) {
+            previousDirection = DIRECTION_LEFT;
             directionX = -1;
         }
         else {
             directionX = 0;
         }
         if (moveDown) {
+            previousDirection = DIRECTION_DOWN;
             directionY = 1;
         }
         else if (moveUp) {
+            previousDirection = DIRECTION_UP;
             directionY = -1;
         }
         else {
@@ -438,6 +479,14 @@ public class Bomber extends DynamicEntity {
                 animationManager.play("WALK_LEFT_FLICKER");
             } else if (moveRight) {
                 animationManager.play("WALK_RIGHT_FLICKER");
+            } else if (previousDirection == DIRECTION_RIGHT) {
+                animationManager.play("STAND_RIGHT_FLICKER");
+            } else if (previousDirection == DIRECTION_LEFT) {
+                animationManager.play("STAND_LEFT_FLICKER");
+            } else if (previousDirection == DIRECTION_DOWN) {
+                animationManager.play("STAND_DOWN_FLICKER");
+            } else if (previousDirection == DIRECTION_UP) {
+                animationManager.play("STAND_UP_FLICKER");
             }
         } else if (moveUp) {
             animationManager.play("WALK_UP");

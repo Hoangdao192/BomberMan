@@ -66,6 +66,8 @@ public class Map {
 
     private Portal portal;
 
+    private boolean levelPass = false;
+
     //Check transfer
     private boolean transfer = false;
 
@@ -199,6 +201,14 @@ public class Map {
 
     public ArrayList<Bonus> getBonusArrayList() {
         return bonusArrayList;
+    }
+
+    public boolean isLevelPass() {
+        return levelPass;
+    }
+
+    public void setLevelPass(boolean levelPass) {
+        this.levelPass = levelPass;
     }
 
     // Check Bonus
@@ -696,23 +706,6 @@ public class Map {
      * Render tất cả các entity nằm trong vùng camera.
      */
     public void render(GraphicsContext graphicsContext) {
-       /* for (int i = 0; i < entities.size(); ++i) {
-            Entity currentEntity = entities.get(i);
-            //  Không render nếu Entity nằm ngoài vùng camera
-            if (currentEntity.getX() >= camera.getEnd().x
-                    || currentEntity.getX() + currentEntity.getWidth() <= camera.getStart().x
-                    || currentEntity.getY() >= camera.getEnd().y
-                    || currentEntity.getY() + currentEntity.getHeight() <= camera.getStart().y) {
-                continue;
-            }
-
-            currentEntity.render(
-                    currentEntity.getX() - camera.getStart().x,
-                    currentEntity.getY() - camera.getStart().y,
-                    graphicsContext
-            );
-        }*/
-
         graphicsContext.setFill(Paint.valueOf("Green"));
         graphicsContext.fillRect(0, 0, camera.getSize().x, camera.getSize().y);
         for (int i = 0; i < staticEntityList.size(); ++i) {
