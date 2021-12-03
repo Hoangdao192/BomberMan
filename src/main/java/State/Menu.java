@@ -1,5 +1,5 @@
-import State.BaseState;
-import State.Game;
+package State;
+
 import UI.ImageViewPane;
 import UI.SettingPane;
 import javafx.event.ActionEvent;

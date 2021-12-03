@@ -1,10 +1,8 @@
 import State.BaseState;
+import State.Menu;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.event.EventHandler;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 import java.util.Stack;
 
@@ -21,6 +19,7 @@ public class Main extends Application {
         Stack<BaseState> stateManager = new Stack<>();
         Menu menu = new Menu(primaryStage, stateManager);
         stateManager.push(menu);
+        primaryStage.setScene(menu.getScene());
         primaryStage.setMinHeight(DEFAULT_HEIGHT + 30);
         primaryStage.setMinWidth(DEFAULT_WIDTH);
         primaryStage.show();

@@ -479,6 +479,7 @@ public class Game extends BaseState{
         map.setPlayer(bomber);
         createUI();
         mainContainer.getChildren().add(mainCanvas);
+        resizeCamera();
     }
 
     private void updateGameOverPane() {
