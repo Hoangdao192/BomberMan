@@ -108,12 +108,7 @@ public class Game {
         mainContainer.setRightAnchor(mainCanvas, 0.0);*/
         setFPS(30);
 
-        createMap();
-        createPlayer();
-        createTransferMap();
-        map.setPlayer(bomber);
-        createResizeEventHandle();
-
+        createMapManager();
         createNewGame();
 
         createResizeEventHandle();
@@ -306,7 +301,7 @@ public class Game {
         return mainStage;
     }
 
-    private void createMap() {
+    private void createMapManager() {
         mapManager = new MapManager((int) screenWidth, (int) screenHeight);
         mapManager.setCurrentLevel(1);
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv1.txt");
@@ -319,8 +314,11 @@ public class Game {
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv8.txt");
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv9.txt");
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv10.txt");
-        //map = mapManager.loadCurrentLevel();
-        map = new Map("src/main/resources/Map/map.txt", DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    }
+
+    private void createMap() {
+        map = mapManager.loadCurrentLevel();
+        //map = new Map("src/main/resources/Map/map.txt", DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 
     private void createPlayer() {
@@ -450,7 +448,6 @@ public class Game {
         createUI();
         mainContainer.getChildren().add(mainCanvas);
     }
-
 
     private void updateGameOverPane() {
         if (!createGameOver) {
