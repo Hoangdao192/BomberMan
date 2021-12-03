@@ -209,6 +209,9 @@ public class Map {
 
     public void setLevelPass(boolean levelPass) {
         this.levelPass = levelPass;
+        if (levelPass) {
+            time.stop();
+        }
     }
 
     // Check Bonus

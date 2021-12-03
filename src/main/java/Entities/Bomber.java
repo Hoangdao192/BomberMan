@@ -36,11 +36,11 @@ public class Bomber extends DynamicEntity {
     //  Có thể đi xuyên tường
     private boolean wallPass = true;
     //  Có thể đi xuyên bom
-    private boolean bombPass = false;
+    private boolean bombPass = true;
     //  Miễn nhiễm với bom nổ
-    private boolean flamePass = false;
+    private boolean flamePass = true;
     //  Miễn ảnh hưởng khi va chạm với Enemy
-    private boolean enemyPass = false;
+    private boolean enemyPass = true;
     //  Trạng thái bất diệt miễn nhiễm với mọi sát thương
     private boolean immortal = false;
     private final int MAX_IMMORTAL_TIME = 10;
@@ -195,7 +195,7 @@ public class Bomber extends DynamicEntity {
     }
 
     private void createBombManager() {
-        bombManager = new BombManager(this, map, 1, 1);
+        bombManager = new BombManager(this, map, 100, 10);
         bombManager.disableDetonator();
     }
 

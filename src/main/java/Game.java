@@ -2,12 +2,10 @@ import Component.MapManager;
 import Entities.Bomber;
 import Map.Map;
 import Setting.Setting;
-import SupportMap.HeadMap;
 import SupportMap.TransferMap;
 import UI.*;
 import Utils.Vector2i;
 import javafx.animation.AnimationTimer;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -20,7 +18,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 import java.io.File;
 
@@ -55,6 +52,7 @@ public class Game {
     //private Font font;
 
     //  UI
+    private TransferMapPane transferMapPane;
     private PauseMenu pauseMenu;
     private HeadPane headPane;
     private final int HEADPANE_DEFAULT_HEIGHT = 60;
@@ -107,12 +105,7 @@ public class Game {
         /*mainContainer.setLeftAnchor(mainCanvas, 0.0);
         mainContainer.setRightAnchor(mainCanvas, 0.0);*/
         setFPS(30);
-
-        createMap();
-        createPlayer();
-        createTransferMap();
-        map.setPlayer(bomber);
-        createResizeEventHandle();
+        createMapManager();
 
         createNewGame();
 
@@ -121,12 +114,9 @@ public class Game {
         playBackgroundMusic();
     }
 
-    /*private void createHeadMap() {
-        headMap = new HeadMap(bomber, map, (int) screenWidth, (int) screenHeight / 10);
-    }*/
-
     private void createTransferMap() {
         transferMap = new TransferMap((int) screenWidth, (int) screenHeight, map.getGridSize());
+        transferMapPane = new TransferMapPane((int) mainScene.getWidth(), (int) mainScene.getHeight(), map);
     }
 
     //  UI initializer
@@ -134,6 +124,7 @@ public class Game {
         createHeadPane();
         createMiniMap();
         createPauseMenu();
+        //createTransferMap();
         //createGameOverPane();
     }
 
@@ -309,7 +300,7 @@ public class Game {
         return mainStage;
     }
 
-    private void createMap() {
+    private void createMapManager() {
         mapManager = new MapManager((int) screenWidth, (int) screenHeight);
         mapManager.setCurrentLevel(1);
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv1.txt");
@@ -322,7 +313,11 @@ public class Game {
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv8.txt");
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv9.txt");
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv10.txt");
-        map = mapManager.loadCurrentLevel();
+    }
+
+    private void createMap() {
+        //map = mapManager.loadCurrentLevel();
+        map = new Map("src/main/resources/Map/map.txt", (int) screenWidth, (int) screenHeight);
     }
 
     private void createPlayer() {
@@ -369,7 +364,7 @@ public class Game {
                 if (now - lastUpdate >= frameDelayTime) {
                     if (running && !pause) {
                         mainScene.getRoot().requestFocus();
-                        if (map.getTime().isStop()) {
+                        if (map.getTime().isStop() && !map.isLevelPass()) {
                             map.getTime().present();
                         }
                         if (pauseMenu.isVisible()) {
@@ -416,14 +411,15 @@ public class Game {
         }
 
         if (!map.isLevelPass()) {
-            if (map.getMaxTime() - map.getTime().countSecond() <= 0) {
+            /*if (map.getMaxTime() - map.getTime().countSecond() <= 0) {
                 bomber.setExist(false);
-            }
+            }*/
+            transferMapPane.resetTime();
             bomber.update();
             map.getCamera().setCenter(bomber.getX(), bomber.getY());
             map.update();
         } else {
-            if (!transferMap.isLoading()) {
+            /*if (!transferMap.isLoading()) {
                 transferMap.reset(map.getPlayer(), map.getTime().countSecond(), map.getBonusArrayList());
             }
             if (transferMap.getPercent() >= 100) {
@@ -432,7 +428,16 @@ public class Game {
                 transferMap.setLoading(false);
             }
             miniMap.newMiniMap();
-            transferMap.update();
+            transferMap.update();*/
+            mainContainer.getChildren().clear();
+            transferMapPane.setTimeMap(map.getTime().countSecond());
+            transferMapPane.setScorePlayer(bomber.getScore().getScore());
+            mainContainer.getChildren().add(transferMapPane);
+            transferMapPane.update();
+            if (transferMapPane.isTransfer()) {
+                mapManager.nextLevel();
+                createNewGame();
+            }
         }
         updateUI();
     }
@@ -441,8 +446,9 @@ public class Game {
         mainContainer.getChildren().clear();
         createMap();
         createPlayer();
-        createTransferMap();
         map.setPlayer(bomber);
+
+        createTransferMap();
         createUI();
         mainContainer.getChildren().add(mainCanvas);
     }
@@ -474,19 +480,21 @@ public class Game {
     }
 
     public void render() {
-        mainContainer.getChildren().remove(mainCanvas);
-        mainContainer.getChildren().add(mainCanvas);
-        miniMap.toFront();
-        pauseMenu.toFront();
+        if (!map.isLevelPass()) {
+            mainContainer.getChildren().remove(mainCanvas);
+            mainContainer.getChildren().add(mainCanvas);
+            miniMap.toFront();
+            pauseMenu.toFront();
 
-        if (!map.isTransfer()) {
-            graphicsContext.clearRect(0, 0, mainCanvas.getWidth(), mainCanvas.getHeight());
+            if (!map.isTransfer()) {
+                graphicsContext.clearRect(0, 0, mainCanvas.getWidth(), mainCanvas.getHeight());
             /*Camera camera = map.getCamera();
             graphicsContext.strokeRect(0, 0, camera.getSize().x, camera.getSize().y);*/
-            map.render(graphicsContext);
-            bomber.render(graphicsContext);
-        } else {
-            transferMap.render(graphicsContext);
+                map.render(graphicsContext);
+                bomber.render(graphicsContext);
+            } else {
+                transferMap.render(graphicsContext);
+            }
         }
     }
 }
