@@ -7,10 +7,12 @@ import javafx.stage.WindowEvent;
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Game game = new Game();
+        /*Game game = new Game();
         game.run();
-        primaryStage = game.getMainStage();
+        primaryStage = game.getMainStage();*/
 
+        Menu menu = new Menu();
+        primaryStage = menu.getMainStage();
         primaryStage.show();
     }
 
