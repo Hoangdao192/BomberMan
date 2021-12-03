@@ -1,3 +1,5 @@
+import State.BaseState;
+import State.Game;
 import UI.ImageViewPane;
 import UI.SettingPane;
 import javafx.event.ActionEvent;
@@ -13,25 +15,22 @@ import javafx.stage.Stage;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Stack;
 
 import UI.UIButton;
 
-public class Menu {
+public class Menu extends BaseState {
     // Kích thước cửa sổ mặc định
     private final int DEFAULT_WIDTH = 800;
     private final int DEFAULT_HEIGHT = 416;
-    //  Kích thước cửa sổ
-    private double screenWidth;
-    private double screenHeight;
 
-    private Stage mainStage;
-    private Scene mainScene;
     private ImageViewPane viewPane;
-    private UIButton button1;
-    private UIButton button2;
-    private UIButton button3;
+    private UIButton newGameButton;
+    private UIButton settingButton;
+    private UIButton exitButton;
 
-    public Menu() throws FileNotFoundException {
+    public Menu(Stage mainStage, Stack<BaseState> states) throws FileNotFoundException {
+        super(mainStage, states);
         Image image = new Image(new FileInputStream("src/main/resources/Graphic/bomberman_menu.png"));
         ImageView imageView = new ImageView();
         imageView.setImage(image);
@@ -40,44 +39,33 @@ public class Menu {
 
         creatUIButton();
 
-        VBox box = new VBox(30, button1, button2, button3);
+        VBox box = new VBox(30, newGameButton, settingButton, exitButton);
         box.setAlignment(Pos.CENTER);
-        VBox.setVgrow(button1, Priority.ALWAYS);
-        VBox.setVgrow(button2, Priority.ALWAYS);
-        VBox.setVgrow(button3, Priority.ALWAYS);
-
+        VBox.setVgrow(newGameButton, Priority.ALWAYS);
+        VBox.setVgrow(settingButton, Priority.ALWAYS);
+        VBox.setVgrow(exitButton, Priority.ALWAYS);
 
         StackPane root = new StackPane();
         root.getChildren().addAll(viewPane, box);
-        mainScene = new Scene(root, DEFAULT_WIDTH, DEFAULT_HEIGHT);
-        mainStage = new Stage();
-        mainStage.setTitle("BomberMan Game");
-        mainStage.setScene(mainScene);
-    }
-
-    public Stage getMainStage() {
-        return mainStage;
+        scene = new Scene(root, DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 
     private void creatUIButton() {
-        button1 = new UIButton(250, 50, "New Game");
-        button1.setStyle(UIButton.GREEN_1);
-        button2 = new UIButton(250, 50, "Setting");
-        button2.setStyle(UIButton.GREEN_1);
-        button3 = new UIButton(250, 50, "Exit");
-        button3.setStyle(UIButton.GREEN_1);
+        newGameButton = new UIButton(250, 50, "New Game");
+        newGameButton.setStyle(UIButton.GREEN_1);
+        settingButton = new UIButton(250, 50, "Setting");
+        settingButton.setStyle(UIButton.GREEN_1);
+        exitButton = new UIButton(250, 50, "Exit");
+        exitButton.setStyle(UIButton.GREEN_1);
 
-        button1.setOnAction(new EventHandler<ActionEvent>() {
+        newGameButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Game game = new Game();
-                game.run();
-                mainStage = game.getMainStage();
-                mainStage.show();
+                states.push(new Game(mainStage, states));
             }
         });
 
-        button2.setOnAction(new EventHandler<ActionEvent>() {
+        settingButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 SettingPane settingPane = new SettingPane(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -87,11 +75,21 @@ public class Menu {
             }
         });
 
-        button3.setOnAction(new EventHandler<ActionEvent>() {
+        exitButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 mainStage.close();
             }
         });
+    }
+
+    @Override
+    public void update() {
+
+    }
+
+    @Override
+    public void render() {
+
     }
 }
