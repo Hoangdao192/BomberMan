@@ -1,118 +1,71 @@
 package UI;
 
-import Entities.BonusIteam.*;
 import Map.Map;
-import SupportMap.TransferMap;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import javax.swing.text.html.ImageView;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.LinkedList;
-import java.util.List;
 
 public class GameOverPane extends AnchorPane {
     private final int DEFAULT_WIDTH = 100;
     private final int DEFAULT_HEIGHT = 100;
 
-    private Font font;
+    private Font headerFont;
+    private Font contentFont;
+
     private Panel mainPanel;
-    private int Width;
-    private int Height;
-    private TransferMap transferMap;
+    private int width;
+    private int height;
 
-    Label gameOverLabel;
-    Label scoreLabel;
-    Label timeLabel;
-    private Button homeButton;
-    private Button newGameButton;
+    private Label gameOverLabel;
+    private Label scoreLabel;
+    private Label timeLabel;
+    private UIButton newGameButton;
+    private UIButton menuButton;
 
-    private int Score = 0;
+    private int playerScore = 0;
     private int countScore = 0;
-    private int Time = 0;
+    private int mapTime = 0;
     private int countTime = 0;
+
+    private MediaPlayer gameOverSoundPlayer;
 
     private boolean checkHighScore = false;
 
-    public GameOverPane(int x, int y, int width, int height, TransferMap transferMap) {
+    private Map map;
+
+    public GameOverPane(int x, int y, int width, int height, Map map) {
         setLayoutX(x);
         setLayoutY(y);
-        this.Width = width;
-        this.Height = height;
+        this.map = map;
+        this.width = width;
+        this.height = height;
         mainPanel = new Panel(width, height);
         getChildren().add(mainPanel);
 
-        gameOverLabel = new Label("GAME OVER");
-        try {
-            gameOverLabel.setFont(Font.loadFont(new FileInputStream("src/main/resources/Font/kenvector_future.ttf"), 25));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        gameOverLabel.setTextFill(Color.ORANGE);
-        gameOverLabel.setLayoutX(width / 10 * 3);
-        gameOverLabel.setLayoutY(height / 10);
-
-        this.Score = transferMap.getScorePlayer();
-        this.Time = transferMap.getTotalTime();
+        this.playerScore = map.getPlayer().getScore().getScore();
+        this.mapTime = map.getTime().countSecond();
 
         countScore = 0;
-        scoreLabel = new Label("Score: " + countScore++);
-        try {
-            scoreLabel.setFont(Font.loadFont(new FileInputStream("src/main/resources/Font/kenvector_future.ttf"), 20));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        scoreLabel.setLayoutX(width / 10 * 3);
-        scoreLabel.setLayoutY(height / 10 * 3);
-
-
         countTime = 0;
-        timeLabel = new Label("Time: " + countTime);
-        try {
-            timeLabel.setFont(Font.loadFont(new FileInputStream("src/main/resources/Font/kenvector_future.ttf"), 20));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        timeLabel.setLayoutX(width / 10 * 3);
-        timeLabel.setLayoutY(height / 10 * 5);
 
+        loadFont();
+        createLabel();
+        createButton();
 
-        homeButton = new Button("Home");
-        try {
-            homeButton.setFont(Font.loadFont(new FileInputStream("src/main/resources/Font/kenvector_future.ttf"), 10));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        homeButton.setLayoutX(width / 10 * 7);
-        homeButton.setLayoutY(height / 5 * 4);
-
-        newGameButton = new Button("New Game");
-        try {
-            newGameButton.setFont(Font.loadFont(new FileInputStream("src/main/resources/Font/kenvector_future.ttf"), 10));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        newGameButton.setLayoutX(width / 10 * 2);
-        newGameButton.setLayoutY(height / 5 * 4);
-
-        Rectangle rectangle = new Rectangle(0, 0, width, height);
-        rectangle.setFill(Color.GRAY);
-
-        newGameButton.setFocusTraversable(true);
-        homeButton.setFocusTraversable(true);
-
-        getChildren().addAll(rectangle, gameOverLabel, scoreLabel, timeLabel, newGameButton, homeButton);
+        createSound();
 
         if (checkHighScore) {
             AnchorPane anchorPane = new AnchorPane();
@@ -120,40 +73,24 @@ public class GameOverPane extends AnchorPane {
             boxHighScore.setFill(Color.YELLOWGREEN);
 
             Label highScore = new Label("High Score");
-            try {
-                highScore.setFont(Font.loadFont(new FileInputStream("src/main/resources/Font/kenvector_future.ttf"), 20));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            highScore.setFont(contentFont);
             highScore.setTextFill(Color.RED);
             highScore.setLayoutX(width / 10 * 3);
             highScore.setLayoutY(height / 10);
 
             Label nameLabel = new Label("Name ");
-            try {
-                nameLabel.setFont(Font.loadFont(new FileInputStream("src/main/resources/Font/kenvector_future.ttf"), 20));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            nameLabel.setFont(contentFont);
             nameLabel.setLayoutX(width / 20);
             nameLabel.setLayoutY(height / 100 * 38);
 
             TextField nameTextField = new TextField("your name");
             nameTextField.setLayoutX(width / 4);
             nameTextField.setLayoutY(height / 3);
-            try {
-                nameTextField.setFont(Font.loadFont(new FileInputStream("src/main/resources/Font/kenvector_future.ttf"), 20));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            nameTextField.setFont(contentFont);
 
 
-            Label yourScore = new Label("Score: " + Score);
-            try {
-                yourScore.setFont(Font.loadFont(new FileInputStream("src/main/resources/Font/kenvector_future.ttf"), 20));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            Label yourScore = new Label("Score: " + playerScore);
+            yourScore.setFont(contentFont);
             yourScore.setLayoutX(width / 10 * 3);
             yourScore.setLayoutY(height / 10 * 6);
 
@@ -180,16 +117,81 @@ public class GameOverPane extends AnchorPane {
         }
     }
 
+    private void createLabel() {
+        gameOverLabel = new Label("GAME OVER");
+        gameOverLabel.setFont(headerFont);
+        gameOverLabel.setTextFill(Color.ORANGE);
+        gameOverLabel.setLayoutX(width / 10 * 3);
+        gameOverLabel.setLayoutY(height / 10);
+
+        scoreLabel = new Label("Score: " + countScore);
+        scoreLabel.setFont(contentFont);
+        scoreLabel.setLayoutX(width / 10 * 3);
+        scoreLabel.setLayoutY(height / 10 * 3);
+
+        timeLabel = new Label("Time: " + countTime);
+        timeLabel.setFont(contentFont);
+        timeLabel.setLayoutX(width / 10 * 3);
+        timeLabel.setLayoutY(height / 10 * 5);
+
+        getChildren().addAll(gameOverLabel, scoreLabel, timeLabel);
+    }
+
+    private void createButton() {
+        newGameButton = new UIButton(152, 39, "NEW GAME");
+        setBottomAnchor(newGameButton, 20.0);
+        setLeftAnchor(newGameButton, 20.0);
+
+        menuButton = new UIButton(152, 39, "MENU");
+        setBottomAnchor(menuButton, 20.0);
+        setRightAnchor(menuButton, 20.0);
+        getChildren().addAll(newGameButton, menuButton);
+    }
+
+    private void createSound() {
+        Media gameOverSound = new Media(new File("src/main/resources/Sound/game_over.mp3").toURI().toString());
+        gameOverSoundPlayer = new MediaPlayer(gameOverSound);
+        //gameOverSoundPlayer.play();
+    }
+
+    private void loadFont() {
+        try {
+            headerFont = Font.loadFont(new FileInputStream("src/main/resources/Font/kenvector_future.ttf"), 25);
+        } catch (Exception e) {
+            System.out.println("Cannot load file: src/main/resources/Font/kenvector_future.ttf");
+            headerFont = Font.loadFont("Arial", 25);
+        }
+
+        try {
+            contentFont = Font.loadFont(new FileInputStream("src/main/resources/Font/kenvector_future.ttf"), 20);
+        } catch (Exception e) {
+            System.out.println("Cannot load file: src/main/resources/Font/kenvector_future.ttf");
+            headerFont = Font.loadFont("Arial", 25);
+        }
+    }
+
     public void update() {
+        //gameOverSoundPlayer.seek(Duration.ZERO);
+        gameOverSoundPlayer.play();
+        this.playerScore = map.getPlayer().getScore().getScore();
+        this.mapTime = map.getTime().countSecond();
         if (countTime < 10) {
             countTime++;
-            int t = countTime * Time / 10;
+            int t = countTime * mapTime / 10;
             timeLabel.setText("Time: " + t);
         }
         if (countScore < 10) {
             countScore++;
-            int s = countScore * Score / 10;
+            int s = countScore * playerScore / 10;
             scoreLabel.setText("Score: " + s);
         }
+    }
+
+    public UIButton getMenuButton() {
+        return menuButton;
+    }
+
+    public UIButton getNewGameButton() {
+        return newGameButton;
     }
 }

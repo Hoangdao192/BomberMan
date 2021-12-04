@@ -28,17 +28,22 @@ public class Main extends Application {
             private long lastUpdate = 0;
             @Override
             public void handle(long now) {
-                if (now - lastUpdate >= frameDelayTime) {
-                    if (stateManager.lastElement().isRunning()) {
-                        if (primaryStage.getScene() != stateManager.lastElement().getScene()) {
-                            primaryStage.setScene(stateManager.lastElement().getScene());
+                if (stateManager.empty()) {
+                    primaryStage.close();
+                }
+                else {
+                    if (now - lastUpdate >= frameDelayTime) {
+                        if (stateManager.lastElement().isRunning()) {
+                            if (primaryStage.getScene() != stateManager.lastElement().getScene()) {
+                                primaryStage.setScene(stateManager.lastElement().getScene());
+                            }
+                            stateManager.lastElement().update();
+                            stateManager.lastElement().render();
+                        } else {
+                            stateManager.pop();
                         }
-                        stateManager.lastElement().update();
-                        stateManager.lastElement().render();
-                    } else {
-                        stateManager.pop();
+                        lastUpdate = now;
                     }
-                    lastUpdate = now;
                 }
             }
         };

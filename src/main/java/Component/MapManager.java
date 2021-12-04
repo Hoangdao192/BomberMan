@@ -19,10 +19,8 @@ public class MapManager {
     }
 
     public void setCurrentLevel(int level) {
-        if (this.level != level) {
-            this.level = level;
-            createMap(level);
-        }
+        this.level = level;
+        System.out.println(level);
     }
 
     public Map loadCurrentLevel() {
@@ -32,6 +30,7 @@ public class MapManager {
 
     public void createMap(int level) {
         currentMap = new Map(mapPathList.get(level - 1), mapCameraSize.x, mapCameraSize.y);
+        System.out.println("level : "+ level);
     }
 
     public Map getCurrentMap() {

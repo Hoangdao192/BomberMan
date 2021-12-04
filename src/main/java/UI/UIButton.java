@@ -1,12 +1,16 @@
 package UI;
 
+import Setting.Setting;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,6 +42,8 @@ public class UIButton extends Button {
     private double width;
     private double height;
 
+    private MediaPlayer clickSoundPlayer;
+
     public UIButton(double width, double height, String text) {
         setText(text);
         setTextFill(Color.GREEN);
@@ -54,6 +60,12 @@ public class UIButton extends Button {
         setStyle(1);
         setStyleIdle();
         createEventHandle();
+        createSound();
+    }
+
+    private void createSound() {
+        Media clickSound = new Media(new File("src/main/resources/Sound/button_click.mp3").toURI().toString());
+        clickSoundPlayer = new MediaPlayer(clickSound);
     }
 
     public void setStyle(int style) {
@@ -142,6 +154,10 @@ public class UIButton extends Button {
     }
 
     private void setStylePressed() {
+        if (Setting.isSoundOn()) {
+            clickSoundPlayer.seek(Duration.ZERO);
+            clickSoundPlayer.play();
+        }
         setPrefHeight(height - 4);
         setBackground(new Background(backgroundImagePressed));
     }

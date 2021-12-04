@@ -154,11 +154,19 @@ public class BombManager {
         return numBomb;
     }
 
+    public int getBombExplodeRadius() {
+        return bombExplodeRadius;
+    }
+
     public void setNumBomb(int numBomb) {
         this.numBomb = numBomb;
     }
 
     public ArrayList<Bomb> getBombList() {
         return bombList;
+    }
+
+    public void setMap(Map map) {
+        this.map = map;
     }
 }

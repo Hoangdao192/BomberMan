@@ -5,12 +5,8 @@ import Entities.Bomber;
 import Map.Map;
 import Setting.Setting;
 import SupportMap.TransferMap;
-import UI.GameOverPane;
-import UI.HeadPane;
-import UI.MiniMap;
-import UI.PauseMenu;
+import UI.*;
 import Utils.Vector2i;
-import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -35,29 +31,18 @@ public class Game extends BaseState{
     private double screenWidth;
     private double screenHeight;
 
-    private int FPS;
-    private long frameDelayTime;
-
     private boolean gameOver = false;
 
     private AnchorPane mainContainer;
     private Canvas mainCanvas;
     private GraphicsContext graphicsContext;
 
-    //  Level
-    private int level = 3;
     private MapManager mapManager;
 
-    // Support Map
-    //private Canvas HpCavas;
-    private Canvas MiniMapCavas;
-    //private GraphicsContext graphicsComponent;
-    //Transfer Map
     private TransferMap transferMap;
-    //Front
-    //private Font font;
 
     //  UI
+    private TransferMapPane transferMapPane;
     private PauseMenu pauseMenu;
     private HeadPane headPane;
     private final int HEADPANE_DEFAULT_HEIGHT = 60;
@@ -65,8 +50,6 @@ public class Game extends BaseState{
     private Vector2i mainCanvasPosition = new Vector2i(0 , 0);
 
     private MediaPlayer mediaPlayer;
-
-    private static boolean soundOn = false;
 
     //  Bottom Pane
     private boolean showMinimap = true;
@@ -110,12 +93,9 @@ public class Game extends BaseState{
         playBackgroundMusic();
     }
 
-    /*private void createHeadMap() {
-        headMap = new HeadMap(bomber, map, (int) screenWidth, (int) screenHeight / 10);
-    }*/
-
     private void createTransferMap() {
         transferMap = new TransferMap((int) screenWidth, (int) screenHeight, map.getGridSize());
+        transferMapPane = new TransferMapPane((int) scene.getWidth(), (int) scene.getHeight(), map);
     }
 
     //  UI initializer
@@ -177,10 +157,24 @@ public class Game extends BaseState{
 
     private void createGameOverPane() {
         gameOverPane = new GameOverPane((int) mainStage.getWidth() / 4, (int) mainStage.getHeight() / 4,
-                (int) mainStage.getWidth() / 2, (int) mainStage.getHeight() / 2, transferMap);
+                (int) mainStage.getWidth() / 2, (int) mainStage.getHeight() / 2, map);
         mainContainer.getChildren().add(gameOverPane);
         gameOverPane.setVisible(false);
         createGameOver = true;
+
+        gameOverPane.getNewGameButton().setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                createNewGame();
+            }
+        });
+
+        gameOverPane.getMenuButton().setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                running = false;
+            }
+        });
     }
 
     //  RESIZE EVENT HANDLE
@@ -285,26 +279,9 @@ public class Game extends BaseState{
         System.out.println(map.getCamera().getSize().y);
     }
 
-    private void resizeHeight() {
-        if (scene.getHeight() - HEADPANE_DEFAULT_HEIGHT <= map.getSize().y) {
-            map.getCamera().setSize(map.getCamera().getSize().x, (int) scene.getHeight() - HEADPANE_DEFAULT_HEIGHT);
-        } else if (scene.getHeight() - HEADPANE_DEFAULT_HEIGHT > map.getSize().y) {
-            map.getCamera().setSize(map.getCamera().getSize().x, map.getSize().y);
-        }
-    }
-
-    public void setFPS(int fps) {
-        FPS = fps;
-        frameDelayTime = 1000000000 / fps;
-    }
-
-    public Stage getMainStage() {
-        return mainStage;
-    }
-
     private void createMapManager() {
         mapManager = new MapManager((int) screenWidth, (int) screenHeight);
-        mapManager.setCurrentLevel(1);
+        //mapManager.setCurrentLevel(1);
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv1.txt");
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv2.txt");
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv3.txt");
@@ -315,6 +292,7 @@ public class Game extends BaseState{
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv8.txt");
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv9.txt");
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv10.txt");
+        mapManager.setCurrentLevel(10);
     }
 
     private void createMap() {
@@ -358,61 +336,12 @@ public class Game extends BaseState{
         return (miniMapRect.contains(bomberRect) || miniMapRect.intersects(bomberRect));
     }
 
-    public void run() {
-        AnimationTimer gameTimer = new AnimationTimer() {
-            private long lastUpdate = 0;
-            @Override
-            public void handle(long now) {
-                if (now - lastUpdate >= frameDelayTime) {
-                    if (running && !pause) {
-                        scene.getRoot().requestFocus();
-                        if (map.getTime().isStop()) {
-                            map.getTime().present();
-                        }
-                        if (pauseMenu.isVisible()) {
-                            pauseMenu.setVisible(false);
-                            if (!headPane.isActionEnable()) {
-                                headPane.enableAction();
-                            }
-                        }
-
-                        update();
-                        render();
-                    }
-                    else if (pause) {
-                        if (!map.getTime().isStop()) {
-                            map.getTime().stop();
-                        }
-                        map.getTime().countSecond();
-                        pauseMenu.toFront();
-                        pauseMenu.setVisible(true);
-                        headPane.disableAction();
-                    } else
-                    {
-                        updateGameOverPane();
-                        gameOverPane.toFront();
-                        gameOverPane.setVisible(true);
-                        /*mapManager.nextLevel();
-                        map = mapManager.loadCurrentLevel();
-                        createTransferMap();
-                        bomber.setMap(map);
-                        map.setPlayer(bomber);
-                        bomber.reback();
-                        running = true;*/
-                    }
-                    lastUpdate = now;
-                }
-            }
-        };
-        gameTimer.start();
-    }
-
     public void update() {
         if (!gameOver) {
             if (!pause) {
                 //  UPDATE GAME
                 scene.getRoot().requestFocus();
-                if (map.getTime().isStop()) {
+                if (map.getTime().isStop()  && !map.isLevelPass()) {
                     map.getTime().present();
                 }
                 if (pauseMenu.isVisible()) {
@@ -422,6 +351,9 @@ public class Game extends BaseState{
                     }
                 }
                 updateGame();
+                if (!bomber.isAlive()) {
+                    gameOver = true;
+                }
             } else {
                 //  UPDATE PAUSE MENU
                 if (!map.getTime().isStop()) {
@@ -433,6 +365,8 @@ public class Game extends BaseState{
                 headPane.disableAction();
             }
         } else {
+            mediaPlayer.stop();
+            headPane.disableAction();
             updateGameOverPane();
             gameOverPane.toFront();
             gameOverPane.setVisible(true);
@@ -440,10 +374,10 @@ public class Game extends BaseState{
     }
 
     private void updateGame() {
-        if (!bomber.isExist()) {
+        /*if (!bomber.isExist()) {
             running = false;
-        }
-        if (!map.isTransfer()) {
+        }*/
+        /*if (!map.isTransfer()) {
             if (map.getMaxTime() - map.getTime().countSecond() <= 0) {
                 bomber.setExist(false);
             }
@@ -452,9 +386,7 @@ public class Game extends BaseState{
                 running = false;
             }
             bomber.update();
-            //map.getCamera().move(bomber.getMovement().getVelocity());
             map.getCamera().setCenter(bomber.getX(), bomber.getY());
-            //map.getCamera().setPosition(0, 0);
             map.update();
         } else {
             if (!transferMap.isLoading()) {
@@ -467,31 +399,74 @@ public class Game extends BaseState{
             }
             miniMap.newMiniMap();
             transferMap.update();
+        }*/
+
+        if (!map.isLevelPass()) {
+            transferMapPane.resetTime();
+            bomber.update();
+            map.getCamera().setCenter(bomber.getX(), bomber.getY());
+            map.update();
+            updateUI();
+        } else {
+            mediaPlayer.stop();
+            mainContainer.getChildren().clear();
+            transferMapPane.setTimeMap(map.getTime().countSecond());
+            transferMapPane.setScorePlayer(bomber.getScore().getScore());
+            mainContainer.getChildren().add(transferMapPane);
+            transferMapPane.update();
+            if (transferMapPane.isTransfer()) {
+                if (mapManager.nextLevel()) {
+                    nextLevel();
+                    bomber.increaseHP();
+                    mediaPlayer.play();
+                } else {
+                    gameOver = true;
+                }
+            }
         }
-        updateUI();
     }
 
     public void createNewGame() {
+        gameOver = false;
+        mapManager.setCurrentLevel(1);
         mainContainer.getChildren().clear();
         createMap();
         createPlayer();
-        createTransferMap();
         map.setPlayer(bomber);
+
+        createTransferMap();
         createUI();
+        createGameOverPane();
+        mainContainer.getChildren().add(mainCanvas);
+        resizeCamera();
+    }
+
+    private void nextLevel() {
+        gameOver = false;
+        mainContainer.getChildren().clear();
+        createMap();
+        bomber.setMap(map);
+        bomber.setPassOverPortal(false);
+        map.setPlayer(bomber);
+
+        createTransferMap();
+        createUI();
+        createGameOverPane();
         mainContainer.getChildren().add(mainCanvas);
         resizeCamera();
     }
 
     private void updateGameOverPane() {
-        if (!createGameOver) {
+        /*if (!createGameOver) {
             map.newMap();
             transferMap.reset(map.getPlayer(), map.getTime().countSecond(), map.getBonusArrayList());
             map.setTransfer(false);
-            transferMap.setLoading(false);
+            //transferMap.setLoading(false);
             createGameOverPane();
-        } else {
+        } else {*/
+            gameOverPane.toFront();
             gameOverPane.update();
-        }
+        //}
     }
 
     private void updateUI() {
@@ -509,19 +484,28 @@ public class Game extends BaseState{
     }
 
     public void render() {
-        mainContainer.getChildren().remove(mainCanvas);
-        mainContainer.getChildren().add(mainCanvas);
-        miniMap.toFront();
-        pauseMenu.toFront();
+        if (!gameOver) {
+            renderGame();
+        }
 
-        if (!map.isTransfer()) {
+        /*if (!map.isTransfer()) {
             graphicsContext.clearRect(0, 0, mainCanvas.getWidth(), mainCanvas.getHeight());
-            /*Camera camera = map.getCamera();
-            graphicsContext.strokeRect(0, 0, camera.getSize().x, camera.getSize().y);*/
             map.render(graphicsContext);
             bomber.render(graphicsContext);
         } else {
             transferMap.render(graphicsContext);
+        }*/
+    }
+
+    private void renderGame() {
+        if (!map.isLevelPass()) {
+            mainContainer.getChildren().remove(mainCanvas);
+            mainContainer.getChildren().add(mainCanvas);
+            miniMap.toFront();
+            pauseMenu.toFront();
+            graphicsContext.clearRect(0, 0, mainCanvas.getWidth(), mainCanvas.getHeight());
+            map.render(graphicsContext);
+            bomber.render(graphicsContext);
         }
     }
 }

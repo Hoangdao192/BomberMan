@@ -9,6 +9,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,6 +28,9 @@ public class Bomber extends DynamicEntity {
     boolean moveDown = false;
 
     BombManager bombManager;
+    private final int MAX_BOMB = 10;
+    private final int MAX_BOMB_EXPLODE_RADIUS = 10;
+    private final int MAX_SPEED = 10;
 
     //Speed up.
     private final int BASE_SPEED = 2;
@@ -34,13 +38,13 @@ public class Bomber extends DynamicEntity {
 
     //  Chức năng
     //  Có thể đi xuyên tường
-    private boolean wallPass = true;
+    private boolean wallPass = false;
     //  Có thể đi xuyên bom
     private boolean bombPass = false;
     //  Miễn nhiễm với bom nổ
-    private boolean flamePass = false;
+    private boolean flamePass = true;
     //  Miễn ảnh hưởng khi va chạm với Enemy
-    private boolean enemyPass = false;
+    private boolean enemyPass = true;
     //  Trạng thái bất diệt miễn nhiễm với mọi sát thương
     private boolean immortal = false;
     private final int MAX_IMMORTAL_TIME = 10;
@@ -58,19 +62,21 @@ public class Bomber extends DynamicEntity {
     private boolean passOverPortal = false;
 
     private MediaPlayer mediaPlayer;
+    private MediaPlayer damagedSoundPlayer;
+    private MediaPlayer eatPowerUpSoundPlayer;
 
     //  CONSTRUCTOR
     public Bomber(int x, int y, Map map) {
         super(x, y, map.getGridSize(), map.getGridSize(), map.getGridSize(), null, map);
-        setMap(map);
         createAnimation();
         createMovement();
         createHitBox();
         createBombManager();
+        setMap(map);
 
         alive = true;
         score = new Score();
-        HP = 3;
+        HP = 1;
         createSound();
     }
 
@@ -194,7 +200,7 @@ public class Bomber extends DynamicEntity {
     }
 
     private void createBombManager() {
-        bombManager = new BombManager(this, map, 1, 1);
+        bombManager = new BombManager(this, map, 10, 10);
         bombManager.disableDetonator();
     }
 
@@ -202,6 +208,12 @@ public class Bomber extends DynamicEntity {
         Media moveSound = new Media(new File("src/main/resources/Sound/move_sound.mp3").toURI().toString());
         mediaPlayer = new MediaPlayer(moveSound);
         mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+
+        Media damageSound = new Media(new File("src/main/resources/Sound/take_damage.mp3").toURI().toString());
+        damagedSoundPlayer = new MediaPlayer(damageSound);
+
+        Media eatPowerUpSound = new Media(new File("src/main/resources/Sound/power_up.wav").toURI().toString());
+        eatPowerUpSoundPlayer = new MediaPlayer(eatPowerUpSound);
     }
 
     private void createBomb() {
@@ -210,11 +222,15 @@ public class Bomber extends DynamicEntity {
 
     //  INCREASE ATTRIBUTE
     public void increaseNumberOfBomb() {
-        bombManager.increaseNumberOfBomb();
+        if (bombManager.getMaxBomb() < MAX_BOMB) {
+            bombManager.increaseNumberOfBomb();
+        }
     }
 
     public void increaseBombRadius() {
-        bombManager.increaseBombRadius();
+        if (bombManager.getBombExplodeRadius() < MAX_BOMB_EXPLODE_RADIUS) {
+            bombManager.increaseBombRadius();
+        }
     }
 
     public void increaseHP() {
@@ -222,8 +238,10 @@ public class Bomber extends DynamicEntity {
     }
 
     public void increaseSpeed() {
-        ++speed;
-        movement.setSpeed(speed * BASE_SPEED);
+        if (movement.getSpeed() < MAX_SPEED) {
+            ++speed;
+            movement.setSpeed(speed * BASE_SPEED);
+        }
     }
 
     /**
@@ -264,6 +282,12 @@ public class Bomber extends DynamicEntity {
     }
 
     //  SETTER
+    @Override
+    public void setMap(Map map) {
+        super.setMap(map);
+        bombManager.setMap(map);
+    }
+
     public void setAlive(boolean alive) {
         this.alive = alive;
     }
@@ -352,13 +376,30 @@ public class Bomber extends DynamicEntity {
         return flamePass;
     }
 
+    public boolean isBombPass() {
+        return bombPass;
+    }
+
+    public boolean isWallPass() {
+        return wallPass;
+    }
+
+    public boolean isDetonatorEnable() {
+        return bombManager.isDetonatorEnable();
+    }
+
     @Override
     public void die() {
         if (immortal) {
             return;
         }
         HP--;
+        if (Setting.isSoundOn()) {
+            damagedSoundPlayer.seek(Duration.ZERO);
+            damagedSoundPlayer.play();
+        }
         if (HP <= 0) {
+            mediaPlayer.stop();
             HP = 0;
             alive = false;
             movement.setSpeed(0);
@@ -375,7 +416,6 @@ public class Bomber extends DynamicEntity {
                 immortal = false;
             }
         }
-
 
         updateMovement();
         updateHitBox();

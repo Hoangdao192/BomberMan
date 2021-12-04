@@ -1,9 +1,11 @@
 package UI;
 
+import Setting.Setting;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -79,13 +81,24 @@ public class SettingPane extends AnchorPane {
         mainPanel.getChildren().add(soundLabel);
 
         CheckBox checkBox = new CheckBox(38);
+        checkBox.setChecked(Setting.isSoundOn());
         mainPanel.setTopAnchor(checkBox, 10.0);
         mainPanel.setLeftAnchor(checkBox, 130.0);
         mainPanel.getChildren().add(checkBox);
+        checkBox.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (Setting.isSoundOn()) {
+                    Setting.setSoundOn(false);
+                } else {
+                    Setting.setSoundOn(true);
+                }
+            }
+        });
     }
 
     private void createButton() {
-        acceptButton = new UIButton(190, 49, "ACCEPT");
+        /*acceptButton = new UIButton(190, 49, "ACCEPT");
         acceptButton.setStyle(UIButton.BLUE_1);
         acceptButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -95,7 +108,7 @@ public class SettingPane extends AnchorPane {
         });
         mainPanel.setLeftAnchor(acceptButton, (mainPanel.getWidth() - 190) / 2);
         mainPanel.setBottomAnchor(acceptButton, 80.0);
-        mainPanel.getChildren().add(acceptButton);
+        mainPanel.getChildren().add(acceptButton);*/
 
         closeButton = new UIButton(190, 49, "CLOSE");
         closeButton.setStyle(UIButton.BLUE_1);
@@ -112,5 +125,9 @@ public class SettingPane extends AnchorPane {
 
     public boolean isAcceptPressed() {
         return acceptPressed;
+    }
+
+    public UIButton getCloseButton() {
+        return closeButton;
     }
 }

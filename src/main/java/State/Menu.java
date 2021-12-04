@@ -8,6 +8,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -68,17 +69,24 @@ public class Menu extends BaseState {
         settingButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                SettingPane settingPane = new SettingPane(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+                /*SettingPane settingPane = new SettingPane(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+                settingPane.getCloseButton().setOnMouseClicked(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent mouseEvent) {
+
+                    }
+                });
                 Scene sceneSetting = new Scene(settingPane);
                 mainStage.setScene(sceneSetting);
-                mainStage.show();
+                mainStage.show();*/
+                states.push(new SettingState(mainStage, states));
             }
         });
 
         exitButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                mainStage.close();
+                states.pop();
             }
         });
     }

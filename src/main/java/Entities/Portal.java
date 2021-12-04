@@ -84,7 +84,8 @@ public class Portal extends PowerUp {
                     down = false;
                 }
                 if (time.countSecond() >= 2 && map.getNumEnemyExist() == 0) {
-                    map.newMap();
+                    //map.newMap();
+                    map.setLevelPass(true);
                     checkHitBox = false;
                     checkColaBottle = false;
                 } else if (map.getNumEnemyExist() > 0) {

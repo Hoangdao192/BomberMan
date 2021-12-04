@@ -4,7 +4,6 @@ import Component.Time;
 import Entities.*;
 import Entities.BonusIteam.*;
 import Entities.Enemy.*;
-import Entities.PowerUp.*;
 import Utils.Vector2i;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
@@ -66,6 +65,8 @@ public class Map {
 
     private Portal portal;
 
+    private boolean levelPass = false;
+
     //Check transfer
     private boolean transfer = false;
 
@@ -106,6 +107,13 @@ public class Map {
     }
 
     //  SETTER
+    public void setLevelPass(boolean levelPass) {
+        this.levelPass = levelPass;
+        if (levelPass) {
+            time.stop();
+        }
+    }
+
     public void setPlayer(Bomber player) {
         this.player = player;
         player.setX(playerStartPosition.x);
@@ -129,6 +137,10 @@ public class Map {
     }
 
     //  GETTER
+    public boolean isLevelPass() {
+        return levelPass;
+    }
+
     public int getNumEnemyExist() {
         return numEnemyExist;
     }
@@ -696,23 +708,6 @@ public class Map {
      * Render tất cả các entity nằm trong vùng camera.
      */
     public void render(GraphicsContext graphicsContext) {
-       /* for (int i = 0; i < entities.size(); ++i) {
-            Entity currentEntity = entities.get(i);
-            //  Không render nếu Entity nằm ngoài vùng camera
-            if (currentEntity.getX() >= camera.getEnd().x
-                    || currentEntity.getX() + currentEntity.getWidth() <= camera.getStart().x
-                    || currentEntity.getY() >= camera.getEnd().y
-                    || currentEntity.getY() + currentEntity.getHeight() <= camera.getStart().y) {
-                continue;
-            }
-
-            currentEntity.render(
-                    currentEntity.getX() - camera.getStart().x,
-                    currentEntity.getY() - camera.getStart().y,
-                    graphicsContext
-            );
-        }*/
-
         graphicsContext.setFill(Paint.valueOf("Green"));
         graphicsContext.fillRect(0, 0, camera.getSize().x, camera.getSize().y);
         for (int i = 0; i < staticEntityList.size(); ++i) {
