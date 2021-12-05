@@ -123,9 +123,6 @@ public class BombManager {
                 map.setNumBombExplosion(0);
             }
         }
-        if(map.getNumBombExplosion() > 0) {
-            System.out.println("BombExplosion" + map.getNumBombExplosion());
-        }
     }
 
     //  Kích hoạt kíp điều khiển nổ

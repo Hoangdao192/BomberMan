@@ -4,6 +4,7 @@ import Component.Time;
 import Entities.*;
 import Entities.BonusIteam.*;
 import Entities.Enemy.*;
+import Utils.RandomInt;
 import Utils.Vector2i;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
@@ -42,10 +43,15 @@ import java.util.Scanner;
  * W: WallPass
  * F: FlamePass
  * I: Bonus Item
+ * !: Bonus Target
+ * @: Cola Bottle
+ * /: Dezeniman_san
+ * %: Famicom
+ * ^: Goddess Mask
+ * &: Nakamoto_san
  */
 public class Map {
     private String path = "";
-    int level = 0;
 
     private int mapGridWidth;
     private int mapGridHeight;
@@ -53,22 +59,18 @@ public class Map {
     private Camera camera;
     private EntityCreator entityCreator;
     private int maxTime = 200;
+    private boolean timeOver = false;
 
     //  Danh sách các Entity có trong map.
     private ArrayList<Entity> entities;
     private ArrayList<ArrayList<ArrayList<Entity>>> staticEntityList;
     private ArrayList<Entity> dynamicEntityList;
-    private ArrayList<Bonus> bonusArrayList = new ArrayList<>();
 
     private Vector2i playerStartPosition = new Vector2i(100, 100);
     private Bomber player;
-
     private Portal portal;
 
     private boolean levelPass = false;
-
-    //Check transfer
-    private boolean transfer = false;
 
     private Time time;
 
@@ -101,7 +103,7 @@ public class Map {
         dynamicEntityList = new ArrayList<>();
         entityCreator = new EntityCreator(this);
         loadFromFile(path);
-        printList();
+        //printList();
         createCamera(cameraWidth, cameraHeight);
         time = new Time();
     }
@@ -193,14 +195,6 @@ public class Map {
         return mapGridWidth;
     }
 
-    public boolean isTransfer() {
-        return transfer;
-    }
-
-    public void setTransfer(boolean transfer) {
-        this.transfer = transfer;
-    }
-
     public Time getTime() {
         return time;
     }
@@ -209,41 +203,9 @@ public class Map {
         return entities;
     }
 
-    public ArrayList<Bonus> getBonusArrayList() {
-        return bonusArrayList;
-    }
-
     // Check Bonus
     public boolean[] getCheckBonus() {
         return checkBonus;
-    }
-
-    //  FUNCTIONS
-    public void newMap() {
-        //  Tính toán bonus trước khi chuyển map
-        if (!transfer) {
-            update();
-            time.stop();
-            checkBonus[0] = checkTarget;
-            checkBonus[1] = checkColaBottle;
-            checkBonus[2] = checkDezeniman_san;
-            checkBonus[3] = checkFamicom;
-            checkBonus[4] = checkGoddessMask;
-            checkBonus[5] = checkNakamoto_san;
-            transfer = true;
-            return;
-        }
-        time.reset();
-
-        entities.clear();
-        staticEntityList.clear();
-        dynamicEntityList.clear();
-        bonusArrayList.clear();
-        player.setPassOverPortal(false);
-        resetBonus();
-        loadFromFile(path);
-        this.setPlayer(player);
-        player.increaseHP();
     }
 
     public void loadFromFile(String path) {
@@ -271,8 +233,6 @@ public class Map {
         } catch (FileNotFoundException e) {
             System.out.println("Không tìm thấy file cấu hình: " + path);
         }
-
-        System.out.println(staticEntityList.get(11).get(14).size());
     }
 
     public void createEntity(char type, int gridX, int gridY) {
@@ -398,49 +358,35 @@ public class Map {
                         gridX * gridSize, gridY * gridSize, gridSize, gridSize));
                 break;
             }
-            case  'I': {
-                if (bonusArrayList.size() == 0) {
-                    Entity entity = entityCreator.createBonusTarget(
-                            gridX * gridSize, gridY * gridSize, gridSize, gridSize);
-                    addEntity(entity);
-                    addBonus((Bonus) entity);
-                    break;
-                }
-                if (bonusArrayList.size() == 1) {
-                    Entity entity = entityCreator.createColaBottle(
-                            gridX * gridSize, gridY * gridSize, gridSize, gridSize);
-                    addEntity(entity);
-                    addBonus((Bonus) entity);
-                    break;
-                }
-                if (bonusArrayList.size() == 2) {
-                    Entity entity = entityCreator.createDezeniman_san(
-                            gridX * gridSize, gridY * gridSize, gridSize, gridSize);
-                    addEntity(entity);
-                    addBonus((Bonus) entity);
-                    break;
-                }
-                if (bonusArrayList.size() == 3) {
-                    Entity entity = entityCreator.createFamicom(
-                            gridX * gridSize, gridY * gridSize, gridSize, gridSize);
-                    addEntity(entity);
-                    addBonus((Bonus) entity);
-                    break;
-                }
-                if (bonusArrayList.size() == 4) {
-                    Entity entity = entityCreator.createGoddessMask(
-                            gridX * gridSize, gridY * gridSize, gridSize, gridSize);
-                    addEntity(entity);
-                    addBonus((Bonus) entity);
-                    break;
-                }
-                if (bonusArrayList.size() == 5) {
-                    Entity entity = entityCreator.createNakamoto_san(
-                            gridX * gridSize, gridY * gridSize, gridSize, gridSize);
-                    addEntity(entity);
-                    addBonus((Bonus) entity);
-                    break;
-                }
+            case '!': {
+                addEntity(entityCreator.createBonusTarget(
+                        gridX * gridSize, gridY * gridSize, gridSize, gridSize));
+                break;
+            }
+            case '@': {
+                addEntity(entityCreator.createColaBottle(
+                        gridX * gridSize, gridY * gridSize, gridSize, gridSize));
+                break;
+            }
+            case '/': {
+                addEntity(entityCreator.createDezeniman_san(
+                        gridX * gridSize, gridY * gridSize, gridSize, gridSize));
+                break;
+            }
+            case '%': {
+                addEntity(entityCreator.createFamicom(
+                        gridX * gridSize, gridY * gridSize, gridSize, gridSize));
+                break;
+            }
+            case '^': {
+                addEntity(entityCreator.createGoddessMask(
+                        gridX * gridSize, gridY * gridSize, gridSize, gridSize));
+                break;
+            }
+            case '&': {
+                addEntity(entityCreator.createNakamoto_san(
+                        gridX * gridSize, gridY * gridSize, gridSize, gridSize));
+                break;
             }
         }
     }
@@ -472,13 +418,6 @@ public class Map {
         }
     }
 
-    public void addBonus(Bonus bonus) {
-        if (bonus == null) {
-            return;
-        }
-        bonusArrayList.add(bonus);
-    }
-
     public void createCamera(int width, int height) {
         this.camera = new Camera(
                 0, 0, width, height,
@@ -491,15 +430,66 @@ public class Map {
         camera.move(velocity);
     }
 
+    private void whenTimeToZero() {
+        if (timeOver) {
+            return;
+        }
+        timeOver = true;
+        final int NUMBER_OF_ENEMY = 10;
+        int enemyCount = 0;
+
+        //  Chuyển các Enemy thành Pontan
+        for (int i = 0; i < dynamicEntityList.size();) {
+            if (!(dynamicEntityList.get(i) instanceof Pontan)) {
+                createEntity('6', dynamicEntityList.get(i).getGridX(), dynamicEntityList.get(i).getGridY());
+                dynamicEntityList.remove(i);
+                ++enemyCount;
+            } else {
+                ++i;
+            }
+        }
+
+        //  Nếu số lượng Pontan chưa đủ thì thêm vào
+        for (int i = enemyCount; i <= NUMBER_OF_ENEMY; ++i) {
+            Vector2i blankTile = getRandomBlankTile();
+            if (blankTile != null) {
+                createEntity('6', blankTile.x, blankTile.y);
+            }
+        }
+    }
+
+    private Vector2i getRandomBlankTile() {
+        int gridX = -1;
+        int gridY = -1;
+        boolean continueRandom = true;
+        int randomCount = 0;
+        while (continueRandom) {
+            ++randomCount;
+            if (randomCount >= mapGridWidth * mapGridHeight) {
+                continueRandom = false;
+            }
+            int tempX = RandomInt.random(0, mapGridWidth - 1);
+            int tempY = RandomInt.random(0, mapGridHeight - 1);
+            if (staticEntityList.get(tempY).get(tempX).size() == 0) {
+                gridX = tempX;
+                gridY = tempY;
+                continueRandom = false;
+            }
+        }
+
+        if (gridX == -1 || gridY == -1) {
+            return null;
+        }
+        return new Vector2i(gridX, gridY);
+    }
+
     // Kiểm tra các Bonus
     public void checkTarget() {
         if (checkTarget) {
             if (numEnemyDie == 0 && player.isPassOverPortal()) {
-                for (Bonus bonus : bonusArrayList) {
-                    if (bonus instanceof BonusTarget) {
-                        bonus.setCheckBonus(true);
-                        break;
-                    }
+                Vector2i blankTile = getBlankTile();
+                if (blankTile != null) {
+                    createEntity('!',blankTile.x, blankTile.y);
                 }
                 checkTarget = false;
             }
@@ -507,14 +497,11 @@ public class Map {
     }
 
     public void checkNakamoto_san() {
-        System.out.println("NumEnemy : " + numEnemyExist);
         if (checkNakamoto_san) {
             if (numEnemyExist == 0 && numBrickDestoy == 0) {
-                for (Bonus bonus : bonusArrayList) {
-                    if (bonus instanceof Nakamoto_san) {
-                        bonus.setCheckBonus(true);
-                        break;
-                    }
+                Vector2i blankTile = getBlankTile();
+                if (blankTile != null) {
+                    createEntity('&',blankTile.x, blankTile.y);
                 }
                 checkNakamoto_san = false;
             }
@@ -550,11 +537,9 @@ public class Map {
                     }
                 }
             }
-            for (Bonus bonus : bonusArrayList) {
-                if (bonus instanceof GoddessMask) {
-                    bonus.setCheckBonus(true);
-                    break;
-                }
+            Vector2i blankTile = getBlankTile();
+            if (blankTile != null) {
+                createEntity('^',blankTile.x, blankTile.y);
             }
             checkGoddessMask = false;
         }
@@ -562,12 +547,10 @@ public class Map {
 
     public void checkColaBottle() {
         if (checkColaBottle) {
-            if(Portal.checkColaBottle) {
-                for (Bonus bonus : bonusArrayList) {
-                    if (bonus instanceof ColaBottle) {
-                        bonus.setCheckBonus(true);
-                        break;
-                    }
+            if(portal.isCheckColaBottle()) {
+                Vector2i blankTile = getBlankTile();
+                if (blankTile != null) {
+                    createEntity('@',blankTile.x, blankTile.y);
                 }
                 checkColaBottle = false;
             }
@@ -578,11 +561,9 @@ public class Map {
     public void checkDezeniman_san() {
         if (checkDezeniman_san) {
             if (portal.getNumBomExplosion() >= 3 && numEnemyDie == 0 && numBrickExist == 0) {
-                for (Bonus bonus : bonusArrayList) {
-                    if (bonus instanceof  Dezeniman_san) {
-                        bonus.setCheckBonus(true);
-                        break;
-                    }
+                Vector2i blankTile = getBlankTile();
+                if (blankTile != null) {
+                    createEntity('/',blankTile.x, blankTile.y);
                 }
                 checkDezeniman_san = false;
             }
@@ -593,14 +574,11 @@ public class Map {
     public void checkFamicom() {
         if (checkFamicom) {
             if (numEnemyExist == 0 && numBombExplosion >= 100) {
-                for (Bonus bonus : bonusArrayList) {
-                    if (bonus instanceof Famicom) {
-                        bonus.setCheckBonus(true);
-                        break;
-                    }
+                Vector2i blankTile = getBlankTile();
+                if (blankTile != null) {
+                    createEntity('%',blankTile.x, blankTile.y);
                 }
                 checkFamicom = false;
-                System.out.println("Famico");
             }
             return;
         }
@@ -641,6 +619,17 @@ public class Map {
         } else {
             resetBooleanMap();
         }
+    }
+
+    public Vector2i getBlankTile() {
+        for (int i = 0; i < staticEntityList.size(); ++i) {
+            for (int j = 0; j < staticEntityList.get(i).size(); ++j) {
+                if (staticEntityList.get(i).get(j).size() == 0) {
+                    return new Vector2i(j, i);
+                }
+            }
+        }
+        return null;
     }
 
     public void updateEntity() {
@@ -699,6 +688,10 @@ public class Map {
     }
 
     public void update() {
+        if (time.countSecond() >= maxTime) {
+            time.stop();
+            whenTimeToZero();
+        }
         camera.update();
         updateEntity();
         updateBonus();
@@ -746,5 +739,9 @@ public class Map {
                     graphicsContext
             );
         }
+    }
+
+    public boolean isTimeOver() {
+        return timeOver;
     }
 }

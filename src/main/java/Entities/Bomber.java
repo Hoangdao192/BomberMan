@@ -44,7 +44,7 @@ public class Bomber extends DynamicEntity {
     //  Miễn nhiễm với bom nổ
     private boolean flamePass = false;
     //  Miễn ảnh hưởng khi va chạm với Enemy
-    private boolean enemyPass = true;
+    private boolean enemyPass = false;
     //  Trạng thái bất diệt miễn nhiễm với mọi sát thương
     private boolean immortal = false;
     private final int MAX_IMMORTAL_TIME = 10;
@@ -76,7 +76,7 @@ public class Bomber extends DynamicEntity {
 
         alive = true;
         score = new Score();
-        HP = 1;
+        HP = 3;
         createSound();
     }
 
@@ -196,7 +196,7 @@ public class Bomber extends DynamicEntity {
     }
 
     private void createHitBox() {
-        createHitBox( 0, 0, (DEFAULT_SPRITE_SIZE - 6)  * 2, height);
+        createHitBox( 0, 0, (DEFAULT_SPRITE_SIZE - 6)  * gridSize / DEFAULT_SPRITE_SIZE, height);
     }
 
     private void createBombManager() {
@@ -401,7 +401,9 @@ public class Bomber extends DynamicEntity {
         if (HP <= 0) {
             mediaPlayer.stop();
             HP = 0;
-            alive = false;
+            if (animationManager.get("DEAD").getCurrentFrame() == animationManager.get("DEAD").getNumberOfFrame() - 1) {
+                alive = false;
+            }
             movement.setSpeed(0);
         } else {
             immortalTimeCount = map.getTime().countSecond();
@@ -503,7 +505,7 @@ public class Bomber extends DynamicEntity {
      * Cập nhập animation.
      */
     private void updateAnimation() {
-        if (!alive) {
+        if (!alive || HP == 0) {
             animationManager.play("DEAD");
             if (animationManager.getCurrentAnimation().getCurrentFrame()
                     == animationManager.getCurrentAnimation().getNumberOfFrame() - 1) {
