@@ -7,6 +7,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
@@ -21,7 +23,6 @@ public class SettingPane extends AnchorPane {
     private Font headerFont;
     private Font contentFont;
 
-    private UIButton acceptButton;
     private UIButton closeButton;
 
     private int width;
@@ -51,6 +52,9 @@ public class SettingPane extends AnchorPane {
         getChildren().add(mainPanel);
         createMainPanel();
         createButton();
+
+        BackgroundFill backgroundFill = new BackgroundFill(Color.RED, null, null);
+        setBackground(new Background(backgroundFill));
     }
 
     private void createHeader() {
@@ -69,6 +73,9 @@ public class SettingPane extends AnchorPane {
         gameOverLabel.setTextFill(Color.WHITE);
         gameOverLabel.setStyle("-fx-alignment: center");
         header.getChildren().add(gameOverLabel);
+        setLeftAnchor(header, 0.0);
+        setRightAnchor(header, 0.0);
+        setTopAnchor(header, 0.0);
         getChildren().add(header);
     }
 
@@ -121,10 +128,6 @@ public class SettingPane extends AnchorPane {
         mainPanel.setLeftAnchor(closeButton, (mainPanel.getWidth() - 190) / 2);
         mainPanel.setBottomAnchor(closeButton, 20.0);
         mainPanel.getChildren().add(closeButton);
-    }
-
-    public boolean isAcceptPressed() {
-        return acceptPressed;
     }
 
     public UIButton getCloseButton() {

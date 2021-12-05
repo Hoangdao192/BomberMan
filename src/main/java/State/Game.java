@@ -84,13 +84,13 @@ public class Game extends BaseState{
         mainCanvas.setScaleY(1);
         mainCanvas.setLayoutX(mainCanvasPosition.x);
         mainCanvas.setLayoutY(mainCanvasPosition.y);
-
+        playBackgroundMusic();
         createMapManager();
         createNewGame();
 
         createResizeEventHandle();
         initEventHandler();
-        playBackgroundMusic();
+
     }
 
     private void createTransferMap() {
@@ -276,12 +276,11 @@ public class Game extends BaseState{
         }
 
         map.getCamera().setSize(newCameraWidth, newCameraHeight);
-        System.out.println(map.getCamera().getSize().y);
     }
 
     private void createMapManager() {
         mapManager = new MapManager((int) screenWidth, (int) screenHeight);
-        //mapManager.setCurrentLevel(1);
+        mapManager.setCurrentLevel(1);
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv1.txt");
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv2.txt");
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv3.txt");
@@ -292,12 +291,12 @@ public class Game extends BaseState{
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv8.txt");
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv9.txt");
         mapManager.getMapPathList().add("src/main/resources/Map/Map_lv10.txt");
-        mapManager.setCurrentLevel(10);
+        //mapManager.setCurrentLevel(10);
     }
 
     private void createMap() {
-        map = mapManager.loadCurrentLevel();
-        //map = new Map("src/main/resources/Map/map.txt", DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        //map = mapManager.loadCurrentLevel();
+        map = new Map("src/main/resources/Map/map.txt", DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 
     private void createPlayer() {
@@ -341,7 +340,7 @@ public class Game extends BaseState{
             if (!pause) {
                 //  UPDATE GAME
                 scene.getRoot().requestFocus();
-                if (map.getTime().isStop()  && !map.isLevelPass()) {
+                if (map.getTime().isStop()  && !map.isLevelPass() && !map.isTimeOver()) {
                     map.getTime().present();
                 }
                 if (pauseMenu.isVisible()) {
@@ -413,6 +412,10 @@ public class Game extends BaseState{
             transferMapPane.setTimeMap(map.getTime().countSecond());
             transferMapPane.setScorePlayer(bomber.getScore().getScore());
             mainContainer.getChildren().add(transferMapPane);
+            mainContainer.setLeftAnchor(transferMapPane, 0.0);
+            mainContainer.setRightAnchor(transferMapPane, 0.0);
+            mainContainer.setTopAnchor(transferMapPane, 0.0);
+            mainContainer.setBottomAnchor(transferMapPane, 0.0);
             transferMapPane.update();
             if (transferMapPane.isTransfer()) {
                 if (mapManager.nextLevel()) {
@@ -427,6 +430,7 @@ public class Game extends BaseState{
     }
 
     public void createNewGame() {
+        mediaPlayer.play();
         gameOver = false;
         //mapManager.setCurrentLevel(1);
         mainContainer.getChildren().clear();
@@ -470,10 +474,6 @@ public class Game extends BaseState{
     }
 
     private void updateUI() {
-        if (headPane.isTransfer() != map.isTransfer()) {
-            headPane.setTransfer(map.isTransfer());
-            headPane.reset();
-        }
         headPane.update();
         miniMap.update();
         if (checkPlayerBehindMiniMap()) {

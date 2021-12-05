@@ -62,7 +62,6 @@ public class BombFlame extends StaticEntity {
             }
             //  Horizon
             case 1: {
-                System.out.println("create");
                 animation = new Animation(
                         this, this.width, this.height, 1,
                         Sprite.BOMB_FLAME_HORIZON_1, Sprite.BOMB_FLAME_HORIZON_2,
@@ -127,12 +126,7 @@ public class BombFlame extends StaticEntity {
     @Override
     public boolean ifCollideDo(Entity other) {
         if (collision(other) || hitBox.contains(other.hitBox)) {
-            if (other instanceof Bomber) {
-                System.out.println("Bomber");
-            }
-
             if (other instanceof Portal) {
-                System.out.println("Portal Flame");
                 int x = ((Portal) other).getHasBomExplosion();
                 ((Portal) other).setHasBomExplosion(++x);
             }

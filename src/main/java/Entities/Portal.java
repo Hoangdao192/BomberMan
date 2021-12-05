@@ -10,7 +10,7 @@ public class Portal extends PowerUp {
     private boolean down = false;
     private boolean left = false;
     private boolean right = false;
-    public static boolean checkColaBottle = false;
+    private boolean checkColaBottle = false;
 
     //   Kiểm tra xem có bom nổ trên Portal ko
     private int hasBomExplosion = 0;
@@ -51,7 +51,7 @@ public class Portal extends PowerUp {
         hasBomExplosion++;
         numBomExplosion++;
         timeBomExplosion = map.getTime().countMilliSecond();
-        System.out.println("hasBombExplosion");
+        //System.out.println("hasBombExplosion");
     }
 
     public boolean hasBomber() {
@@ -92,7 +92,7 @@ public class Portal extends PowerUp {
                     if (!checkColaBottle) {
                         if (up && down && left && right) {
                             checkColaBottle = true;
-                            System.out.println("Cola true");
+                            //System.out.println("Cola true");
                         }
                         if (bomber.isMoveDown()) {
                             down = true;
@@ -126,5 +126,13 @@ public class Portal extends PowerUp {
 
     public void setNumBomExplosion(int numBomExplosion) {
         this.numBomExplosion = numBomExplosion;
+    }
+
+    public void setCheckColaBottle(boolean checkColaBottle) {
+        this.checkColaBottle = checkColaBottle;
+    }
+
+    public boolean isCheckColaBottle() {
+        return checkColaBottle;
     }
 }

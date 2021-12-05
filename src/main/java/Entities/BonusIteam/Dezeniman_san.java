@@ -6,30 +6,20 @@ import Entities.Entity;
 import Map.Map;
 
 public class Dezeniman_san extends Bonus {
-//    public Dezeniman_san(int x, int y, int width, int height) {
-//        super(Sprite.DEZENIMAN_SAN, "Dezeniman_san", x, y, width, height, 20000000);
-//    }
-
     public Dezeniman_san(int x, int y, int width, int height, int gridSize, Map map) {
-        super(x, y, width, height, gridSize, null, map, 20000000, "Dezeniman_san");
-        this.sprite = Sprite.SPRITE_TRANSPARENT;
+        super(x, y, width, height, gridSize, Sprite.DEZENIMAN_SAN, map, 20000000, "Dezeniman_san");
         collision = true;
     }
 
     @Override
     public void update() {
-        if (checkBonus) {
-            this.sprite = Sprite.DEZENIMAN_SAN;
-        }
     }
 
     public boolean ifCollideDo(Entity other) {
-        if (checkBonus) {
-            if (collision(other) && other instanceof Bomber) {
-                ((Bomber) other).getScore().addScore(this.score);
-                destroy();
-                return true;
-            }
+        if (collision(other) && other instanceof Bomber) {
+            ((Bomber) other).getScore().addScore(this.score);
+            destroy();
+            return true;
         }
         return false;
     }

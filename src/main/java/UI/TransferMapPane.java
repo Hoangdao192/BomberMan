@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
@@ -22,7 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-public class TransferMapPane extends AnchorPane {
+public class TransferMapPane extends VBox {
     int width;
     int height;
     Time time;
@@ -52,6 +53,8 @@ public class TransferMapPane extends AnchorPane {
         this.width = width;
         this.height = height;
 
+        setAlignment(Pos.CENTER);
+
         scorePlayer = map.getPlayer().getScore().getScore();
         timeMap = map.getTime().countSecond();
 
@@ -75,27 +78,28 @@ public class TransferMapPane extends AnchorPane {
         headerLabel.setTextFill(Color.YELLOW);
         headerLabel.setPrefWidth(width);
         headerLabel.setAlignment(Pos.CENTER);
-        setTopAnchor(headerLabel, height / 4.0);
+        //setTopAnchor(headerLabel, height / 4.0);
 
         scoreLabel = new Label("SCORE: " + scorePlayer);
         scoreLabel.setFont(contentFont);
         scoreLabel.setTextFill(Color.YELLOW);
         scoreLabel.setPrefWidth(width);
         scoreLabel.setAlignment(Pos.CENTER);
-        setTopAnchor(scoreLabel, height / 4.0 * 2.0);
+        //setTopAnchor(scoreLabel, height / 4.0 * 2.0);
 
         timeLabel = new Label("TIME: " + timeMap);
         timeLabel.setFont(contentFont);
         timeLabel.setTextFill(Color.YELLOW);
         timeLabel.setPrefWidth(width);
         timeLabel.setAlignment(Pos.CENTER);
-        setTopAnchor(timeLabel, height / 4.0 * 2.0 + height / 15.8);
+        //setTopAnchor(timeLabel, height / 4.0 * 2.0 + height / 15.8);
 
         timeCountLabel = new Label("Next level ..." + time.countSecond());
         timeCountLabel.setFont(contentFont);
         timeCountLabel.setPrefWidth(width);
         timeCountLabel.setAlignment(Pos.CENTER);
-        setTopAnchor(timeCountLabel, height / 5.0 * 4.0);
+        timeCountLabel.setLayoutY(40);
+        //setTopAnchor(timeCountLabel, height / 5.0 * 4.0);
 
         getChildren().addAll(headerLabel, scoreLabel, timeLabel, timeCountLabel);
     }
@@ -123,7 +127,7 @@ public class TransferMapPane extends AnchorPane {
         if (timeCount > 10) {
             timeCount = 10;
         }
-        timeCountLabel.setText("Next level ..." + (DEFAULT_WAIT_TIME - timeCount));
+        timeCountLabel.setText("\n\nNext level ..." + (DEFAULT_WAIT_TIME - timeCount));
         if (timeCount >= DEFAULT_WAIT_TIME) {
             transfer = true;
         }
@@ -131,7 +135,7 @@ public class TransferMapPane extends AnchorPane {
 
     public void setScorePlayer(int scorePlayer) {
         this.scorePlayer = scorePlayer;
-        scoreLabel.setText("SCORE: " + scorePlayer);
+        scoreLabel.setText("\n\nSCORE: " + scorePlayer);
     }
 
     public void setTimeMap(int timeMap) {
