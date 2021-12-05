@@ -95,7 +95,7 @@ public class Game extends BaseState{
 
     private void createTransferMap() {
         transferMap = new TransferMap((int) screenWidth, (int) screenHeight, map.getGridSize());
-        transferMapPane = new TransferMapPane((int) scene.getWidth(), (int) scene.getHeight(), map);
+        transferMapPane = new TransferMapPane((int) scene.getWidth(), (int) scene.getHeight(), map, mapManager);
     }
 
     //  UI initializer
@@ -150,7 +150,7 @@ public class Game extends BaseState{
         pauseMenu.getMenuButton().setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                running = false;
+                stop();
             }
         });
     }
@@ -172,7 +172,7 @@ public class Game extends BaseState{
         gameOverPane.getMenuButton().setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                running = false;
+                stop();
             }
         });
     }
@@ -420,7 +420,7 @@ public class Game extends BaseState{
                     bomber.increaseHP();
                     mediaPlayer.play();
                 } else {
-                    gameOver = true;
+                    stop();
                 }
             }
         }
@@ -428,7 +428,7 @@ public class Game extends BaseState{
 
     public void createNewGame() {
         gameOver = false;
-        mapManager.setCurrentLevel(1);
+        //mapManager.setCurrentLevel(1);
         mainContainer.getChildren().clear();
         createMap();
         createPlayer();
@@ -507,5 +507,11 @@ public class Game extends BaseState{
             map.render(graphicsContext);
             bomber.render(graphicsContext);
         }
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+        mediaPlayer.stop();
     }
 }

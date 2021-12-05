@@ -25,6 +25,7 @@ public class GameOverPane extends AnchorPane {
     private Font headerFont;
     private Font contentFont;
 
+    private Panel headPanel;
     private Panel mainPanel;
     private int width;
     private int height;
@@ -52,7 +53,11 @@ public class GameOverPane extends AnchorPane {
         this.map = map;
         this.width = width;
         this.height = height;
-        mainPanel = new Panel(width, height);
+
+        loadFont();
+        createHeader();
+        mainPanel = new Panel(width, height - 40);
+        mainPanel.setLayoutY(40);
         getChildren().add(mainPanel);
 
         this.playerScore = map.getPlayer().getScore().getScore();
@@ -61,7 +66,7 @@ public class GameOverPane extends AnchorPane {
         countScore = 0;
         countTime = 0;
 
-        loadFont();
+
         createLabel();
         createButton();
 
@@ -117,13 +122,26 @@ public class GameOverPane extends AnchorPane {
         }
     }
 
-    private void createLabel() {
-        gameOverLabel = new Label("GAME OVER");
-        gameOverLabel.setFont(headerFont);
-        gameOverLabel.setTextFill(Color.ORANGE);
-        gameOverLabel.setLayoutX(width / 10 * 3);
-        gameOverLabel.setLayoutY(height / 10);
+    private void createHeader() {
+        headPanel = new Panel(width, 45);
+        headPanel.setColor(
+                Color.rgb(25, 137, 184),
+                Color.rgb(53, 186, 243),
+                Color.rgb(30, 167, 225)
+        );
+        Label gameOverLabel = new Label("GAME OVER");
+        try {
+            gameOverLabel.setFont(headerFont);
+        } catch (Exception e) {}
+        gameOverLabel.setPrefWidth(width);
+        gameOverLabel.setPrefHeight(45);
+        gameOverLabel.setTextFill(Color.WHITE);
+        gameOverLabel.setStyle("-fx-alignment: center");
+        headPanel.getChildren().add(gameOverLabel);
+        getChildren().add(headPanel);
+    }
 
+    private void createLabel() {
         scoreLabel = new Label("Score: " + countScore);
         scoreLabel.setFont(contentFont);
         scoreLabel.setLayoutX(width / 10 * 3);
@@ -134,7 +152,7 @@ public class GameOverPane extends AnchorPane {
         timeLabel.setLayoutX(width / 10 * 3);
         timeLabel.setLayoutY(height / 10 * 5);
 
-        getChildren().addAll(gameOverLabel, scoreLabel, timeLabel);
+        getChildren().addAll(scoreLabel, timeLabel);
     }
 
     private void createButton() {

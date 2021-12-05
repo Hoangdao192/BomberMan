@@ -1,5 +1,6 @@
 package UI;
 
+import Component.MapManager;
 import Component.Time;
 import Entities.Bomber;
 import Map.Map;
@@ -31,6 +32,7 @@ public class TransferMapPane extends AnchorPane {
     int scorePlayer = 0;
     int timeMap = 0;
     private Map map;
+    private MapManager mapManager;
 
     private Font headerFont;
     private Font contentFont;
@@ -43,7 +45,8 @@ public class TransferMapPane extends AnchorPane {
 
     private MediaPlayer mediaPlayer;
 
-    public TransferMapPane(int width, int height, Map map) {
+    public TransferMapPane(int width, int height, Map map, MapManager mapManager) {
+        this.mapManager = mapManager;
         this.map = map;
         time = new Time();
         this.width = width;
@@ -97,10 +100,6 @@ public class TransferMapPane extends AnchorPane {
         getChildren().addAll(headerLabel, scoreLabel, timeLabel, timeCountLabel);
     }
 
-    private void alignLabel() {
-        //double headLabelWidth = TextBu.create().text(text).font(font).build().getLayoutBounds();
-    }
-
     private void loadFont() {
         try {
             headerFont = Font.loadFont(new FileInputStream("src/main/resources/Font/kenvector_future.ttf"), 35);
@@ -113,6 +112,12 @@ public class TransferMapPane extends AnchorPane {
     }
 
     public void update() {
+        if (mapManager.getLevel() < mapManager.getMapPathList().size()) {
+            headerLabel.setText("CONGRATULATION\n NEXT LEVEL: " + (mapManager.getLevel() + 1));
+        } else {
+            headerLabel.setText("CONGRATULATION\n YOU PASS ALL LEVEL.");
+        }
+
         mediaPlayer.play();
         int timeCount = time.countSecond();
         if (timeCount > 10) {

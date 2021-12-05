@@ -41,6 +41,7 @@ public class Menu extends BaseState {
         creatUIButton();
 
         VBox box = new VBox(30, newGameButton, settingButton, exitButton);
+
         box.setAlignment(Pos.CENTER);
         VBox.setVgrow(newGameButton, Priority.ALWAYS);
         VBox.setVgrow(settingButton, Priority.ALWAYS);
@@ -52,11 +53,11 @@ public class Menu extends BaseState {
     }
 
     private void creatUIButton() {
-        newGameButton = new UIButton(250, 50, "New Game");
+        newGameButton = new UIButton(190, 49, "New Game");
         newGameButton.setStyle(UIButton.GREEN_1);
-        settingButton = new UIButton(250, 50, "Setting");
+        settingButton = new UIButton(190, 49, "Setting");
         settingButton.setStyle(UIButton.GREEN_1);
-        exitButton = new UIButton(250, 50, "Exit");
+        exitButton = new UIButton(190, 49, "Exit");
         exitButton.setStyle(UIButton.GREEN_1);
 
         newGameButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -69,16 +70,6 @@ public class Menu extends BaseState {
         settingButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                /*SettingPane settingPane = new SettingPane(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
-                settingPane.getCloseButton().setOnMouseClicked(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent mouseEvent) {
-
-                    }
-                });
-                Scene sceneSetting = new Scene(settingPane);
-                mainStage.setScene(sceneSetting);
-                mainStage.show();*/
                 states.push(new SettingState(mainStage, states));
             }
         });

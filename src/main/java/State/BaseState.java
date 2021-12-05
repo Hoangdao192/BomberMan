@@ -29,6 +29,10 @@ public abstract class BaseState {
         this.running = running;
     }
 
+    public void stop() {
+        running = false;
+    }
+
     public Scene getScene() {
         return scene;
     }

@@ -42,7 +42,7 @@ public class Bomber extends DynamicEntity {
     //  Có thể đi xuyên bom
     private boolean bombPass = false;
     //  Miễn nhiễm với bom nổ
-    private boolean flamePass = true;
+    private boolean flamePass = false;
     //  Miễn ảnh hưởng khi va chạm với Enemy
     private boolean enemyPass = true;
     //  Trạng thái bất diệt miễn nhiễm với mọi sát thương
