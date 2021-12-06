@@ -34,7 +34,7 @@ public class Bomber extends DynamicEntity {
 
     //Speed up.
     private final int BASE_SPEED = 2;
-    private int speed = 2;
+    private int speed = 4;
 
     //  Chức năng
     //  Có thể đi xuyên tường
@@ -192,7 +192,7 @@ public class Bomber extends DynamicEntity {
                 setVelocityY(0);
             }
         };
-        movement.setSpeed(speed * BASE_SPEED);
+        movement.setSpeed(speed);
     }
 
     private void createHitBox() {
@@ -200,7 +200,7 @@ public class Bomber extends DynamicEntity {
     }
 
     private void createBombManager() {
-        bombManager = new BombManager(this, map, 10, 10);
+        bombManager = new BombManager(this, map, 1, 1);
         bombManager.disableDetonator();
     }
 
@@ -240,7 +240,7 @@ public class Bomber extends DynamicEntity {
     public void increaseSpeed() {
         if (movement.getSpeed() < MAX_SPEED) {
             ++speed;
-            movement.setSpeed(speed * BASE_SPEED);
+            movement.setSpeed(speed);
         }
     }
 
@@ -401,7 +401,7 @@ public class Bomber extends DynamicEntity {
         if (HP <= 0) {
             mediaPlayer.stop();
             HP = 0;
-            if (animationManager.get("DEAD").getCurrentFrame() == animationManager.get("DEAD").getNumberOfFrame() - 1) {
+            if (animationManager.get("DEAD").getCurrentFrame() >= animationManager.get("DEAD").getNumberOfFrame() - 1) {
                 alive = false;
             }
             movement.setSpeed(0);

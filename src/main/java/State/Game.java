@@ -295,8 +295,8 @@ public class Game extends BaseState{
     }
 
     private void createMap() {
-        //map = mapManager.loadCurrentLevel();
-        map = new Map("src/main/resources/Map/map.txt", DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        map = mapManager.loadCurrentLevel();
+        //map = new Map("src/main/resources/Map/map.txt", DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 
     private void createPlayer() {
@@ -312,6 +312,12 @@ public class Game extends BaseState{
                     if (!pause) {
                         pause = true;
                     } else pause = false;
+                } else if (keyEvent.getCode().equals(KeyCode.M)) {
+                    if (miniMap.isVisible()) {
+                        showMinimap = false;
+                    } else {
+                        showMinimap = true;
+                    }
                 }
                 bomber.updateInput(keyEvent, true);
             }
@@ -421,7 +427,9 @@ public class Game extends BaseState{
                 if (mapManager.nextLevel()) {
                     nextLevel();
                     bomber.increaseHP();
-                    mediaPlayer.play();
+                    if (Setting.isSoundOn()) {
+                        mediaPlayer.play();
+                    }
                 } else {
                     stop();
                 }
@@ -430,7 +438,9 @@ public class Game extends BaseState{
     }
 
     public void createNewGame() {
-        mediaPlayer.play();
+        if (Setting.isSoundOn()) {
+            mediaPlayer.play();
+        }
         gameOver = false;
         //mapManager.setCurrentLevel(1);
         mainContainer.getChildren().clear();
